@@ -5,6 +5,7 @@
   export let extraClasses: string | undefined
   export let enabled = true
   export let forceActiveState = false
+  export let small = false
 
   const dispatch = createEventDispatcher()
 </script>
@@ -18,6 +19,7 @@
   class:cursor-default={!enabled}
   class:enabled
   class:forceActiveState
+  class:small
   on:click={() => {
     if (enabled) {
       dispatch("click")
@@ -58,7 +60,7 @@
     border-radius: 6px;
     background: none;
     cursor: pointer;
-    padding: 14px 0px;
+    padding: 14px 0;
     display: inline-block;
     letter-spacing: 1px;
     outline: none;
@@ -67,6 +69,10 @@
     background: #ea6148;
     box-shadow: 0 5px #bb612b, 0 0 0 1px #241f12, 0px 5px 0px 1px #241f12;
     @apply font-museo;
+  }
+  .small {
+    font-size: 20px;
+    padding: 7px 21px;
   }
   button:hover {
     box-shadow: 0 3px #bb612b, 0 0 0 1px #241f12, 0 3px 0 1px #241f12;

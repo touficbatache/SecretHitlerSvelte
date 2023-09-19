@@ -20,16 +20,20 @@ export function init(token: string) {
   userIdToken = token
 }
 
+// https://us-central1-secret-hitler-app.cloudfunctions.net/api/${endpoint}
 async function callApi(endpoint: string, body?: string) {
-  return await fetch(`https://us-central1-secret-hitler-app.cloudfunctions.net/api/${endpoint}`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json; charset=utf-8",
-      Authorization: `Bearer ${userIdToken}`,
+  return await fetch(
+    `https://us-central1-secret-hitler-test-app.cloudfunctions.net/api/${endpoint}`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json; charset=utf-8",
+        Authorization: `Bearer ${userIdToken}`,
+      },
+      body,
     },
-    body,
-  })
+  )
 }
 
 async function setGameCodeCookie(code: string) {

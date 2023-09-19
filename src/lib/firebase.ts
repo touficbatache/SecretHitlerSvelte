@@ -1,5 +1,11 @@
 import { type FirebaseApp, type FirebaseOptions, initializeApp } from "firebase/app"
-import { getAuth, onIdTokenChanged, signOut as _signOut, type Auth } from "firebase/auth"
+import {
+  getAuth,
+  onIdTokenChanged,
+  signOut as _signOut,
+  type Auth,
+  updateProfile,
+} from "firebase/auth"
 
 import { browser } from "$app/environment"
 import { invalidateAll } from "$app/navigation"
@@ -21,6 +27,8 @@ export function initializeFirebase(config: FirebaseOptions): void {
 function listenForAuthChanges() {
   const auth: Auth = getAuth(app)
 
+  // In addition to sign-in and sign-out, this observer will
+  // fire if a token has expired (> 1 hour), generating a new one
   onIdTokenChanged(
     auth,
     async (user) => {
@@ -47,6 +55,25 @@ async function setTokenCookie(token: string | undefined) {
   await fetch("/api/login", options)
 
   await invalidateAll()
+}
+
+export function setUserName(name: string) {
+  const currentUser = getAuth(app).currentUser
+  if (currentUser !== null) {
+    updateProfile(currentUser, {
+      displayName: name,
+    })
+      .then(async () => {
+        const token = await getAuth(app).currentUser?.getIdToken()
+        await setTokenCookie(token)
+      })
+      .catch((reason) => {
+        // TODO: throw error and handle it outside
+      })
+  } else {
+    // TODO: throw error and handle it outside
+    // console.log("Error")
+  }
 }
 
 export async function signOut() {

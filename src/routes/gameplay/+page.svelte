@@ -15,6 +15,10 @@
     if ($page.data.gameCode === undefined) {
       goto("/")
     }
+
+    // if ($gameData?.status === "waiting") {
+    //   goto("/waitingRoom")
+    // }
   }
 
   $: console.log($gameData)

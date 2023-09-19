@@ -6,6 +6,10 @@ import admin from "firebase-admin"
 
 import type { GameData } from "$lib/game_data"
 
+export interface TokenResponse extends DecodedIdToken {
+  name: string | undefined
+}
+
 let listeningCallback: ((snapshot: admin.database.DataSnapshot) => void) | undefined
 
 function initializeFirebase() {
@@ -19,7 +23,7 @@ function initializeFirebase() {
   }
 }
 
-export async function verifyToken(token: string): Promise<DecodedIdToken> {
+export async function verifyToken(token: string): Promise<TokenResponse> {
   if (token === undefined) {
     throw new Error("Invalid login.")
   }
@@ -32,7 +36,12 @@ export async function verifyToken(token: string): Promise<DecodedIdToken> {
     throw new Error("Couldn't decode login.")
   }
 
-  return decodedToken
+  const user = await admin.auth().getUser(decodedToken.uid)
+
+  return {
+    ...decodedToken,
+    name: user.displayName,
+  }
 }
 
 function castGameData(snapshotValue: any, userId: string): GameData {
