@@ -28,16 +28,16 @@ module.exports = {
     },
   ],
   rules: {
-  //   "@typescript-eslint/explicit-function-return-type": "off",
+    //   "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
-  //   "@typescript-eslint/no-inferrable-types": "off",
-  //   "@typescript-eslint/typedef": [
-  //     "error",
-  //     {
-  //       arrowParameter: true,
-  //       variableDeclaration: true,
-  //     },
-  //   ],
-  //   "import/no-unresolved": 0,
+    //   "@typescript-eslint/no-inferrable-types": "off",
+    //   "@typescript-eslint/typedef": [
+    //     "error",
+    //     {
+    //       arrowParameter: true,
+    //       variableDeclaration: true,
+    //     },
+    //   ],
+    //   "import/no-unresolved": 0,
   },
 }

@@ -30,7 +30,9 @@
   <div class="overlay" />
   <div class="overlay" />
 
-  <span class="w-full absolute -z-[1] left-1/2 top-[calc(50%+.7px)] -translate-x-1/2 -translate-y-1/2">
+  <span
+    class="w-full absolute -z-[1] left-1/2 top-[calc(50%+.7px)] -translate-x-1/2 -translate-y-1/2"
+  >
     <Icon
       class="text-base overflow-visible text-black m-auto"
       {icon}

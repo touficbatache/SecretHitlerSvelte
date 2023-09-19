@@ -12,10 +12,7 @@
     <Deck cards={["fascist", "liberal", "fascist"]} />
   </div>
 
-  <button
-    class="w-fit mt-40 px-10 py-5 bg-gray-200 rounded-2xl"
-    on:click={() => reveal = true}
-  >
+  <button class="w-fit mt-40 px-10 py-5 bg-gray-200 rounded-2xl" on:click={() => (reveal = true)}>
     Reveal cards
   </button>
 </main>
@@ -26,15 +23,12 @@
     transition:fade={{ duration: 400, easing: expoOut }}
   >
     <div class="w-96 h-96">
-      <Deck
-        cards={["fascist", "liberal", "fascist"]}
-        interactive={true}
-      />
+      <Deck cards={["fascist", "liberal", "fascist"]} interactive={true} />
       <!--    debug={true}-->
     </div>
     <button
       class="mt-40 px-10 py-5 bg-[#373633] text-white rounded-2xl"
-      on:click={() => reveal = false}
+      on:click={() => (reveal = false)}
     >
       Done
     </button>

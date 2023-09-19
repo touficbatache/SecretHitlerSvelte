@@ -6,7 +6,9 @@
   // Helper function to check if the touch position is inside an element
   function isInsideElement(touchX, touchY, element) {
     const rect = element.getBoundingClientRect()
-    return touchX >= rect.left && touchX <= rect.right && touchY >= rect.top && touchY <= rect.bottom
+    return (
+      touchX >= rect.left && touchX <= rect.right && touchY >= rect.top && touchY <= rect.bottom
+    )
   }
 
   let deckEl = undefined
@@ -54,17 +56,18 @@
     on:touchend={onContainerTouchStartEnd}
     on:mouseleave={onContainerTouchStartEnd}
     class:expanded={isContainerExpanded}
-    class:debug={debug}
+    class:debug
   >
     {#each cards as card, index}
       <li
         class="hitbox"
-        class:reveal={isContainerExpanded && revealedElementIndex === index} style:z-index={cards.length - index}
-        class:debug={debug}
+        class:reveal={isContainerExpanded && revealedElementIndex === index}
+        style:z-index={cards.length - index}
+        class:debug
       >
         <div class="card flipped {card}" style:z-index={cards.length - index}>
           <!--          style:transform={index === 1 ? "rotateX(0deg) rotateY(309deg) rotateZ(110deg) translate(-25px, 50px)" : ""}-->
-          <div class="depth"></div>
+          <div class="depth" />
         </div>
       </li>
     {/each}
@@ -72,128 +75,132 @@
 {/if}
 
 <style>
-    .deck {
-        @apply w-full h-full flex flex-col justify-end items-center touch-none;
-    }
+  .deck {
+    @apply w-full h-full flex flex-col justify-end items-center touch-none;
+  }
 
-    .deck.debug {
-        @apply bg-red-400 bg-opacity-50 border border-black;
-    }
+  .deck.debug {
+    @apply bg-red-400 bg-opacity-50 border border-black;
+  }
 
-    .deck * {
-        @apply select-none;
-    }
+  .deck * {
+    @apply select-none;
+  }
 
-    .deck > * {
-        @apply transition-all duration-500 w-[80%] h-[30%] shrink-0;
-    }
+  .deck > * {
+    @apply transition-all duration-500 w-[80%] h-[30%] shrink-0;
+  }
 
-    .deck > .debug {
-        @apply bg-blue-400 bg-opacity-30 border border-black;
-    }
+  .deck > .debug {
+    @apply bg-blue-400 bg-opacity-30 border border-black;
+  }
 
-    .hitbox {
-        perspective: 10000;
-        -webkit-perspective: 10000; /* This fixes a pass-through bug on iPhone Safari */
-    }
+  .hitbox {
+    perspective: 10000;
+    -webkit-perspective: 10000; /* This fixes a pass-through bug on iPhone Safari */
+  }
 
-    .deck .card {
-        position: relative;
-        top: -50%;
-        margin: 0 auto;
-        width: 50%;
-        aspect-ratio: 5/7;
-        border-radius: 6.5%;
-        /*border-radius: 12px;*/
-        color: #fff;
-        transform-style: preserve-3d;
-        transform: rotateX(45deg) rotateY(15deg) rotate(-45deg);
-        /* transform: rotateX(45deg) rotateY(195deg) rotate(45deg); */
-        transition: all 0.4s ease;
-        pointer-events: none;
-        box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9E9E9E, -5.5px 6px 0px -0.5px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);
+  .deck .card {
+    position: relative;
+    top: -50%;
+    margin: 0 auto;
+    width: 50%;
+    aspect-ratio: 5/7;
+    border-radius: 6.5%;
+    /*border-radius: 12px;*/
+    color: #fff;
+    transform-style: preserve-3d;
+    transform: rotateX(45deg) rotateY(15deg) rotate(-45deg);
+    /* transform: rotateX(45deg) rotateY(195deg) rotate(45deg); */
+    transition: all 0.4s ease;
+    pointer-events: none;
+    box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9e9e9e,
+      -5.5px 6px 0px -0.5px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);
 
-        /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9E9E9E, -5px 5px 0px 0.5px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
+    /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9E9E9E, -5px 5px 0px 0.5px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
 
-        /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3px 0px 0.75px #9E9E9E, -5px 5px 0px 0.5px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
+    /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3px 0px 0.75px #9E9E9E, -5px 5px 0px 0.5px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
 
-        /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3.3px 3.3px 0px 0.75px #9E9E9E, -4.5px 4.5px 0px 0.75px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
+    /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3.3px 3.3px 0px 0.75px #9E9E9E, -4.5px 4.5px 0px 0.75px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
 
-        /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3.3px 3.3px 0px 0.75px #9E9E9E, -5px 5px 0px 0.75px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
+    /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3.3px 3.3px 0px 0.75px #9E9E9E, -5px 5px 0px 0.75px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
 
-        /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3px 0px 1px #9E9E9E, -5px 5px 0px 0.5px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
+    /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3px 0px 1px #9E9E9E, -5px 5px 0px 0.5px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
 
-        /*box-shadow: -1.5px 1px 0px 1px #ececec, -3px 3px 0px 1px #9E9E9E, -5px 4.5px 0px 1px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
+    /*box-shadow: -1.5px 1px 0px 1px #ececec, -3px 3px 0px 1px #9E9E9E, -5px 4.5px 0px 1px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
 
-        /* box-shadow: -1.5px 1px 0px 1px #ececec, -3px 3px 0px 1px #9E9E9E, -5px 4.5px 0px 1px #ececec, -20px 20px 60px rgba(143, 143, 143, 0.5); */
+    /* box-shadow: -1.5px 1px 0px 1px #ececec, -3px 3px 0px 1px #9E9E9E, -5px 4.5px 0px 1px #ececec, -20px 20px 60px rgba(143, 143, 143, 0.5); */
 
-        /* box-shadow: -20px 20px 60px rgba(143, 143, 143, 0.5), -2px 3px 0px 2px #9E9E9E; */
-    }
+    /* box-shadow: -20px 20px 60px rgba(143, 143, 143, 0.5), -2px 3px 0px 2px #9E9E9E; */
+  }
 
-    /*.deck .card::before,*/
-    .deck .card > .depth {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 6.5%;
-        /*border-radius: 12px;*/
-        transform: rotateY(180deg);
-        transform-origin: 50% 0 -0.5px;
-        background-image: url(/policy_backcover.png);
-        background-size: cover;
-    }
+  /*.deck .card::before,*/
+  .deck .card > .depth {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 6.5%;
+    /*border-radius: 12px;*/
+    transform: rotateY(180deg);
+    transform-origin: 50% 0 -0.5px;
+    background-image: url(/policy_backcover.png);
+    background-size: cover;
+  }
 
-    .deck .card.flipped {
-        /* transform: rotateX(45deg) rotateY(195deg) rotate(45deg); */
-        /* transform: rotateX(150deg) rotateY(-137deg) rotate(111deg); */
-        transform: rotateX(45deg) rotateY(-165deg) rotate(45deg);
-        box-shadow: 1.5px 1.5px 0px 0.5px #ececec, 3px 3.3px 0px 0.4px #9E9E9E, 5.5px 6px 0px -0.5px #ececec, 9px 9px 20px 0px rgba(143, 143, 143, 0.5);
-    }
+  .deck .card.flipped {
+    /* transform: rotateX(45deg) rotateY(195deg) rotate(45deg); */
+    /* transform: rotateX(150deg) rotateY(-137deg) rotate(111deg); */
+    transform: rotateX(45deg) rotateY(-165deg) rotate(45deg);
+    box-shadow: 1.5px 1.5px 0px 0.5px #ececec, 3px 3.3px 0px 0.4px #9e9e9e,
+      5.5px 6px 0px -0.5px #ececec, 9px 9px 20px 0px rgba(143, 143, 143, 0.5);
+  }
 
-    .deck > *:not(:first-child) {
-        margin-top: calc(-28.7%);
-        /*margin-top: calc(-30% + 5px);*/
-    }
+  .deck > *:not(:first-child) {
+    margin-top: calc(-28.7%);
+    /*margin-top: calc(-30% + 5px);*/
+  }
 
-    .deck.expanded > *:not(:first-child) {
-        margin-top: 0;
-    }
+  .deck.expanded > *:not(:first-child) {
+    margin-top: 0;
+  }
 
-    .deck .card.fascist {
-        @apply bg-[url(policy_fascist.png)] bg-cover;
-    }
+  .deck .card.fascist {
+    @apply bg-[url(policy_fascist.png)] bg-cover;
+  }
 
-    .deck .card.liberal {
-        @apply bg-[url(policy_liberal.png)] bg-cover;
-    }
+  .deck .card.liberal {
+    @apply bg-[url(policy_liberal.png)] bg-cover;
+  }
 
-    .deck .reveal .card {
-        transform: rotateX(30deg) rotateY(15deg) rotate(-30deg) translate(-10%, 20%);
-        /*transform: rotateX(30deg) rotateY(15deg) rotate(-30deg) translate(-25px, 50px);*/
-        /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9E9E9E, -5px 5px 0px 0.5px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
-    }
+  .deck .reveal .card {
+    transform: rotateX(30deg) rotateY(15deg) rotate(-30deg) translate(-10%, 20%);
+    /*transform: rotateX(30deg) rotateY(15deg) rotate(-30deg) translate(-25px, 50px);*/
+    /*box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9E9E9E, -5px 5px 0px 0.5px #ececec, -9px 9px 20px 0px rgba(143, 143, 143, 0.5);*/
+  }
 
-    .deck .reveal .card.fascist {
-        box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9E9E9E, -5.5px 6px 0px -0.5px #ececec, -9px 9px 20px 0px rgba(214, 13, 0, 0.3);
-    }
+  .deck .reveal .card.fascist {
+    box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9e9e9e,
+      -5.5px 6px 0px -0.5px #ececec, -9px 9px 20px 0px rgba(214, 13, 0, 0.3);
+  }
 
-    .deck .reveal .card.liberal {
-        box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9E9E9E, -5.5px 6px 0px -0.5px #ececec, -9px 9px 20px 0px rgba(0, 145, 179, 0.3);
-    }
+  .deck .reveal .card.liberal {
+    box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9e9e9e,
+      -5.5px 6px 0px -0.5px #ececec, -9px 9px 20px 0px rgba(0, 145, 179, 0.3);
+  }
 
-    /*.tariffCards > div:hover .card:after,*/
-    /*.deck > .reveal .card:after {*/
-    /*    transform: translateX(100%);*/
-    /*    transition: all 1.2s ease-in-out;*/
-    /*}*/
+  /*.tariffCards > div:hover .card:after,*/
+  /*.deck > .reveal .card:after {*/
+  /*    transform: translateX(100%);*/
+  /*    transition: all 1.2s ease-in-out;*/
+  /*}*/
 
-    /* shine */
-    /* .deck:after {
+  /* shine */
+  /* .deck:after {
         position: absolute;
         bottom: -27px;
         left: 5%;
@@ -204,8 +211,8 @@
         background-image: radial-gradient(rgba(34, 50, 84, 0.04), rgba(34, 50, 84, 0));
     } */
 
-    /* shine */
-    /* .deck .card:after {
+  /* shine */
+  /* .deck .card:after {
         content: '';
         position: absolute;
         top: -70px;
@@ -216,7 +223,7 @@
         transform: translateX(-100%);
     } */
 
-    /* .deck .card:after {
+  /* .deck .card:after {
         content: '';
         position: absolute;
         top: 50%;
