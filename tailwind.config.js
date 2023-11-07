@@ -29,11 +29,13 @@ export default {
         "card-role-liberal-5": "url('/card_role_liberal_5.png')",
         "card-role-liberal-6": "url('/card_role_liberal_6.png')",
         checkerboard: "url('/background.png')",
+        "hand-drawn-x": "url('hand_drawn_x.svg')",
         logo: "url('/logo.png')",
         "logo-nsk": "url('/logo_nsk.png')",
         "logo-nsk-s": "url('/logo_nsk_s.png')",
         "skw-logo": "url('/skw_logo.png')",
         "skw-logo-2": "url('/skw_logo_2.png')",
+        paperback: "url('/paperback.png')",
         "placard-president": "url('/placard_president.png')",
         "placard-chancellor": "url('/placard_chancellor.png')",
         player: "url('/player.png')",
@@ -47,6 +49,8 @@ export default {
         "player-liberal-4": "url('/player_liberal_4.png')",
         "player-liberal-5": "url('/player_liberal_5.png')",
         "player-liberal-6": "url('/player_liberal_6.png')",
+        "policy-liberal": "url('/policy_liberal.png')",
+        "policy-fascist": "url('/policy_fascist.png')",
       },
       backgroundSize: {
         136: "34rem",
@@ -124,11 +128,15 @@ export default {
         "sh-grey-less-dark": "#1a1a1a",
         "sh-grey-dark": "#141414",
         "sh-grey-very-dark": "#0f0f0f",
+        "red-fascist": "#d60d00",
+        "blue-liberal": "#0091b3",
       },
       darkMode: "class",
       fontFamily: {
         sans: ["Courier Prime", "sans-serif"],
         museo: ["Museo"],
+        futura: ["Futura"],
+        eskapade_fraktur: ["Eskapade Fraktur"],
       },
       keyframes: {
         rotator: {
@@ -158,6 +166,93 @@ export default {
           },
           "100%": {
             transform: "rotate(360deg)",
+          },
+        },
+        "card-showcase": {
+          "0%, 100%": {
+            "animation-timing-function": "linear",
+            transform: "translateX(0) scale(1)",
+          },
+          "5%": {
+            "animation-timing-function": "cubic-bezier(.73,.03,.99,.55)",
+            transform: "translateX(-60px) scale(1)",
+          },
+          "10%": {
+            "animation-timing-function": "cubic-bezier(.73,.03,.99,.55)",
+            transform: "translateX(-100px) scale(1.5)",
+          },
+          "15%": {
+            "animation-timing-function": "cubic-bezier(.73,.03,.99,.55)",
+            transform: "translateX(-60px) scale(2)",
+          },
+          "85%": {
+            "animation-timing-function": "linear",
+            transform: "translateX(80px) scale(2)",
+          },
+          "90%": {
+            "animation-timing-function": "linear",
+            transform: "translateX(100px) scale(1.5)",
+          },
+          "95%": {
+            "animation-timing-function": "linear",
+            transform: "translateX(80px) scale(1)",
+          },
+        },
+        "cs-pos": {
+          "0%": {
+            transform: "translateX(0)",
+          },
+          "10%": {
+            "animation-timing-function": "ease-in",
+            transform: "translateX(-200px)",
+          },
+          "80%": {
+            transform: "translateX(200px)",
+          },
+        },
+        "cs-siz": {
+          "0%": {
+            transform: "scale(1) rotateY(0deg)",
+          },
+          "30%, 72%": {
+            // "animation-timing-function": "cubic-bezier(.35,.65,.47,.85)",
+            // "animation-timing-function": "cubic-bezier(.5,.93,.58,1)",
+            transform: "scale(1.5) rotateY(180deg)",
+          },
+        },
+        "cs-siz-reverse": {
+          "0%": {
+            transform: "scale(1) rotateY(180deg)",
+          },
+          "30%, 72%": {
+            transform: "scale(1.5) rotateY(0deg)",
+          },
+          "100%": {
+            transform: "scale(1) rotateY(0deg)",
+          },
+        },
+        "rotate-reveal": {
+          "0%": {
+            transform: "rotateY(180deg)",
+          },
+          "10%, 80%": {
+            transform: "rotateY(360deg)",
+          },
+          "100%": {
+            transform: "rotateY(360deg)",
+          },
+        },
+        "grow-reveal": {
+          "0%": {
+            "animation-timing-function": "cubic-bezier(0, 0.55, 0.45, 1)",
+            transform: "scale(1)",
+          },
+          "70%": {
+            "animation-timing-function": "cubic-bezier(.87,0,.21,1.48)",
+            transform: "scale(2)",
+          },
+          "100%": {
+            transform: "scale(1)",
           },
         },
       },

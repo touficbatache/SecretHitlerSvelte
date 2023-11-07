@@ -3,7 +3,7 @@
   import { v4 as uuidV4 } from "uuid"
 
   export let label: string | undefined
-  export let placeholder: string | undefined
+  export let placeholder: string | undefined = undefined
   export let type: string | undefined
   export let value: string | undefined
 

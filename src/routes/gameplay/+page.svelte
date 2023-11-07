@@ -16,28 +16,22 @@
       goto("/")
     }
 
-    // if ($gameData?.status === "waiting") {
-    //   goto("/waitingRoom")
-    // }
-  }
+    if ($gameData?.status === "waiting") {
+      goto("/waitingRoom")
+    }
 
-  $: console.log($gameData)
+    if ($gameData?.status === "settingUp") {
+      goto("/intro")
+    }
+  }
 </script>
 
 <div class="w-full h-full px-6 py-4">
   <Decor {gameCode} gameData={$gameData}>
-    <div class="w-full aspect-[1547/551] bg-board-liberal bg-cover rounded shadow-depth">
-      <!--      -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-      <!--      <br />-->
-      <!--      -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-      <!--      <br />-->
-      <!--      -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-      <!--      <br />-->
-      <!--      -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-    </div>
+    <div class="w-full aspect-[1547/551] bg-board-liberal bg-cover rounded shadow-depth" />
 
-    {#if $gameData?.players}
-      {@const playerCount = $gameData?.players.length}
+    {#if $gameData?.players?.all}
+      {@const playerCount = $gameData?.players.all?.length}
       <div
         class="w-full aspect-[1547/551] bg-cover rounded shadow-depth"
         class:bg-board-fascist-5-6={playerCount === 5 || playerCount === 6}

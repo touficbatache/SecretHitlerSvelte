@@ -12,6 +12,16 @@
   src: url("/museo.otf");
 }
 
+@font-face {
+  font-family: "Futura";
+  src: url("/futura_hv_bt_heavy.ttf");
+}
+
+@font-face {
+  font-family: "Eskapade Fraktur";
+  src: url("/eskapade_fraktur_w04_black.otf");
+}
+
 @layer base {
   html {
     @apply text-white text-opacity-80;
@@ -33,5 +43,11 @@
   }
   .container_column.column-center {
     @apply justify-center;
+  }
+
+  .frame {
+    @apply border-2 border-[rgba(255,255,255,.03)] rounded-xl;
+    box-shadow: inset 0px 2px 0px 0px rgba(255, 255, 255, 0.15),
+      0px 3px 0px 0px rgba(255, 255, 255, 0.15);
   }
 }

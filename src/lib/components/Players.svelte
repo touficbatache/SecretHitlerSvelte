@@ -2,6 +2,8 @@
   import PlayerView from "$lib/components/PlayerView.svelte"
   import type { Player } from "$lib/player"
 
+  type ShowRoles = "all" | "fascist" | "liberal" | "none"
+
   export let fillRemaining = false
   export let players: Player[] | undefined
   export let showSelf = true
@@ -19,7 +21,7 @@
 
   export let hideName = false
 
-  export let showRoles = false
+  export let showRoles: ShowRoles = "none"
 
   $: renderedPlayers = [
     ...(players ?? []),
@@ -39,7 +41,15 @@
 
   <div class="w-full grid grid-cols-5 gap-x-5 gap-y-2">
     {#each renderedPlayers as player}
-      <PlayerView {player} {hideEssentials} {hideExtras} {hideName} showRole={showRoles} />
+      <PlayerView
+        {player}
+        {hideEssentials}
+        {hideExtras}
+        {hideName}
+        showRole={showRoles === "all" ||
+          (showRoles === "fascist" && player.membership === "fascist") ||
+          (showRoles === "liberal" && player.membership === "liberal")}
+      />
     {/each}
   </div>
 </div>

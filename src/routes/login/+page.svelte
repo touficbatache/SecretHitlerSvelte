@@ -12,7 +12,6 @@
   import SHButton from "$lib/components/SHButton.svelte"
 
   let auth
-  let recaptchaVerifier
 
   let error = ""
 
@@ -41,8 +40,7 @@
     auth = getAuth(app)
 
     // Create and pre-render the Recaptcha Verifier
-    recaptchaVerifier = new RecaptchaVerifier(auth, "btn-sign-in", { size: "invisible" })
-    recaptchaVerifier.render()
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, "btn-sign-in", { size: "invisible" })
   })
 
   function onInput() {
@@ -61,7 +59,7 @@
     }
 
     isSendingOTP = true
-    signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier)
+    signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier)
       .then((confirmationRes) => {
         // SMS sent. Prompt user to type the code from the message, then sign the
         // user in with confirmationResult.confirm(code).
@@ -71,6 +69,9 @@
         // console.log("success send otp")
       })
       .catch((e) => {
+        // window.recaptchaVerifier.render().then((widgetId) => {
+        //   window.grecaptcha.reset(widgetId)
+        // })
         // Error: SMS not sent
         if (e.code === "auth/invalid-phone-number") {
           error = "Please enter a valid phone number"
@@ -87,12 +88,11 @@
 
     confirmationResult
       .confirm(otp)
-      .then((userCredential) => {
-        // User signed in successfully.
-        userCredential.user
-        // console.log("success sign in")
-        // console.log(userCredential.user)
-      })
+      // .then((userCredential) => {
+      // User signed in successfully.
+      // console.log("success sign in")
+      // console.log(userCredential.user)
+      // })
       .catch((e) => {
         // User couldn't sign in (bad verification code?)
         if (e.code === "auth/invalid-verification-code") {
@@ -108,7 +108,7 @@
 <div class="w-full h-full px-12 py-36 md:py-24 flex flex-col justify-between">
   <Logo />
 
-  <div class="w-full flex flex-col items-center gap-4">
+  <form class="w-full flex flex-col items-center gap-4">
     <span class="text-xl text-center text-on-background text-opacity-70">
       {#if !isOTPSent}
         Sign in
@@ -151,6 +151,7 @@
         id="btn-sign-in"
         extraClasses="w-full"
         enabled={isButtonEnabled}
+        type="submit"
         on:click={() => {
           if (!isOTPSent) {
             sendOTP()
@@ -170,7 +171,7 @@
         {/if}
       </SHButton>
     </div>
-  </div>
+  </form>
 </div>
 
 <style>

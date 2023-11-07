@@ -1,10 +1,26 @@
 import { FIREBASE_SERVER_CONFIG } from "$env/static/private"
 import { PUBLIC_FIREBASE_CONFIG } from "$env/static/public"
 
-import type { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier"
 import admin from "firebase-admin"
+import type { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier"
 
+import type { Error } from "$lib/error"
 import type { GameData } from "$lib/game_data"
+import type { Player } from "$lib/player"
+
+export interface FirebaseServerConfig {
+  type: string
+  project_id: string
+  private_key_id: string
+  private_key: string
+  client_email: string
+  client_id: number
+  auth_uri: string
+  token_uri: string
+  auth_provider_x509_cert_url: string
+  client_x509_cert_url: string
+  universe_domain: string
+}
 
 export interface TokenResponse extends DecodedIdToken {
   name: string | undefined
@@ -53,6 +69,7 @@ function castGameData(snapshotValue: any, userId: string): GameData {
     players,
     policies,
     settings,
+    startedAt,
     status,
     subStatus,
   } = snapshotValue
@@ -63,6 +80,21 @@ function castGameData(snapshotValue: any, userId: string): GameData {
       }
     | undefined
   const playersArray = Array.isArray(players) ? players : Object.values(players)
+  const allPlayers: Player[] = playersArray.map((player) => ({
+    assetReference: player.assetReference,
+    name: player.name,
+    role: player.role,
+    membership: player.role === "liberal" ? "liberal" : "fascist",
+    self: player.id === userId,
+    isPresident: player.id === currentSessionObj?.presidentId,
+    isChancellor: player.id === currentSessionObj?.chancellorId,
+    isPreviousChancellor: player.id === lastSuccessfulChancellorId,
+  }))
+  const currentPlayerIndex = allPlayers.findIndex((player) => player.self)
+  const [currentPlayer, ...otherPlayers] = [
+    ...allPlayers.slice(currentPlayerIndex),
+    ...allPlayers.slice(0, currentPlayerIndex),
+  ]
   const policiesObj = policies as
     | {
         board: { fascist: number; liberal: number }
@@ -78,22 +110,20 @@ function castGameData(snapshotValue: any, userId: string): GameData {
     // },
     electionTracker,
     isOwner: ownerId === userId,
-    players: playersArray.map((player) => ({
-      assetReference: player.assetReference,
-      name: player.name,
-      role: player.role,
-      membership: player.role === "liberal" ? "liberal" : "fascist",
-      self: player.id === userId,
-      isPresident: player.id === currentSessionObj?.presidentId,
-      isChancellor: player.id === currentSessionObj?.chancellorId,
-      isPreviousChancellor: player.id === lastSuccessfulChancellorId,
-    })),
+    players: {
+      all: allPlayers,
+      others: otherPlayers,
+      self: currentPlayer,
+      fascists: allPlayers.filter((player) => player.membership === "fascist"),
+      liberals: allPlayers.filter((player) => player.membership === "liberal"),
+    },
     policies: {
       board: policiesObj?.board,
       drawPileCount: policiesObj?.drawPile?.split(",").length ?? 0,
       discardPileCount: policiesObj?.discardPile?.split(",").length ?? 0,
     },
     settings,
+    startedAt,
     status,
     subStatus,
   }
@@ -102,7 +132,7 @@ function castGameData(snapshotValue: any, userId: string): GameData {
 export function listenForGameChanges(
   code: string,
   userId: string,
-  callback: (gameData: GameData) => void,
+  callback: (gameData: GameData | undefined, error: Error | undefined) => void,
 ) {
   if (code === undefined || !/^\d{6}$/.test(code)) {
     throw new Error("Invalid code.")
@@ -115,8 +145,10 @@ export function listenForGameChanges(
   initializeFirebase()
 
   listeningCallback = (snapshot: admin.database.DataSnapshot) => {
-    if (snapshot?.val() !== null) {
-      callback(castGameData(snapshot.val(), userId))
+    if (!snapshot.exists()) {
+      callback(undefined, { message: "Game doesn't exist" } as Error)
+    } else if (snapshot?.val() !== null) {
+      callback(castGameData(snapshot.val(), userId), undefined)
     }
   }
 

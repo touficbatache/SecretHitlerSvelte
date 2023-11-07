@@ -8,8 +8,10 @@ export const GET: RequestHandler = ({ locals }) => {
   const stream = new ReadableStream({
     start(controller) {
       if (gameCode !== undefined && user?.uid !== undefined) {
-        listenForGameChanges(gameCode, user?.uid, (gameData) => {
-          controller.enqueue(`data: ${JSON.stringify(gameData)}\n\n`)
+        listenForGameChanges(gameCode, user?.uid, (gameData, error) => {
+          controller.enqueue(
+            `data: ${JSON.stringify(error !== undefined ? { error } : gameData)}\n\n`,
+          )
         })
       }
       // else {

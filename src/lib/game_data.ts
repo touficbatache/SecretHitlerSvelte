@@ -9,7 +9,7 @@ export interface GameData {
   //   | undefined
   electionTracker: string
   isOwner: boolean
-  players: Player[]
+  players: GameDataPlayers
   policies: {
     board:
       | {
@@ -24,6 +24,15 @@ export interface GameData {
     hidePicsGameInfo: boolean
     skipLongIntro: boolean
   }
+  startedAt: number | undefined
   status: string
   subStatus: string
+}
+
+export interface GameDataPlayers {
+  all: Player[]
+  others: Player[]
+  self: Player
+  fascists: Player[]
+  liberals: Player[]
 }

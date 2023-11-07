@@ -20,6 +20,8 @@
   export let hideName = false
 
   export let showRole = false
+
+  export let revealCards = false
 </script>
 
 <div class="flex flex-col items-center gap-0.5" class:opacity-30={player?.isDummy}>
@@ -46,7 +48,7 @@
       />
     {/if}
     {#if !hideExtras}
-      {#if showRole}
+      {#if revealCards}
         <div class="absolute -top-2.5 left-0 right-0 flex justify-center">
           <div
             class="z-40 rounded-sm h-6 aspect-[397/555] bg-contain bg-center -rotate-45"
@@ -92,6 +94,6 @@
     {/if}
   </div>
   {#if !hideName}
-    <span class:mt-5={!hideExtras && !showRole}>{player?.name}</span>
+    <span class:mt-5={!hideExtras && !revealCards}>{player?.name}</span>
   {/if}
 </div>

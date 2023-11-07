@@ -8,7 +8,10 @@
   export let pin: string
   export let size = 6
 
-  let pinArray = pin?.length > 0 ? pin.split("") : Array(size).fill("")
+  let pinArray =
+    pin?.length > 0
+      ? [...pin.split(""), ...Array(size - pin.length).fill("")]
+      : Array(size).fill("")
   let activeIndex = undefined
 
   $: if (!isEnabled) {
@@ -47,6 +50,16 @@
     }
     updateActive()
   }
+
+  function handlePaste(event) {
+    event.preventDefault()
+    const data = event.clipboardData || window.clipboardData
+    const code = data.getData("Text").replace(/\D/g, "").slice(0, 6)
+    for (let i = 0; i < code.length; i++) {
+      pinArray[i] = code.charAt(i)
+    }
+    updateActive()
+  }
 </script>
 
 <div
@@ -69,6 +82,7 @@
       bind:value={digit}
       on:input={(e) => handleInput(e, index)}
       on:keydown={(e) => handleBackspace(e, index)}
+      on:paste={(e) => handlePaste(e)}
       readonly={index !== activeIndex}
     />
   {/each}

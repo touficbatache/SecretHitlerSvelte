@@ -15,7 +15,10 @@
 
 {#if gameData?.players}
   <div class="w-full h-full flex flex-col justify-between">
-    <Players players={gameData?.players} showSelf={false} />
+    <Players
+      players={gameData?.players?.others}
+      showRoles={gameData?.players?.self?.membership === "fascist" ? "fascist" : "none"}
+    />
 
     <slot />
 
@@ -38,31 +41,27 @@
 
               <div class="flex flex-col gap-2">
                 <span>
-                  {gameData?.players.filter((player) => player.membership === "fascist").length} fascists
+                  {gameData?.players?.fascists.length} fascists
                 </span>
                 <Players
-                  players={gameData?.players
-                    .filter((player) => player.membership === "fascist")
-                    .sort(() => Math.random() - 0.5)}
+                  players={gameData?.players?.fascists.sort(() => Math.random() - 0.5)}
                   hideEssentials={true}
                   hideExtras={true}
                   hideName={true}
-                  showRoles={!gameData?.settings.hidePicsGameInfo}
+                  showRoles={!gameData?.settings.hidePicsGameInfo ? "all" : "none"}
                 />
               </div>
 
               <div class="flex flex-col gap-2">
                 <span>
-                  {gameData?.players.filter((player) => player.membership === "liberal").length} liberals
+                  {gameData?.players?.liberals.length} liberals
                 </span>
                 <Players
-                  players={gameData?.players
-                    .filter((player) => player.membership === "liberal")
-                    .sort(() => Math.random() - 0.5)}
+                  players={gameData?.players?.liberals.sort(() => Math.random() - 0.5)}
                   hideEssentials={true}
                   hideExtras={true}
                   hideName={true}
-                  showRoles={!gameData?.settings.hidePicsGameInfo}
+                  showRoles={!gameData?.settings.hidePicsGameInfo ? "all" : "none"}
                 />
               </div>
             </div>
@@ -81,7 +80,7 @@
       <!--      <PlayfulIconButton extraClasses="w-10 h-10" icon="fa:info" />-->
 
       <div class="w-1/5 px-2">
-        <PlayerView player={gameData?.players?.find((player) => player.self)} showRole={true} />
+        <PlayerView player={gameData?.players?.self} showRole={true} revealCards={true} />
       </div>
 
       <button

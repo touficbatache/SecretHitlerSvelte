@@ -6,7 +6,7 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
-  import { clickOutside } from "$lib/click_outside"
+  import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PinInput from "$lib/components/PinInput.svelte"
   import Players from "$lib/components/Players.svelte"
   import Settings from "$lib/components/Settings.svelte"
@@ -29,8 +29,12 @@
       goto("/")
     }
 
-    if ($gameData?.status !== "waiting") {
-      goto("/gameplay")
+    if ($gameData?.status !== undefined && $gameData?.status !== "waiting") {
+      if ($gameData?.status === "settingUp") {
+        goto("/intro")
+      } else {
+        goto("/gameplay")
+      }
     }
   }
 
@@ -57,16 +61,23 @@
     </div>
 
     <div class="w-full flex flex-col gap-5">
-      <Players fillRemaining={true} players={$gameData?.players} showTitle={true} />
+      <Players
+        fillRemaining={true}
+        hideEssentials={true}
+        hideExtras={true}
+        players={$gameData?.players?.all}
+        showTitle={true}
+      />
 
       {#if $gameData?.isOwner && btnSettings !== undefined}
-        <div
-          class="md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:z-20 md:w-full md:shadow-2xl md:shadow-white/10"
-          class:md:hidden={!showSettings}
-          use:clickOutside={{ callback: () => (showSettings = false), excluded: [btnSettings] }}
-        >
-          <Settings bind:hideAvatars bind:skipLongIntro />
-        </div>
+        <FloatingWindow alwaysShowOnMobile={true} bind:isOpen={showSettings}>
+          <div
+            class="md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:z-[9999] md:w-full md:shadow-2xl md:shadow-white/10"
+            class:md:hidden={!showSettings}
+          >
+            <Settings bind:hideAvatars bind:skipLongIntro />
+          </div>
+        </FloatingWindow>
       {/if}
 
       {#if $gameData?.isOwner}
@@ -84,7 +95,7 @@
 
           <SHButton
             extraClasses="w-full"
-            enabled={$gameData?.players?.length >= 5 && !isStarting}
+            enabled={$gameData?.players?.all?.length >= 5 && !isStarting}
             on:click={start}
           >
             {#if !isStarting}

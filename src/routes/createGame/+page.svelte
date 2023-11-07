@@ -4,7 +4,6 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
-  import Spinner from "$lib/components/Spinner.svelte"
   import PlayfulSpinner from "$lib/components/PlayfulSpinner.svelte"
 
   onMount(() => {

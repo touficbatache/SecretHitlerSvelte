@@ -4,7 +4,6 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import PlayfulSpinner from "$lib/components/PlayfulSpinner.svelte"
-  import Spinner from "$lib/components/Spinner.svelte"
 
   onMount(() => {
     if ($page.data.gameCode === undefined) {

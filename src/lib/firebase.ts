@@ -9,17 +9,25 @@ import {
 
 import { browser } from "$app/environment"
 import { invalidateAll } from "$app/navigation"
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
 
 // Initialize Firebase
 export let app: FirebaseApp
 
-export function initializeFirebase(config: FirebaseOptions): void {
+export function initializeFirebase(firebaseConfig: FirebaseOptions, devMode: boolean): void {
   if (!browser) {
     throw new Error("Can't use the Firebase client on the server.")
   }
 
   if (!app) {
-    app = initializeApp(config)
+    app = initializeApp(firebaseConfig)
+    if (devMode) {
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
+    }
+    initializeAppCheck(app, {
+      provider: new ReCaptchaEnterpriseProvider("6LfGHDUoAAAAAFX-EBTpFEbo-v7n08QGyQPPk5yo"),
+      isTokenAutoRefreshEnabled: true,
+    })
     listenForAuthChanges()
   }
 }
