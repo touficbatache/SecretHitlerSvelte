@@ -1,30 +1,21 @@
 <script lang="ts">
   import Icon from "@iconify/svelte"
-  import { createEventDispatcher } from "svelte"
 
   export let btn: HTMLElement
+  export let disabled: boolean = false
   export let extraClasses: string | undefined
-  export let enabled = true
-  export let forceActiveState = false
   export let icon: string | undefined
-
-  const dispatch = createEventDispatcher()
 </script>
 
 <button
   bind:this={btn}
-  class="z-10 rounded antialiased text-on-button-500 transition-all duration-200 ease-material-standard {extraClasses ??
+  class="z-10 rounded antialiased text-on-button-500 transition-all duration-200 ease-material-standard shadow-icon-button-resting enabled:hover:shadow-icon-button-hover enabled:hover:translate-y-[0.0625rem] enabled:active:shadow-icon-button-active enabled:active:translate-y-[0.1875rem] {extraClasses ??
     ''}"
-  class:opacity-60={!enabled}
-  class:text-opacity-60={!enabled}
-  class:cursor-default={!enabled}
-  class:enabled
-  class:forceActiveState
-  on:click={() => {
-    if (enabled) {
-      dispatch("click")
-    }
-  }}
+  class:opacity-60={disabled}
+  class:text-opacity-60={disabled}
+  class:cursor-default={disabled}
+  {disabled}
+  on:click
   {...$$restProps}
 >
   <div class="overlay" />
@@ -51,23 +42,13 @@
     color: #fbe1c0;
     border-radius: 10%;
     background: none;
-    cursor: pointer;
     display: inline-block;
     letter-spacing: 1px;
     outline: none;
     position: relative;
     transition: all 0.2s;
     background: #ea6148;
-    box-shadow: 0 3px #bb612b, 0 0 0 1px #241f12, 0px 3px 0px 1px #241f12;
     @apply font-museo;
-  }
-  button:hover {
-    box-shadow: 0 2px #bb612b, 0 0 0 1px #241f12, 0 2px 0 1px #241f12;
-    transform: translateY(1px);
-  }
-  button:active {
-    box-shadow: 0 0px #bb612b, 0 0 0 1px #241f12, 0 0 0 1px #241f12;
-    transform: translateY(3px);
   }
   button .overlay {
     width: -webkit-fill-available;

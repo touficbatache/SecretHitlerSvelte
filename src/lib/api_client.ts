@@ -4,7 +4,7 @@ export interface CodeResponse {
   code: string
 }
 
-interface ApiReponse {
+export interface ApiResponse {
   success: any
   error:
     | {
@@ -37,7 +37,7 @@ async function callApi(endpoint: string, body?: string) {
 }
 
 async function setGameCodeCookie(code: string) {
-  const options = {
+  const options: RequestInit = {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
@@ -51,8 +51,8 @@ async function setGameCodeCookie(code: string) {
 }
 
 export async function newGame(): Promise<boolean> {
-  const endpoint = "newGame"
-  const res = await callApi(endpoint)
+  const endpoint: string = "newGame"
+  const res: Response = await callApi(endpoint)
   if (!res.ok) {
     console.error(
       `Error ${res.status} while creating a new game at ${endpoint}\n\n${await res.text()}`,
@@ -64,9 +64,9 @@ export async function newGame(): Promise<boolean> {
   return true
 }
 
-export async function joinGame(code: string): Promise<ApiReponse> {
-  const endpoint = "joinGame"
-  const res = await callApi(endpoint, JSON.stringify({ code }))
+export async function joinGame(code: string): Promise<ApiResponse> {
+  const endpoint: string = "joinGame"
+  const res: Response = await callApi(endpoint, JSON.stringify({ code }))
 
   if (!res.ok) {
     if (res.status === 453) {
@@ -87,9 +87,9 @@ export async function startGame(
   code: string,
   hidePicsGameInfo: boolean,
   skipLongIntro: boolean,
-): Promise<ApiReponse> {
-  const endpoint = "startGame"
-  const res = await callApi(
+): Promise<ApiResponse> {
+  const endpoint: string = "startGame"
+  const res: Response = await callApi(
     endpoint,
     JSON.stringify({
       code,
@@ -109,8 +109,8 @@ export async function leaveGame(): Promise<void> {
   await setGameCodeCookie("")
 }
 
-async function handleError(res: Response): Promise<ApiReponse> {
-  const message = await res.text()
+async function handleError(res: Response): Promise<ApiResponse> {
+  const message: string = await res.text()
 
   console.error(`Error ${res.status} while joining a game.\n\n${message}`)
 
@@ -123,7 +123,7 @@ async function handleError(res: Response): Promise<ApiReponse> {
   }
 }
 
-async function handleSuccess(res: Response): Promise<ApiReponse> {
+async function handleSuccess(res: Response): Promise<ApiResponse> {
   return {
     success: await res.json(),
     error: undefined,

@@ -8,8 +8,10 @@
   import { app } from "$lib/firebase"
   import Logo from "$lib/components/Logo.svelte"
   import PinInput from "$lib/components/PinInput.svelte"
-  import SHTextField from "$lib/components/SHTextField.svelte"
+  import PlayfulButton from "$lib/components/PlayfulButton.svelte"
+  import PlayfulTextField from "$lib/components/PlayfulTextField.svelte"
   import SHButton from "$lib/components/SHButton.svelte"
+  import TwoPaneView from "$lib/components/TwoPaneView.svelte"
 
   let auth
 
@@ -105,10 +107,12 @@
   }
 </script>
 
-<div class="w-full h-full px-12 py-36 md:py-24 flex flex-col justify-between">
-  <Logo />
+<TwoPaneView class="w-full h-full py-24 md:px-12">
+  <div class="w-full h-full flex items-center px-6" slot="first">
+    <Logo />
+  </div>
 
-  <form class="w-full flex flex-col items-center gap-4">
+  <form class="w-full h-full flex flex-col justify-center gap-4 px-10" slot="second">
     <span class="text-xl text-center text-on-background text-opacity-70">
       {#if !isOTPSent}
         Sign in
@@ -119,12 +123,21 @@
 
     <div class="self-stretch flex flex-col gap-1">
       {#if !isOTPSent}
-        <SHTextField
-          label="Phone number"
-          type="tel"
-          placeholder="+1 23 456 789"
+        <!--        <SHTextField-->
+        <!--          label="Phone number"-->
+        <!--          type="tel"-->
+        <!--          placeholder="+1 23 456 789"-->
+        <!--          bind:value={phoneNumber}-->
+        <!--          on:input={onInput}-->
+        <!--        />-->
+
+        <PlayfulTextField
           bind:value={phoneNumber}
+          label="Phone number"
           on:input={onInput}
+          placeholder="+1 23 456 789"
+          type="tel"
+          validator={(value) => value.trim().replaceAll(/[^+\d]|(?!^)\+/g, "")}
         />
       {/if}
 
@@ -147,7 +160,7 @@
     </div>
 
     <div class="recaptcha-container self-stretch">
-      <SHButton
+      <PlayfulButton
         id="btn-sign-in"
         extraClasses="w-full"
         enabled={isButtonEnabled}
@@ -169,10 +182,79 @@
         {:else}
           Signing in...
         {/if}
-      </SHButton>
+      </PlayfulButton>
     </div>
   </form>
-</div>
+</TwoPaneView>
+
+<!--<div class="w-full h-full px-12 py-36 md:py-24 flex flex-col justify-between">-->
+<!--  <Logo />-->
+
+<!--  <form class="w-full flex flex-col items-center gap-4">-->
+<!--    <span class="text-xl text-center text-on-background text-opacity-70">-->
+<!--      {#if !isOTPSent}-->
+<!--        Sign in-->
+<!--      {:else}-->
+<!--        Enter OTP for {phoneNumber}-->
+<!--      {/if}-->
+<!--    </span>-->
+
+<!--    <div class="self-stretch flex flex-col gap-1">-->
+<!--      {#if !isOTPSent}-->
+<!--        <SHTextField-->
+<!--          label="Phone number"-->
+<!--          type="tel"-->
+<!--          placeholder="+1 23 456 789"-->
+<!--          bind:value={phoneNumber}-->
+<!--          on:input={onInput}-->
+<!--        />-->
+<!--      {/if}-->
+
+<!--      {#if isOTPSent}-->
+<!--        &lt;!&ndash;        <PinInput&ndash;&gt;-->
+<!--        &lt;!&ndash;          inactiveClass="bg-button-500 text-sh-yellow-500"&ndash;&gt;-->
+<!--        &lt;!&ndash;          activeClass="bg-sh-yellow-500 bg-opacity-70 text-sh-yellow-500 border-2 border-sh-yellow-500 border-opacity-70"&ndash;&gt;-->
+<!--        &lt;!&ndash;          bind:pin={otp}&ndash;&gt;-->
+<!--        &lt;!&ndash;        />&ndash;&gt;-->
+<!--        <PinInput-->
+<!--          inactiveClass="bg-button-500 text-white text-opacity-80"-->
+<!--          activeClass="bg-white bg-opacity-70 text-white text-opacity-80 border-2 border-white border-opacity-70"-->
+<!--          bind:pin={otp}-->
+<!--        />-->
+<!--      {/if}-->
+
+<!--      {#if error.length > 0}-->
+<!--        <span class="text-[#B71C1C]">Error: {error}</span>-->
+<!--      {/if}-->
+<!--    </div>-->
+
+<!--    <div class="recaptcha-container self-stretch">-->
+<!--      <SHButton-->
+<!--        id="btn-sign-in"-->
+<!--        extraClasses="w-full"-->
+<!--        enabled={isButtonEnabled}-->
+<!--        type="submit"-->
+<!--        on:click={() => {-->
+<!--          if (!isOTPSent) {-->
+<!--            sendOTP()-->
+<!--          } else {-->
+<!--            confirmOTP()-->
+<!--          }-->
+<!--        }}-->
+<!--      >-->
+<!--        {#if !isOTPSent && !isSendingOTP}-->
+<!--          Send OTP-->
+<!--        {:else if isSendingOTP}-->
+<!--          Sending OTP...-->
+<!--        {:else if !isSigningIn}-->
+<!--          Sign in-->
+<!--        {:else}-->
+<!--          Signing in...-->
+<!--        {/if}-->
+<!--      </SHButton>-->
+<!--    </div>-->
+<!--  </form>-->
+<!--</div>-->
 
 <style>
   .recaptcha-container > div {

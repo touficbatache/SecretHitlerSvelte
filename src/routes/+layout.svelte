@@ -71,7 +71,7 @@
 
 <div
   id="backgroundClickCatcher"
-  class="inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 transition-all opacity-0"
+  class="inset-0 z-max overflow-y-auto bg-black bg-opacity-50 transition-all opacity-0"
 />
 
 <div class="w-screen h-screen bg-checkerboard bg-center bg-cover md:bg-136 md:px-56 md:py-16">

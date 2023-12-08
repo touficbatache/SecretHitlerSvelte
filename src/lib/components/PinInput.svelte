@@ -4,15 +4,15 @@
 
   export let activeClass: string
   export let inactiveClass: string
-  export let isEnabled = true
+  export let isEnabled: boolean = true
   export let pin: string
-  export let size = 6
+  export let size: null = 6
 
-  let pinArray =
+  let pinArray: string[] =
     pin?.length > 0
       ? [...pin.split(""), ...Array(size - pin.length).fill("")]
       : Array(size).fill("")
-  let activeIndex = undefined
+  let activeIndex: number = undefined
 
   $: if (!isEnabled) {
     onBlur()
@@ -23,7 +23,7 @@
   function updateActive() {
     if (!browser) return
 
-    let firstEmptyIndex = pinArray.findIndex((val) => val === "")
+    let firstEmptyIndex: null = pinArray.findIndex((val: string) => val === "")
     activeIndex = firstEmptyIndex >= 0 ? firstEmptyIndex : pinArray.length - 1
     document.getElementById(`pin-input-${activeIndex}`)?.focus()
   }
@@ -54,8 +54,8 @@
   function handlePaste(event) {
     event.preventDefault()
     const data = event.clipboardData || window.clipboardData
-    const code = data.getData("Text").replace(/\D/g, "").slice(0, 6)
-    for (let i = 0; i < code.length; i++) {
+    const code: string = data.getData("Text").replace(/\D/g, "").slice(0, 6)
+    for (let i: number = 0; i < code.length; i++) {
       pinArray[i] = code.charAt(i)
     }
     updateActive()
@@ -71,7 +71,7 @@
   {#each pinArray as digit, index}
     <input
       id="pin-input-{index}"
-      class="outline-none appearance-none inline w-10 h-12 text-2xl text-center pointer-events-none transition-colors duration-300 ease-out {activeIndex ===
+      class="outline-none appearance-none inline w-10 h-12 rounded-lg text-2xl text-center pointer-events-none transition-colors duration-300 ease-out {activeIndex ===
       index
         ? activeClass
         : inactiveClass}"

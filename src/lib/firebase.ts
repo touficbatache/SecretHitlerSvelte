@@ -76,11 +76,10 @@ export function setUserName(name: string) {
         await setTokenCookie(token)
       })
       .catch((reason) => {
-        // TODO: throw error and handle it outside
+        console.error(reason)
       })
   } else {
-    // TODO: throw error and handle it outside
-    // console.log("Error")
+    console.error("Current user cannot be found")
   }
 }
 

@@ -2,6 +2,7 @@
 @import "@fontsource/courier-prime/400-italic.css";
 @import "@fontsource/courier-prime/700.css";
 @import "@fontsource/courier-prime/700-italic.css";
+@import "@fontsource-variable/nunito";
 
 @tailwind base;
 @tailwind components;
@@ -24,7 +25,7 @@
 
 @layer base {
   html {
-    @apply text-white text-opacity-80;
+    @apply text-white text-opacity-80 font-semibold;
   }
 
   input[type="number"]::-webkit-outer-spin-button,
@@ -46,8 +47,6 @@
   }
 
   .frame {
-    @apply border-2 border-[rgba(255,255,255,.03)] rounded-xl;
-    box-shadow: inset 0px 2px 0px 0px rgba(255, 255, 255, 0.15),
-      0px 3px 0px 0px rgba(255, 255, 255, 0.15);
+    @apply shadow-frame border-2 border-[rgba(255,255,255,.03)] rounded-xl;
   }
 }

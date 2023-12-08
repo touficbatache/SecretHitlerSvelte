@@ -56,7 +56,15 @@ export default {
         136: "34rem",
       },
       boxShadow: {
+        "button-resting": "0 5px #bb612b, 0 0 0 1px #241f12, 0px 5px 0px 1px #241f12",
+        "button-hover": "0 3px #bb612b, 0 0 0 1px #241f12, 0 3px 0 1px #241f12",
+        "button-active": "0 0px #bb612b, 0 0 0 1px #241f12, 0 0 0 1px #241f12",
+        "icon-button-resting": "0 3px #bb612b, 0 0 0 1px #241f12, 0px 3px 0px 1px #241f12",
+        "icon-button-hover": "0 2px #bb612b, 0 0 0 1px #241f12, 0 2px 0 1px #241f12",
+        "icon-button-active": "0 0px #bb612b, 0 0 0 1px #241f12, 0 0 0 1px #241f12",
         depth: "0px 1px 0px 4px black",
+        frame:
+          "inset 0px 2px 0px 0px rgba(255, 255, 255, 0.15), 0px 3px 0px 0px rgba(255, 255, 255, 0.15)",
       },
       colors: {
         "on-background": "#ffffff",
@@ -133,10 +141,11 @@ export default {
       },
       darkMode: "class",
       fontFamily: {
-        sans: ["Courier Prime", "sans-serif"],
+        sans: ["Nunito Variable", "sans-serif"],
         museo: ["Museo"],
         futura: ["Futura"],
         eskapade_fraktur: ["Eskapade Fraktur"],
+        nunito: ["Nunito Variable"],
       },
       keyframes: {
         rotator: {
@@ -264,6 +273,9 @@ export default {
         "material-standard": "cubic-bezier(0.4, 0, 0.2, 1)",
         "material-acceleration": "cubic-bezier(0.4, 0, 1, 1)",
         "material-sharp": "cubic-bezier(0.4, 0, 0.6, 1)",
+      },
+      zIndex: {
+        max: "999",
       },
     },
   },

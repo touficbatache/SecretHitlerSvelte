@@ -4,6 +4,7 @@ export interface Player {
   role: PlayerRole
   membership: PlayerMembership
   self: boolean
+  isExecuted: boolean
   isPresident: boolean
   isChancellor: boolean
   isPreviousChancellor: boolean

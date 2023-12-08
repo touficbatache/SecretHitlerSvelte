@@ -5,6 +5,7 @@
   import { browser } from "$app/environment"
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
+  import ChooseChancellorView from "$lib/components/ChooseChancellorView.svelte"
   import Decor from "$lib/components/Decor.svelte"
   import type { GameData } from "$lib/game_data"
 
@@ -37,6 +38,14 @@
         class:bg-board-fascist-5-6={playerCount === 5 || playerCount === 6}
         class:bg-board-fascist-7-8={playerCount === 7 || playerCount === 8}
         class:bg-board-fascist-9-10={playerCount === 9 || playerCount === 10}
+      />
+    {/if}
+
+    {#if $gameData.subStatus === "election_presidentChoosingChancellor" && $gameData.players.self.isPresident}
+      <ChooseChancellorView
+        open={true}
+        players={$gameData?.players?.eligible}
+        showRoles={$gameData?.players?.self?.membership === "fascist" ? "fascist" : "none"}
       />
     {/if}
   </Decor>

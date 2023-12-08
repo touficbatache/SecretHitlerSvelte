@@ -1,18 +1,20 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import Icon from "@iconify/svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
 
-  export let btn: HTMLElement
+  export let btn: HTMLElement | undefined = undefined
   export let extraClasses: string | undefined
-  export let enabled = true
-  export let forceActiveState = false
-  export let small = false
+  export let enabled: boolean = true
+  export let forceActiveState: boolean = false
+  export let icon: string | undefined = undefined
+  export let small: boolean = false
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher = createEventDispatcher()
 </script>
 
 <button
   bind:this={btn}
-  class="z-10 rounded py-4 px-8 antialiased text-on-button-500 transition-all duration-200 ease-material-standard {extraClasses ??
+  class="inline-block z-10 rounded py-4 px-8 antialiased text-on-button-500 transition-all duration-200 ease-material-standard shadow-button-resting enabled:hover:shadow-button-hover enabled:hover:translate-y-0.5 enabled:active:shadow-button-active enabled:active:translate-y-[0.3125rem] {extraClasses ??
     ''}"
   class:opacity-60={!enabled}
   class:text-opacity-60={!enabled}
@@ -20,6 +22,7 @@
   class:enabled
   class:forceActiveState
   class:small
+  disabled={!enabled}
   on:click={() => {
     if (enabled) {
       dispatch("click")
@@ -30,25 +33,26 @@
   <div class="overlay" />
   <div class="overlay" />
 
-  <!--  <svg viewBox="0 0 100 4" xmlns="http://www.w3.org/2000/svg" class="s-OdUXF-bzy5xc" style="width: 100%; height: 100%;"><style class="s-OdUXF-bzy5xc">.Rrrrr {-->
-  <!--    font: 9px Museo;-->
-  <!--    fill: #fbe1c0;-->
-  <!--    paint-order: stroke;-->
-  <!--    stroke: #000000;-->
-  <!--    stroke-width: 2px;-->
-  <!--    stroke-dasharray: 0,50,150;-->
-  <!--    stroke-linecap: square;-->
-  <!--    stroke-linejoin: miter;-->
-  <!--  }</style><text x="15" y="6" class="Rrrrr s-OdUXF-bzy5xc">Pass &amp; Play</text></svg>-->
-
   <span
-    class="w-full absolute -z-[1] left-1/2 top-[calc(50%+0.5px)] -translate-x-1/2 -translate-y-1/2"
+    class="flex gap-2 absolute -z-[1] left-1/2 top-[calc(50%+0.5px)] -translate-x-1/2 -translate-y-1/2"
     style="-webkit-text-stroke: black 3.2px;"
   >
+    {#if icon !== undefined}
+      <Icon
+        class="text-base overflow-visible text-black my-auto"
+        {icon}
+        style="stroke: black; stroke-width: 16em; stroke-linecap: round;"
+      />
+    {/if}
+
     <slot />
   </span>
 
-  <slot />
+  <span class="flex gap-2 justify-center">
+    <Icon class="text-base m-auto" {icon} />
+
+    <slot />
+  </span>
 </button>
 
 <style lang="postcss">
@@ -59,28 +63,17 @@
     color: #fbe1c0;
     border-radius: 6px;
     background: none;
-    cursor: pointer;
     padding: 14px 0;
-    display: inline-block;
     letter-spacing: 1px;
     outline: none;
     position: relative;
     transition: all 0.2s;
     background: #ea6148;
-    box-shadow: 0 5px #bb612b, 0 0 0 1px #241f12, 0px 5px 0px 1px #241f12;
-    @apply font-museo;
+    /*@apply font-museo;*/
   }
   .small {
-    font-size: 20px;
+    @apply text-xl;
     padding: 7px 21px;
-  }
-  button:hover {
-    box-shadow: 0 3px #bb612b, 0 0 0 1px #241f12, 0 3px 0 1px #241f12;
-    transform: translateY(2px);
-  }
-  button:active {
-    box-shadow: 0 0px #bb612b, 0 0 0 1px #241f12, 0 0 0 1px #241f12;
-    transform: translateY(5px);
   }
   button .overlay {
     width: -webkit-fill-available;

@@ -33,6 +33,7 @@ export interface GameDataPlayers {
   all: Player[]
   others: Player[]
   self: Player
+  eligible: Player[]
   fascists: Player[]
   liberals: Player[]
 }
