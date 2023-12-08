@@ -19,17 +19,11 @@
   {...$$restProps}
 >
   {#if icon}
-    <span
-      class:text-xl={!compact}
-    >
-    <Icon {icon} />
+    <span class:text-xl={!compact}>
+      <Icon {icon} />
     </span>
   {/if}
-  <span
-    class="font-bold pt-0.5"
-    class:text-lg={compact}
-    class:text-2xl={!compact}
-  >
+  <span class="font-bold pt-0.5" class:text-lg={compact} class:text-2xl={!compact}>
     <slot />
   </span>
 </button>

@@ -13,10 +13,7 @@
     <div class="flex flex-col items-center px-4 py-12 shadow-frame bg-[#141414] rounded-lg gap-4">
       <h5 class="text-3xl font-eskapade_fraktur">You're the President</h5>
       <span>Choose your Chancellor</span>
-      <Players
-        {players}
-        {showRoles}
-      />
+      <Players {players} {showRoles} />
     </div>
   </div>
 </FloatingWindow>
