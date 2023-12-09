@@ -128,21 +128,19 @@
 
     let currentTime = Date.now()
 
-    for (const index of steps.keys()) {
-      const duration = steps
-        .slice(0, index + 1)
-        .map((el) => el.duration)
-        .reduce((a, b) => a + b, 0)
-
-      const delay = steps
-        .slice(0, index + 1)
-        .map((el) => el.delay)
-        .reduce((a, b) => a + b, 0)
-
-      setTimeout(() => (indexShown = index + 1), duration + delay - (currentTime - startedAt))
-    }
-
-    indexShown = 0
+    // for (const index of steps.keys()) {
+    //   const duration = steps
+    //     .slice(0, index + 1)
+    //     .map((el) => el.duration)
+    //     .reduce((a, b) => a + b, 0)
+    //
+    //   const delay = steps
+    //     .slice(0, index + 1)
+    //     .map((el) => el.delay)
+    //     .reduce((a, b) => a + b, 0)
+    //
+    //   setTimeout(() => (indexShown = index + 1), duration + delay - (currentTime - startedAt))
+    // }
   }
 </script>
 
@@ -160,7 +158,7 @@
   {@const step = steps[indexShown]}
   {#if indexShown === 0}
     <div
-      class="absolute inset-0 flex flex-col justify-center items-center gap-24 px-6 md:p-0"
+      class="absolute inset-0 flex flex-col justify-center items-center gap-16 px-6 md:p-0"
       out:fade={{ duration: 500 }}
       in:fade={{ delay: step.delay, duration: 500 }}
     >
