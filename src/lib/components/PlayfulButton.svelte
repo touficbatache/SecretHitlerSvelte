@@ -34,7 +34,7 @@
   <div class="overlay" />
 
   <span
-    class="flex gap-2 absolute -z-[1] left-1/2 top-[calc(50%+0.5px)] -translate-x-1/2 -translate-y-1/2"
+    class="w-full flex justify-center gap-2 absolute -z-[1] left-1/2 top-[calc(50%+0.5px)] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
     style="-webkit-text-stroke: black 3.2px;"
   >
     {#if icon !== undefined}
