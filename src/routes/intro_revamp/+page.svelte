@@ -8,6 +8,7 @@
   import IntroStep1 from "$lib/components/intro/IntroStep1.svelte"
   import IntroStep2 from "$lib/components/intro/IntroStep2.svelte"
   import IntroStep3 from "$lib/components/intro/IntroStep3.svelte"
+  import RoleHeader from "$lib/components/RoleHeader.svelte"
 
   interface Step {
     text: string
@@ -127,25 +128,35 @@
 
     let currentTime = Date.now()
 
-    // for (const index of steps.keys()) {
-    //   const duration = steps
-    //     .slice(0, index + 1)
-    //     .map((el) => el.duration)
-    //     .reduce((a, b) => a + b, 0)
-    //
-    //   const delay = steps
-    //     .slice(0, index + 1)
-    //     .map((el) => el.delay)
-    //     .reduce((a, b) => a + b, 0)
-    //
-    //   setTimeout(() => (indexShown = index + 1), duration + delay - (currentTime - startedAt))
-    // }
+    for (const index of steps.keys()) {
+      const duration = steps
+        .slice(0, index + 1)
+        .map((el) => el.duration)
+        .reduce((a, b) => a + b, 0)
+
+      const delay = steps
+        .slice(0, index + 1)
+        .map((el) => el.delay)
+        .reduce((a, b) => a + b, 0)
+
+      setTimeout(() => (indexShown = index + 1), duration + delay - (currentTime - startedAt))
+    }
 
     indexShown = 0
   }
 </script>
 
 {#if $gameData?.players}
+  {#if indexShown < steps.length}
+    <div
+      class="absolute top-5 inset-x-0 mx-2"
+      in:fade={{ delay: steps[0]?.delay ?? 0, duration: 500 }}
+      out:fade={{ duration: 500 }}
+    >
+      <RoleHeader {player} />
+    </div>
+  {/if}
+
   {@const step = steps[indexShown]}
   {#if indexShown === 0}
     <div
