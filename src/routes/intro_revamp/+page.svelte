@@ -1,79 +1,86 @@
 <script lang="ts">
   import { getContext } from "svelte"
   import type { Writable } from "svelte/store"
-  import { fade } from "svelte/transition"
+  import { fade, fly } from "svelte/transition"
 
   import { browser } from "$app/environment"
   import type { GameData } from "$lib/game_data"
   import IntroStep1 from "$lib/components/intro/IntroStep1.svelte"
   import IntroStep2 from "$lib/components/intro/IntroStep2.svelte"
   import IntroStep3 from "$lib/components/intro/IntroStep3.svelte"
+  import IntroStep4 from "$lib/components/intro/IntroStep4.svelte"
   import RoleHeader from "$lib/components/RoleHeader.svelte"
 
   interface Step {
     text: string
     duration: number
-    delay: number
   }
 
-  const gameData = getContext("gameData") as Writable<GameData | undefined>
+  const gameData: Writable<GameData | undefined> = getContext("gameData") as Writable<
+    GameData | undefined
+  >
+
+  let isSetup: boolean = false
+
+  let steps: Step[] | undefined
+  let stepShown: number = 1
+
+  let countDown: number = 4
 
   $: if (browser) {
-    if ($gameData?.settings?.skipLongIntro || $gameData?.status !== "settingUp") {
+    if ($gameData?.status !== "settingUp") {
       // TODO: uncomment
       // goto("/gameplay")
     }
   }
 
-  $: if ($gameData?.startedAt !== undefined) {
-    setupIntro()
-  }
-
-  $: player = { role: "liberal", membership: "liberal", assetReference: "liberal_6" }
-  // $: player = { role: "fascist", membership: "fascist", assetReference: "fascist_snake" }
+  // $: player = { role: "liberal", membership: "liberal", assetReference: "liberal_6" }
+  $: player = { role: "fascist", membership: "fascist", assetReference: "fascist_snake" }
   // $: player = { role: "hitler", membership: "fascist", assetReference: "hitler" }
   // TODO: uncomment
   // $: player = $gameData?.players?.self
 
-  let isSetup = false
+  let skipLongIntro: boolean = true
+  $: if (player) {
+    if (!skipLongIntro) {
+      setupLongIntro()
+    } else {
+      setupShortIntro()
+    }
+  }
+  // TODO: uncomment
+  // $: if (player && !$gameData?.settings?.skipLongIntro) {
+  //   setupIntro()
+  // }
 
-  let steps: Step[] = []
-  let indexShown = 0
-
-  function setupIntro() {
+  function setupLongIntro() {
     if (isSetup) {
       return
     }
 
     isSetup = true
 
-    let startedAt = Date.now()
-    // TODO: uncomment
-    // let startedAt = $gameData?.startedAt
+    let startedAt: number = $gameData?.startedAt ?? Date.now()
 
-    switch (player?.role) {
+    switch (player?.membership) {
       case "liberal":
         steps = [
           {
             text: "You have a majority, but you don't know for sure who anyone is.",
             duration: 5000,
-            delay: 0,
           },
           {
-            text: "Win by enacting 5 Liberal Policies,<br/><br/>or by killing the Secret Hitler.",
-            duration: 7000,
-            delay: 2000,
-          },
-          {
-            text: "You lose if six Fascist Policies are enacted, or if Hitler is elected Chancellor after three Fascist Policies have been enacted (with three or more Fascist Policies on the board).",
+            text: "Win by enacting 5 Liberal Policies. Or by killing the Secret Hitler.",
             duration: 10000,
-            delay: 2000,
           },
-          // {
-          //   text: "Attention: The Fascists know Hitler's identity, but Hitler doesn't know them.",
-          //   duration: 5000,
-          //   delay: 2000,
-          // },
+          {
+            text: "You lose if six Fascist Policies are enacted. Or if Hitler is elected Chancellor after three Fascist Policies have been enacted (with 3+ Fascist policies on the board).",
+            duration: 11000,
+          },
+          {
+            text: "Countdown",
+            duration: 4000,
+          },
         ]
         break
       case "fascist":
@@ -81,104 +88,102 @@
           {
             text: "You must resort to secrecy and sabotage to accomplish your goals.",
             duration: 5000,
-            delay: 2000,
           },
           {
-            text: "Hitler plays for your team. Win by enacting six Fascist Policies, or by electing Hitler as Chancellor after three Fascist Policies have been enacted (with three or more Fascist Policies on the board).",
+            text: "Hitler plays for your team. Win by enacting six Fascist Policies. Or by electing Hitler as Chancellor after three Fascist Policies have been enacted (with 3+ Fascist policies on the board).",
             duration: 12000,
-            delay: 2000,
           },
           {
-            text: "You lose if five Liberal Policies are enacted, or if Hitler is killed.",
-            duration: 5000,
-            delay: 2000,
-          },
-          // {
-          //   text: "Attention: You and your team know Hitler's identity, but Hitler doesn't know you.",
-          //   duration: 5000,
-          //   delay: 2000,
-          // },
-        ]
-        break
-      case "hitler":
-        steps = [
-          {
-            text: "You must resort to secrecy and sabotage to accomplish your goals.",
-            duration: 5000,
-            delay: 0,
+            text: "You lose if five Liberal Policies are enacted. Or if Hitler is killed.",
+            duration: 9000,
           },
           {
-            text: "You play for the Fascist team. Win by enacting six Fascist Policies, or by being elected as Chancellor after three Fascist Policies have been enacted (with three or more Fascist Policies on the board).",
-            duration: 12000,
-            delay: 2000,
+            text: "Countdown",
+            duration: 4000,
           },
-          {
-            text: "You and your team lose if five Liberal Policies are enacted, or if you're killed.",
-            duration: 5000,
-            delay: 2000,
-          },
-          // {
-          //   text: "Attention: The Fascists know your identity, but you don't know them.",
-          //   duration: 5000,
-          //   delay: 2000,
-          // },
         ]
         break
     }
 
-    let currentTime = Date.now()
+    let currentTime: number = Date.now()
 
-    // for (const index of steps.keys()) {
-    //   const duration = steps
-    //     .slice(0, index + 1)
-    //     .map((el) => el.duration)
-    //     .reduce((a, b) => a + b, 0)
-    //
-    //   const delay = steps
-    //     .slice(0, index + 1)
-    //     .map((el) => el.delay)
-    //     .reduce((a, b) => a + b, 0)
-    //
-    //   setTimeout(() => (indexShown = index + 1), duration + delay - (currentTime - startedAt))
-    // }
+    for (const index of steps.keys()) {
+      const duration: number = steps
+        .slice(0, index + 1)
+        .map((step) => step.duration)
+        .reduce((a, b) => a + b, 0)
+
+      setTimeout(() => {
+        stepShown = index + 2
+      }, duration - (currentTime - startedAt))
+    }
+  }
+
+  function setupShortIntro() {
+    if (isSetup) {
+      return
+    }
+
+    isSetup = true
+
+    let startedAt: number = $gameData?.startedAt ?? Date.now()
+    let currentTime: number = Date.now()
+
+    setTimeout(async () => {
+      while (countDown > 0) {
+        countDown--
+        await new Promise((f) => setTimeout(f, 1000))
+      }
+    }, 2000 - (currentTime - startedAt))
   }
 </script>
 
 {#if $gameData?.players}
-  {#if indexShown < steps.length}
-    <div
-      class="absolute top-5 inset-x-0 mx-2"
-      in:fade={{ delay: steps[0]?.delay ?? 0, duration: 500 }}
-      out:fade={{ duration: 500 }}
-    >
+  {#if stepShown < (steps?.length ?? 2)}
+    <div class="absolute top-5 inset-x-0 mx-2" transition:fade={{ duration: 300 }}>
       <RoleHeader {player} />
     </div>
   {/if}
 
-  {@const step = steps[indexShown]}
-  {#if indexShown === 0}
+  {#if stepShown === 1}
     <div
       class="absolute inset-0 flex flex-col justify-center items-center gap-16 px-6 md:p-0"
-      out:fade={{ duration: 500 }}
-      in:fade={{ delay: step.delay, duration: 500 }}
+      transition:fade={{ duration: 300 }}
     >
       <IntroStep1 {player} />
     </div>
-  {:else if indexShown === 1}
+  {:else if stepShown === 2}
     <div
-      class="absolute inset-0 flex flex-col justify-between items-center py-5"
-      out:fade={{ duration: 500 }}
-      in:fade={{ delay: step.delay, duration: 500 }}
+      class="absolute inset-0 flex flex-col justify-between items-center pt-20 pb-5"
+      transition:fade={{ duration: 300 }}
     >
       <IntroStep2 {player} players={$gameData?.players} />
     </div>
-  {:else if indexShown === 2}
+  {:else if stepShown === 3}
     <div
-      class="absolute inset-0 flex flex-col justify-between items-center py-5"
-      out:fade={{ duration: 500 }}
-      in:fade={{ delay: step.delay, duration: 500 }}
+      class="absolute inset-0 flex flex-col justify-between items-center pt-20 pb-5"
+      transition:fade={{ duration: 300 }}
     >
       <IntroStep3 {player} />
     </div>
+  {:else if stepShown === 4}
+    <div
+      class="absolute inset-0 flex flex-col justify-between items-center pt-20 pb-5"
+      transition:fade={{ duration: 300 }}
+    >
+      <IntroStep4 />
+    </div>
+  {/if}
+
+  {#if skipLongIntro}
+    {#key countDown}
+      <span
+        class="absolute bottom-16 left-1/2 -translate-x-1/2 text-4xl"
+        in:fly={{ duration: 700, y: "30px" }}
+        out:fly={{ duration: 200, y: "-30px" }}
+      >
+        {4 > countDown && countDown > 0 ? countDown : ""}
+      </span>
+    {/key}
   {/if}
 {/if}

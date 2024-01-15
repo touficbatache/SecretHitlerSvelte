@@ -6,21 +6,34 @@ import {
   type Auth,
   updateProfile,
 } from "firebase/auth"
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
+import { type Database, getDatabase } from "firebase/database"
 
 import { browser } from "$app/environment"
 import { invalidateAll } from "$app/navigation"
-import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
+import type { GameData } from "$lib/game_data"
+import { canSeeRoles, type Player } from "$lib/player"
 
 // Initialize Firebase
 export let app: FirebaseApp
+export let rtdb: Database
 
-export function initializeFirebase(firebaseConfig: FirebaseOptions, devMode: boolean): void {
+export function initializeFirebase(
+  firebaseConfig: FirebaseOptions | undefined,
+  devMode: boolean = false,
+): void {
   if (!browser) {
     throw new Error("Can't use the Firebase client on the server.")
   }
 
+  if (firebaseConfig === undefined) {
+    console.error("Firebase options config is undefined.")
+    return
+  }
+
   if (!app) {
     app = initializeApp(firebaseConfig)
+    rtdb = getDatabase(app)
     if (devMode) {
       self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
     }
@@ -41,7 +54,7 @@ function listenForAuthChanges() {
     auth,
     async (user) => {
       if (user) {
-        const token = await user.getIdToken()
+        const token: string = await user.getIdToken()
         await setTokenCookie(token)
       } else {
         await setTokenCookie(undefined)
@@ -52,7 +65,7 @@ function listenForAuthChanges() {
 }
 
 async function setTokenCookie(token: string | undefined) {
-  const options = {
+  const options: RequestInit = {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
@@ -86,4 +99,102 @@ export function setUserName(name: string) {
 export async function signOut() {
   const auth: Auth = getAuth(app)
   await _signOut(auth)
+}
+
+export function castGameData(snapshotValue: any): GameData {
+  const user = getAuth(app).currentUser
+  const {
+    currentSession,
+    electionTracker,
+    gameType,
+    lastSuccessfulChancellorId,
+    ownerId,
+    players,
+    policies,
+    settings,
+    startedAt,
+    status,
+    subStatus,
+  } = snapshotValue
+  const currentSessionObj:
+    | {
+        presidentId: string
+        presidentPolicies: string
+        chancellorId: string
+        chancellorPolicies: string
+        votes: {
+          [playerId: string]: boolean
+        }
+      }
+    | undefined = currentSession
+  const votes = Object.entries(currentSessionObj?.votes ?? {})
+  const playersArray = Array.isArray(players) ? players : Object.values(players)
+  const allPlayers: Player[] = playersArray.map((player) => ({
+    id: player.id,
+    assetReference: player.assetReference,
+    name: player.name,
+    role: player.role,
+    membership: player.role === "liberal" ? "liberal" : "fascist",
+    self: player.id === user?.uid,
+    isExecuted: player.isExecuted ?? false,
+    isPresident: player.id === currentSessionObj?.presidentId,
+    isChancellor: player.id === currentSessionObj?.chancellorId,
+    isPreviousChancellor: player.id === lastSuccessfulChancellorId,
+    vote: () => votes.find(([playerId]) => player.id === playerId)?.[1],
+  }))
+  const currentPlayerIndex = allPlayers.findIndex((player) => player.self)
+  const [currentPlayer, ...otherPlayers] = [
+    ...allPlayers.slice(currentPlayerIndex),
+    ...allPlayers.slice(0, currentPlayerIndex),
+  ]
+  const policiesObj:
+    | {
+        board:
+          | {
+              liberal: number
+              fascist: number
+            }
+          | undefined
+        drawPile: string[]
+        discardPile:
+          | {
+              liberal: number
+              fascist: number
+            }
+          | undefined
+      }
+    | undefined = policies
+  return {
+    currentSession: {
+      ...currentSession,
+      president: () => allPlayers.find((player) => player.id === currentSessionObj?.presidentId),
+      chancellor: () => allPlayers.find((player) => player.id === currentSessionObj?.chancellorId),
+      presidentPolicies: currentSessionObj?.presidentPolicies?.split(","),
+      chancellorPolicies: currentSessionObj?.chancellorPolicies?.split(","),
+    },
+    electionTracker,
+    gameType,
+    isOwner: ownerId === user?.uid,
+    players: {
+      self: currentPlayer,
+      all: allPlayers,
+      others: otherPlayers,
+      fascists: allPlayers.filter((player) => player.membership === "fascist"),
+      liberals: allPlayers.filter((player) => player.membership === "liberal"),
+      eligible: () =>
+        otherPlayers.filter((player) => !player.isPreviousChancellor && !player.isExecuted),
+      visiblePlayerIds: () => canSeeRoles(currentPlayer, allPlayers, gameType),
+    },
+    policies: {
+      ...policies,
+      drawPile: policiesObj?.drawPile?.split(","),
+      drawPileCount: () => policiesObj?.drawPile?.split(",").length ?? 0,
+      discardPileCount: () =>
+        (policiesObj?.discardPile?.liberal ?? 0) + (policiesObj?.discardPile?.fascist ?? 0),
+    },
+    settings,
+    startedAt,
+    status,
+    subStatus,
+  }
 }

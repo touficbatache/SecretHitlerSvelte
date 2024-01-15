@@ -1,21 +1,22 @@
 <script lang="ts">
   import type { Player } from "$lib/player"
   import { onMount } from "svelte"
-  import RoleHeader from "$lib/components/RoleHeader.svelte"
 
   export let player: Player | undefined
 
   let visibleSection = -1
   onMount(() => {
-    setTimeout(() => {
+    setTimeout(async () => {
       if (player?.role === "liberal") {
-        setTimeout(() => (visibleSection = 0), 1000)
-        setTimeout(() => (visibleSection = 1), 4000)
+        visibleSection = 0
+        await new Promise((f) => setTimeout(f, 4000))
+        visibleSection = 1
       } else {
-        setTimeout(() => (visibleSection = 0), 1000)
-        setTimeout(() => (visibleSection = 1), 3000)
+        visibleSection = 0
+        await new Promise((f) => setTimeout(f, 3000))
+        visibleSection = 1
       }
-    }, 2000)
+    }, 1000)
   })
 </script>
 
@@ -29,8 +30,8 @@
       <div class="flex">
         {#each Array(6) as _, policyIndex}
           <div
-            class="rounded-md h-20 aspect-[397/555] bg-policy-fascist bg-contain bg-center -ml-4
-                  z-{5 * 10 - policyIndex * 10}"
+            class="rounded-md h-20 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-4
+                  z-{5 * 10 - policyIndex * 10} shadow-card-small"
           />
         {/each}
       </div>
@@ -41,24 +42,24 @@
       class:opacity-100={visibleSection >= 1}
     >
       <div class="relative w-full text-center">
-        or if Hitler is elected Chancellor<br />(with three or more Fascist Policies on the board).
+        Or if Hitler is elected Chancellor<br />(with 3+ Fascist policies on the board)
       </div>
       <div class="relative w-48 h-48">
         <div
-          class="absolute inset-0 bg-player-hitler bg-contain bg-center rounded-full border-[6px] border-[#f7e1c1]"
+          class="absolute inset-0 bg-player-hitler bg-contain bg-center rounded-full border-[6px] border-sh-beige"
         />
         <div
           class="absolute inset-x-0 bottom-0 aspect-[1321/349] bg-placard-chancellor bg-contain bg-center"
         />
         <div class="absolute bottom-10 right-0 flex">
           <div
-            class="rounded-sm h-10 -rotate-12 aspect-[397/555] bg-policy-fascist bg-contain bg-center -ml-2 z-20"
+            class="rounded-sm h-10 -rotate-12 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-2 z-20 shadow-md"
           />
           <div
-            class="rounded-sm h-10 -mt-0.5 aspect-[397/555] bg-policy-fascist bg-contain bg-center -ml-2 z-10"
+            class="rounded-sm h-10 -mt-0.5 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-2 z-10 shadow-md"
           />
           <div
-            class="rounded-sm h-10 rotate-12 aspect-[397/555] bg-policy-fascist bg-contain bg-center -ml-2"
+            class="rounded-sm h-10 rotate-12 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-2 shadow-md"
           />
         </div>
       </div>
@@ -72,8 +73,8 @@
       <div class="flex">
         {#each Array(5) as _, policyIndex}
           <div
-            class="rounded-md h-20 aspect-[397/555] bg-policy-liberal bg-contain bg-center -ml-4
-                  z-{5 * 10 - policyIndex * 10}"
+            class="rounded-md h-20 aspect-[7/10] bg-policy-liberal bg-contain bg-center -ml-4
+                  z-{5 * 10 - policyIndex * 10} shadow-card-small"
           />
         {/each}
       </div>
@@ -84,11 +85,11 @@
       class:opacity-100={visibleSection >= 1}
     >
       <div class="relative w-full text-center">
-        or if {player?.role === "hitler" ? "you are" : "Hitler is"} killed.
+        Or if {player?.role === "hitler" ? "you are" : "Hitler is"} killed
       </div>
       <div class="relative w-48 h-48">
         <div
-          class="absolute inset-0 bg-player-hitler bg-contain bg-center rounded-full border-[6px] border-[#f7e1c1]"
+          class="absolute inset-0 bg-player-hitler bg-contain bg-center rounded-full border-[6px] border-sh-beige"
         />
         <div class="absolute inset-0 bg-hand-drawn-x bg-contain bg-center opacity-80" />
       </div>

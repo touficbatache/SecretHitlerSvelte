@@ -12,7 +12,10 @@
     <Deck cards={["fascist", "liberal", "fascist"]} />
   </div>
 
-  <button class="w-fit mt-40 px-10 py-5 bg-gray-200 rounded-2xl" on:click={() => (reveal = true)}>
+  <button
+    class="w-fit mt-40 px-10 py-5 bg-gray-200 text-neutral-600 rounded-2xl"
+    on:click={() => (reveal = true)}
+  >
     Reveal cards
   </button>
 </main>

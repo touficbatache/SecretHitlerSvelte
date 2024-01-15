@@ -4,10 +4,17 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
+        "board-election-tracker": "url('/board_election_tracker.png')",
         "board-liberal": "url('/board_liberal.png')",
+        "board-liberal-small-exterior": "url('/board_liberal_small_exterior.png')",
+        "board-liberal-small-interior": "url('/board_liberal_small_interior.png')",
         "board-fascist-5-6": "url('/board_fascist_5_6.png')",
         "board-fascist-7-8": "url('/board_fascist_7_8.png')",
         "board-fascist-9-10": "url('/board_fascist_9_10.png')",
+        "board-fascist-small-exterior": "url('/board_fascist_small_exterior.png')",
+        "board-fascist-small-interior-56": "url('/board_fascist_small_interior_56.png')",
+        "board-fascist-small-interior-78": "url('/board_fascist_small_interior_78.png')",
+        "board-fascist-small-interior-910": "url('/board_fascist_small_interior_910.png')",
         "btn-create-game": "url('/btn_create_game.png')",
         "btn-join-game": "url('/btn_join_game.png')",
         "btn-logout": "url('/btn_logout.png')",
@@ -36,6 +43,8 @@ export default {
         "skw-logo": "url('/skw_logo.png')",
         "skw-logo-2": "url('/skw_logo_2.png')",
         paperback: "url('/paperback.png')",
+        "pile-draw": "url('/pile_draw.png')",
+        "pile-discard": "url('/pile_discard.png')",
         "placard-president": "url('/placard_president.png')",
         "placard-chancellor": "url('/placard_chancellor.png')",
         player: "url('/player.png')",
@@ -49,11 +58,16 @@ export default {
         "player-liberal-4": "url('/player_liberal_4.png')",
         "player-liberal-5": "url('/player_liberal_5.png')",
         "player-liberal-6": "url('/player_liberal_6.png')",
+        "policy-backcover": "url('/policy_backcover.png')",
         "policy-liberal": "url('/policy_liberal.png')",
         "policy-fascist": "url('/policy_fascist.png')",
       },
       backgroundSize: {
         136: "34rem",
+      },
+      blur: {
+        xxs: "1px",
+        xs: "2px",
       },
       boxShadow: {
         "button-resting": "0 5px #bb612b, 0 0 0 1px #241f12, 0px 5px 0px 1px #241f12",
@@ -65,6 +79,9 @@ export default {
         depth: "0px 1px 0px 4px black",
         frame:
           "inset 0px 2px 0px 0px rgba(255, 255, 255, 0.15), 0px 3px 0px 0px rgba(255, 255, 255, 0.15)",
+        "player-frame": "0px 0px 0px 5px #d7cba1",
+        "card-small":
+          "1px 1.3px 0px 0.5px #ececec, 2px 2.2px 0px 0.4px #9e9e9e, 3.3px 3.3px 0px 0px #ececec, 6px 2px 5px 0px rgb(0 0 0 / 22%)",
       },
       colors: {
         "on-background": "#ffffff",
@@ -120,6 +137,8 @@ export default {
           900: "#ffffff",
           950: "#ffffff",
         },
+        "sh-beige": "#f7e1c1",
+        "sh-beige-dark": "#d7cba1",
         "sh-yellow": {
           50: "#fffcf9",
           100: "#fef9f2",

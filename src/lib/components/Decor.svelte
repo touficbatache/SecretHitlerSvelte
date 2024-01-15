@@ -1,195 +1,163 @@
 <script lang="ts">
+  import { getContext, onDestroy, onMount } from "svelte"
+  import { quartOut } from "svelte/easing"
+  import type { Writable } from "svelte/store"
+  import { fade } from "svelte/transition"
+
   import * as ApiClient from "$lib/api_client"
-  import { clickOutside } from "$lib/click_outside"
   import PinInput from "$lib/components/PinInput.svelte"
   import Players from "$lib/components/Players.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
   import type { GameData } from "$lib/game_data"
+  import { mounted } from "$lib/mounted"
+  import FloatingWindow from "$lib/components/FloatingWindow.svelte"
+  import PaperBack from "$lib/components/PaperBack.svelte"
 
   export let gameCode: string
   export let gameData: GameData | undefined
 
-  let btnInfo: HTMLElement
-  let showInfo = false
+  const contentOverflow: Writable<boolean> = getContext("contentOverflow") as Writable<boolean>
+  const contentShiftRight: Writable<boolean> = getContext("contentShiftRight") as Writable<boolean>
+
+  let innerWidth: number
+  let infoOpen: boolean = false
+
+  onMount(() => {
+    $contentShiftRight = true
+    $contentOverflow = true
+  })
+  onDestroy(() => {
+    $contentShiftRight = false
+    $contentOverflow = false
+  })
 </script>
 
-{#if gameData?.players}
-  <div class="w-full h-full flex flex-col justify-between">
-    <Players
-      players={gameData?.players?.others}
-      showRoles={gameData?.players?.self?.membership === "fascist" ? "fascist" : "none"}
-    />
+<svelte:window bind:innerWidth />
+
+{#if $mounted && gameData?.players}
+  <div
+    class="w-full h-full flex flex-col justify-between md:justify-center"
+    transition:fade={{ delay: 500, duration: 500, easing: quartOut }}
+  >
+    {#if innerWidth >= 768}
+      <div
+        class="flex flex-col justify-between absolute left-0 inset-y-16 w-[19rem] ml-16 mr-4 p-7 frame bg-[#141414]"
+        transition:fade={{ duration: 500, easing: quartOut }}
+      >
+        <Players
+          cols={3}
+          players={gameData?.players?.others}
+          showRoles={gameData?.players?.visiblePlayerIds()}
+        />
+
+        <div class="grid items-center grid-cols-3 gap-7">
+          <button
+            class="w-fit h-fit justify-self-start flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
+            on:click={() => (infoOpen = !infoOpen)}
+          >
+            <iconify-icon class="text-2xl" icon="material-symbols:info-outline" />
+          </button>
+
+          <PlayerView player={gameData?.players?.self} showRole={true} revealCards={true} />
+
+          <button
+            class="w-fit h-fit justify-self-end flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
+            on:click={ApiClient.leaveGame}
+          >
+            <iconify-icon class="text-2xl" icon="material-symbols:logout" />
+          </button>
+        </div>
+      </div>
+    {/if}
+
+    <div class="block md:hidden">
+      <Players
+        cols={5}
+        players={gameData?.players?.others}
+        showRoles={gameData?.players?.visiblePlayerIds()}
+      />
+    </div>
 
     <slot />
 
-    <div class="w-full flex justify-around">
-      {#if showInfo && btnInfo !== undefined}
-        <div
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-full px-10 md:px-0"
-          use:clickOutside={{ callback: () => (showInfo = false), excluded: [btnInfo] }}
+    <PaperBack
+      classes="w-full block md:hidden"
+      contentClasses="flex justify-center gap-6 px-10 py-2"
+      backgroundColor={gameData?.players.self.role === "liberal" ? "#0091b3" : "#d60d00"}
+    >
+      <div class="w-full flex justify-between">
+        <button
+          class="w-fit h-fit flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
+          on:click={() => (infoOpen = !infoOpen)}
         >
-          <div class="py-4 flex flex-col bg-[#424242] shadow-2xl shadow-white/10 rounded-lg">
-            <span class="w-full text-center">Game info</span>
+          <iconify-icon class="text-2xl" icon="material-symbols:info-outline" />
+        </button>
 
-            <div class="flex flex-col gap-8 mt-4 px-6">
-              <PinInput
-                isEnabled={false}
-                inactiveClass="bg-button-500 text-sh-yellow-500"
-                activeClass="bg-sh-yellow-500 bg-opacity-70 text-sh-yellow-500 border-2 border-sh-yellow-500 border-opacity-70"
-                pin={gameCode}
-              />
+        <!--        <PlayfulIconButton-->
+        <!--          extraClasses="w-10 h-10"-->
+        <!--          icon="fa:info"-->
+        <!--          on:click={() => (showInfo = !showInfo)}-->
+        <!--        />-->
 
-              <div class="flex flex-col gap-2">
-                <span>
-                  {gameData?.players?.fascists.length} fascists
-                </span>
-                <Players
-                  players={gameData?.players?.fascists.sort(() => Math.random() - 0.5)}
-                  hideEssentials={true}
-                  hideExtras={true}
-                  hideName={true}
-                  showRoles={!gameData?.settings.hidePicsGameInfo ? "all" : "none"}
-                />
-              </div>
-
-              <div class="flex flex-col gap-2">
-                <span>
-                  {gameData?.players?.liberals.length} liberals
-                </span>
-                <Players
-                  players={gameData?.players?.liberals.sort(() => Math.random() - 0.5)}
-                  hideEssentials={true}
-                  hideExtras={true}
-                  hideName={true}
-                  showRoles={!gameData?.settings.hidePicsGameInfo ? "all" : "none"}
-                />
-              </div>
-            </div>
-          </div>
+        <div class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/5 z-max">
+          <PlayerView revealCards={true} player={gameData?.players?.self} showRole={true} />
         </div>
-      {/if}
 
-      <button
-        bind:this={btnInfo}
-        class="h-fit flex p-3 mt-1 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
-        on:click={() => (showInfo = !showInfo)}
-      >
-        <iconify-icon class="text-2xl" icon="material-symbols:info-outline" />
-      </button>
-
-      <!--      <PlayfulIconButton extraClasses="w-10 h-10" icon="fa:info" />-->
-
-      <div class="w-1/5 px-2">
-        <PlayerView player={gameData?.players?.self} showRole={true} revealCards={true} />
+        <button
+          class="w-fit h-fit flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
+          on:click={ApiClient.leaveGame}
+        >
+          <iconify-icon class="text-2xl" icon="material-symbols:logout" />
+        </button>
       </div>
+    </PaperBack>
 
-      <button
-        class="h-fit flex p-3 mt-1 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
-        on:click={ApiClient.leaveGame}
-      >
-        <iconify-icon class="text-2xl" icon="material-symbols:logout" />
-      </button>
-    </div>
+    <FloatingWindow
+      classes="py-6 flex flex-col bg-[#424242] shadow-2xl rounded-lg"
+      bind:open={infoOpen}
+    >
+      <span class="w-full text-center">Game info</span>
 
-    <!--    <div class="relative w-full">-->
-    <!--      <img src="bottombar.png" class="invisible" />-->
-    <!--      <div-->
-    <!--        class="test"-->
-    <!--        style="-->
-    <!--          width: 100%;-->
-    <!--          height: 58px;-->
-    <!--          position: absolute;-->
-    <!--          bottom: 0px;-->
-    <!--          background: rgb(86 86 255);-->
-    <!--          clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0 calc(100% - 5px), 0 5px);-->
-    <!--          /*box-shadow: rgb(255 255 255 / 63%) 0px 1px 5px 0px inset, rgb(0 0 0 / 17%) 0px 2px 20px 0px inset;*/-->
-    <!--        "-->
-    <!--      >-->
-    <!--        <div-->
-    <!--          style="-->
-    <!--            position: absolute;-->
-    <!--            top: 0;-->
-    <!--            right: 0;-->
-    <!--            width: 8px;-->
-    <!--            height: 8px;-->
-    <!--            clip-path: polygon(0 65%, 35% 0, 100% 65%, 35% 100%);-->
-    <!--            background: rgb(108 108 255);-->
-    <!--          "-->
-    <!--        />-->
-    <!--        <div-->
-    <!--          style="-->
-    <!--            position: absolute;-->
-    <!--            top: 0;-->
-    <!--            left: 0;-->
-    <!--            width: 8px;-->
-    <!--            height: 8px;-->
-    <!--            clip-path: polygon(0 65%, 35% 0, 100% 65%, 35% 100%);-->
-    <!--            background: rgb(108 108 255);-->
-    <!--            transform: rotate(-90deg);-->
-    <!--          "-->
-    <!--        />-->
-    <!--        <div-->
-    <!--          style="-->
-    <!--            position: absolute;-->
-    <!--            bottom: 0;-->
-    <!--            left: 0;-->
-    <!--            width: 8px;-->
-    <!--            height: 8px;-->
-    <!--            clip-path: polygon(0 65%, 35% 0, 100% 65%, 35% 100%);-->
-    <!--            background: rgb(108 108 255);-->
-    <!--            transform: rotate(180deg);-->
-    <!--          "-->
-    <!--        />-->
-    <!--        <div-->
-    <!--          style="-->
-    <!--            position: absolute;-->
-    <!--            bottom: 0;-->
-    <!--            right: 0;-->
-    <!--            width: 8px;-->
-    <!--            height: 8px;-->
-    <!--            clip-path: polygon(0 65%, 35% 0, 100% 65%, 35% 100%);-->
-    <!--            background: rgb(108 108 255);-->
-    <!--            transform: rotate(90deg);-->
-    <!--          "-->
-    <!--        />-->
-    <!--      </div>-->
+      <div class="flex flex-col gap-8 mt-4 px-6">
+        <PinInput
+          isEnabled={false}
+          inactiveClass="bg-button-500 text-sh-yellow-500"
+          activeClass="bg-sh-yellow-500 bg-opacity-70 text-sh-yellow-500 border-2 border-sh-yellow-500 border-opacity-70"
+          pin={gameCode}
+        />
 
-    <!--      &lt;!&ndash;      <div&ndash;&gt;-->
-    <!--      &lt;!&ndash;        style="&ndash;&gt;-->
-    <!--      &lt;!&ndash;          opacity: 0.4;&ndash;&gt;-->
-    <!--      &lt;!&ndash;          width: 100%;&ndash;&gt;-->
-    <!--      &lt;!&ndash;          height: 58px;&ndash;&gt;-->
-    <!--      &lt;!&ndash;          position: absolute;&ndash;&gt;-->
-    <!--      &lt;!&ndash;          bottom: 0px;&ndash;&gt;-->
-    <!--      &lt;!&ndash;          background: rgb(0, 0, 255);&ndash;&gt;-->
-    <!--      &lt;!&ndash;          border-top-left-radius: 10px;&ndash;&gt;-->
-    <!--      &lt;!&ndash;          border-top-right-radius: 10px;&ndash;&gt;-->
-    <!--      &lt;!&ndash;          box-shadow: rgb(255 255 255 / 63%) 0px 1px 5px 0px inset, rgb(0 0 0 / 17%) 0px 2px 20px 0px inset;&ndash;&gt;-->
-    <!--      &lt;!&ndash;        "&ndash;&gt;-->
-    <!--      &lt;!&ndash;      />&ndash;&gt;-->
-    <!--    </div>-->
+        <div class="flex flex-col gap-2">
+          <span>
+            {gameData?.players?.fascists.length} fascists
+          </span>
+          <Players
+            players={gameData?.players?.fascists.sort(() => Math.random() - 0.5)}
+            hideExtras={true}
+            hideName={true}
+            hidePlacards={true}
+            hideVotes={true}
+            showRoles={!gameData?.settings.hidePicsGameInfo
+              ? gameData?.players?.all.map((player) => player.id)
+              : []}
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span>
+            {gameData?.players?.liberals.length} liberals
+          </span>
+          <Players
+            players={gameData?.players?.liberals.sort(() => Math.random() - 0.5)}
+            hideExtras={true}
+            hideName={true}
+            hidePlacards={true}
+            hideVotes={true}
+            showRoles={!gameData?.settings.hidePicsGameInfo
+              ? gameData?.players?.all.map((player) => player.id)
+              : []}
+          />
+        </div>
+      </div>
+    </FloatingWindow>
   </div>
 {/if}
-
-<style>
-  .test:before {
-    content: "";
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    bottom: 5px;
-    left: 5px;
-    background: rgb(81 81 255);
-    box-shadow: inset 0px 7px 9px 1px #0000001a;
-    clip-path: polygon(
-      3px 0px,
-      calc(100% - 3px) 0px,
-      100% 3px,
-      100% calc(100% - 3px),
-      calc(100% - 3px) 100%,
-      3px 100%,
-      0px calc(100% - 3px),
-      0px 3px
-    );
-  }
-</style>

@@ -1,7 +1,18 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte"
+
   export let cards: string[]
-  export let debug = false
-  export let interactive = false
+  export let center: boolean = false
+  export let debug: boolean = false
+  export let interactive: boolean = false
+  export let selectable: boolean = false
+  export let shadow: boolean = true
+
+  const dispatch = createEventDispatcher()
+
+  let deckEl = undefined
+  let isContainerExpanded: boolean = false
+  let revealedElementIndex: number | undefined = undefined
 
   // Helper function to check if the touch position is inside an element
   function isInsideElement(touchX, touchY, element) {
@@ -11,19 +22,17 @@
     )
   }
 
-  let deckEl = undefined
-  let isContainerExpanded = false
-  let revealedElementIndex = undefined
-
   function onContainerTouchStartEnd(event) {
     if (!interactive) return
 
     if (event.type === "touchstart" || event.type === "mouseenter") {
       isContainerExpanded = true
-    } else if (event.type === "touchend" || event.type === "mouseleave") {
+    } else if (!selectable && (event.type === "touchend" || event.type === "mouseleave")) {
       isContainerExpanded = false
     }
-    revealedElementIndex = null
+    if (!selectable) {
+      revealedElementIndex = null
+    }
   }
 
   function onContainerTouchMove(event) {
@@ -40,6 +49,7 @@
         )
       ) {
         revealedElementIndex = index
+        dispatch("select", cards[revealedElementIndex])
       }
     })
   }
@@ -56,6 +66,8 @@
     on:touchend={onContainerTouchStartEnd}
     on:mouseleave={onContainerTouchStartEnd}
     class:expanded={isContainerExpanded}
+    class:justify-center={center}
+    class:justify-end={!center}
     class:debug
   >
     {#each cards as card, index}
@@ -65,7 +77,11 @@
         style:z-index={cards.length - index}
         class:debug
       >
-        <div class="card flipped {card}" style:z-index={cards.length - index}>
+        <div
+          class="card flipped {card}"
+          style:z-index={cards.length - index}
+          class:noshadow={!shadow}
+        >
           <!--          style:transform={index === 1 ? "rotateX(0deg) rotateY(309deg) rotateZ(110deg) translate(-25px, 50px)" : ""}-->
           <div class="depth" />
         </div>
@@ -76,7 +92,7 @@
 
 <style>
   .deck {
-    @apply w-full h-full flex flex-col justify-end items-center touch-none;
+    @apply w-full h-full flex flex-col items-center touch-none;
   }
 
   .deck.debug {
@@ -160,6 +176,11 @@
       5.5px 6px 0px -0.5px #ececec, 9px 9px 20px 0px rgba(143, 143, 143, 0.5);
   }
 
+  .deck .card.flipped.noshadow {
+    box-shadow: 1.5px 1.5px 0px 0.5px #ececec, 3px 3.3px 0px 0.4px #9e9e9e,
+      5.5px 6px 0px -0.5px #ececec;
+  }
+
   .deck > *:not(:first-child) {
     margin-top: calc(-28.7%);
     /*margin-top: calc(-30% + 5px);*/
@@ -191,6 +212,11 @@
   .deck .reveal .card.liberal {
     box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9e9e9e,
       -5.5px 6px 0px -0.5px #ececec, -9px 9px 20px 0px rgba(0, 145, 179, 0.3);
+  }
+
+  .deck .reveal .card.noshadow {
+    box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9e9e9e,
+      -5.5px 6px 0px -0.5px #ececec;
   }
 
   /*.tariffCards > div:hover .card:after,*/

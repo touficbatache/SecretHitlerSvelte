@@ -1,12 +1,13 @@
 <script lang="ts">
-  export let classes = ""
-  export let contentClasses = ""
-  export let backgroundColor = "#ffffff"
+  export let classes: string = ""
+  export let contentClasses: string = ""
+  export let backgroundColor: string = "#ffffff"
 </script>
 
-<div
-  class="relative {classes}"
-  style="
+<div class="relative {classes}">
+  <div
+    class="pointer-events-none absolute inset-0 paperback-background bg-center bg-cover after:absolute after:inset-0 after:bg-paperback after:bg-center after:bg-cover after:mix-blend-multiply"
+    style="
   --background-color: {backgroundColor};
   clip-path: polygon(
       0.25rem 0px,
@@ -18,9 +19,6 @@
       0px calc(100% - 0.25rem),
       0px 0.25rem
     );"
->
-  <div
-    class="pointer-events-none absolute inset-0 paperback-background bg-center bg-cover after:absolute after:inset-0 after:bg-paperback after:bg-center after:bg-cover after:mix-blend-multiply"
   >
     <!--    <div-->
     <!--      class="absolute inset-0"-->

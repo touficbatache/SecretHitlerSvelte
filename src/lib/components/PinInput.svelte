@@ -63,7 +63,7 @@
 </script>
 
 <div
-  class="w-full flex justify-between"
+  class="w-full flex justify-between gap-2"
   class:cursor-pointer={isEnabled}
   on:click={isEnabled ? updateActive : onBlur}
   use:clickOutside={{ callback: onBlur }}

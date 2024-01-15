@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getContext } from "svelte"
-  import type { Writable } from "svelte/store"
+  import type { Readable } from "svelte/store"
 
   import { browser } from "$app/environment"
   import { goto } from "$app/navigation"
@@ -16,7 +16,7 @@
   import { Compact } from "$lib/enums"
 
   const gameCode: string = $page.data.gameCode
-  const gameData: Writable<GameData> = getContext("gameData") as Writable<GameData>
+  const gameData: Readable<GameData> = getContext("gameData") as Readable<GameData>
 
   // TODO: make it false again if error, and show error
   let isStarting: boolean = false
@@ -60,7 +60,7 @@
   </div>
 
   <div
-    class="w-full h-full px-6 py-20 flex flex-col justify-evenly items-center md:flex-row md:px-20 md:gap-20"
+    class="w-full h-full px-6 py-20 flex flex-col justify-evenly items-center md:flex-row md:px-16 md:gap-20"
   >
     <div class="w-full flex flex-col items-center gap-5 md:h-full md:justify-evenly">
       <span class="text-2xl md:text-3xl">Game code</span>
@@ -93,8 +93,10 @@
       <Players
         compact={Compact.mobile}
         fillRemaining={true}
-        hideEssentials={true}
         hideExtras={true}
+        hidePlacards={true}
+        hideVotes={true}
+        highlight={true}
         players={$gameData?.players?.all}
         showTitle={true}
       />

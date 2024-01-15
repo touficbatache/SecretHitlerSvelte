@@ -1,39 +1,57 @@
 import type { Player } from "$lib/player"
 
 export interface GameData {
-  // currentSession:
-  //   | {
-  //       presidentId: string | undefined
-  //       chancellorId: string | undefined
-  //     }
-  //   | undefined
-  electionTracker: string
-  isOwner: boolean
-  players: GameDataPlayers
-  policies: {
-    board:
+  readonly currentSession: GameDataSession | undefined
+  readonly electionTracker: string
+  readonly gameType: GameType
+  readonly isOwner: boolean
+  readonly players: GameDataPlayers
+  readonly policies: {
+    readonly board:
       | {
-          liberal: number
-          fascist: number
+          readonly liberal: number
+          readonly fascist: number
         }
       | undefined
-    drawPileCount: number
-    discardPileCount: number
+    readonly drawPile: string[]
+    readonly drawPileCount: () => number
+    readonly discardPile:
+      | {
+          readonly liberal: number
+          readonly fascist: number
+        }
+      | undefined
+    readonly discardPileCount: () => number
   }
-  settings: {
-    hidePicsGameInfo: boolean
-    skipLongIntro: boolean
+  readonly settings: {
+    readonly hidePicsGameInfo: boolean
+    readonly skipLongIntro: boolean
   }
-  startedAt: number | undefined
-  status: string
-  subStatus: string
+  readonly startedAt: number | undefined
+  readonly status: string
+  readonly subStatus: string
 }
 
 export interface GameDataPlayers {
-  all: Player[]
-  others: Player[]
-  self: Player
-  eligible: Player[]
-  fascists: Player[]
-  liberals: Player[]
+  readonly self: Player
+  readonly all: Player[]
+  readonly others: Player[]
+  readonly fascists: Player[]
+  readonly liberals: Player[]
+  readonly eligible: () => Player[]
+  readonly visiblePlayerIds: () => string[]
 }
+
+export interface GameDataSession {
+  readonly president: () => Player
+  readonly presidentId: string
+  readonly presidentPolicies: string[] | undefined
+  readonly chancellor: () => Player | undefined
+  readonly chancellorId: string | undefined
+  readonly chancellorPolicies: string[] | undefined
+  readonly votes: {
+    readonly [playerId: string]: boolean
+  }
+}
+
+export type GameType = "fiveSix" | "sevenEight" | "nineTen"

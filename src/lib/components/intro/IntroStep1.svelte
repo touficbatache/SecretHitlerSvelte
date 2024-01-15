@@ -4,14 +4,14 @@
   export let player: Player | undefined
 </script>
 
-<div class="flex flex-col">
+<div class="flex flex-col items-center">
   <span class="font-futura text-lg uppercase tracking-widest">Your secret role</span>
   <h3 class="font-eskapade_fraktur text-6xl uppercase">{player?.role}</h3>
 </div>
 
 <div class="w-full px-16">
   <div
-    class="w-full aspect-square bg-player-hitler bg-contain bg-center rounded-full border-[6px] border-[#f7e1c1]"
+    class="w-full aspect-square bg-player-hitler bg-contain bg-center rounded-full border-[6px] border-sh-beige"
     class:bg-player-fascist-frog={player?.assetReference === "fascist_frog"}
     class:bg-player-fascist-lizard={player?.assetReference === "fascist_lizard"}
     class:bg-player-fascist-snake={player?.assetReference === "fascist_snake"}
@@ -25,10 +25,10 @@
   />
 </div>
 
-<div class="w-full text-center px-10">
+<div class="w-full text-center text-xl">
   {#if player?.role === "liberal"}
-    You have a majority, but you don't know for sure who anyone is.
+    You have a majority, but you don't know for sure who anyone is
   {:else}
-    You must resort to secrecy and sabotage to accomplish your goals.
+    You must resort to secrecy and sabotage to accomplish your goals
   {/if}
 </div>

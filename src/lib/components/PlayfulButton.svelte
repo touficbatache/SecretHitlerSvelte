@@ -3,8 +3,8 @@
   import { createEventDispatcher, type EventDispatcher } from "svelte"
 
   export let btn: HTMLElement | undefined = undefined
-  export let extraClasses: string | undefined
   export let enabled: boolean = true
+  export let extraClasses: string | undefined = undefined
   export let forceActiveState: boolean = false
   export let icon: string | undefined = undefined
   export let small: boolean = false
@@ -76,8 +76,8 @@
     padding: 7px 21px;
   }
   button .overlay {
-    width: -webkit-fill-available;
-    height: -webkit-fill-available;
+    width: calc(100% - 12px);
+    height: calc(100% - 8px);
     position: absolute;
     background: #ef664a;
     box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.06);

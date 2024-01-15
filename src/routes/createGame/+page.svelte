@@ -9,7 +9,7 @@
   onMount(() => {
     if ($page.data.gameCode === undefined) {
       setTimeout(async () => {
-        const success = await ApiClient.newGame()
+        const success: boolean = await ApiClient.newGame()
         if (success) {
           await goto("/waitingRoom")
         }

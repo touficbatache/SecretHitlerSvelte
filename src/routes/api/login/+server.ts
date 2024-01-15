@@ -12,6 +12,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     })
   } else {
     cookies.delete("token", { path: "/" })
+    cookies.delete("gameCode", { path: "/" })
   }
   return json({})
 }

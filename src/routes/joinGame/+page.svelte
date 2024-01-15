@@ -6,6 +6,7 @@
   import * as ApiClient from "$lib/api_client"
   import SHButton from "$lib/components/SHButton.svelte"
   import PinInput from "$lib/components/PinInput.svelte"
+  import PlayfulButton from "$lib/components/PlayfulButton.svelte"
 
   let gameCode = ""
 
@@ -32,20 +33,20 @@
 </script>
 
 {#if $page.data.gameCode === undefined}
-  <div class="w-full h-full px-6 flex flex-col justify-center items-center gap-6">
-    <span class="text-xl">Enter game code</span>
+  <div class="w-full h-full px-6 md:px-60 flex flex-col justify-center items-center gap-10">
+    <span class="text-2xl">Enter game code</span>
     <PinInput
       isEnabled={!isJoining}
       inactiveClass="bg-button-500 text-sh-yellow-500"
       activeClass="bg-sh-yellow-500 bg-opacity-70 text-sh-yellow-500 border-2 border-sh-yellow-500 border-opacity-70"
       bind:pin={gameCode}
     />
-    <SHButton enabled={gameCode.length === 6 && !isJoining} extraClasses="w-full" on:click={join}>
+    <PlayfulButton enabled={gameCode.length === 6 && !isJoining} extraClasses="w-full" on:click={join} >
       {#if !isJoining}
         Join
       {:else}
         Joining...
       {/if}
-    </SHButton>
+    </PlayfulButton>
   </div>
 {/if}

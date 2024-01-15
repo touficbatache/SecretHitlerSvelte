@@ -1,10 +1,14 @@
 /** Dispatch event on click outside of node */
 export interface ClickOutsideOptions {
-  callback: () => void
+  callback: (() => void) | undefined
   excluded?: HTMLElement[]
 }
 
-export const clickOutside = (node: HTMLElement, options: ClickOutsideOptions) => {
+export const clickOutside = (node: HTMLElement, options: ClickOutsideOptions | undefined) => {
+  if (options === undefined || options.callback === undefined) {
+    return
+  }
+
   const handleClick = (event: MouseEvent) => {
     if (!event?.target) return
     if (

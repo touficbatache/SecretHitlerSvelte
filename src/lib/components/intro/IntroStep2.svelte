@@ -3,38 +3,41 @@
 
   import type { Player } from "$lib/player"
   import type { GameDataPlayers } from "$lib/game_data"
-  import RoleHeader from "$lib/components/RoleHeader.svelte"
 
   export let player: Player | undefined
   export let players: GameDataPlayers | undefined
 
   let visibleSection = -1
   onMount(() => {
-    setTimeout(() => {
+    setTimeout(async () => {
       if (player?.role === "liberal") {
-        setTimeout(() => (visibleSection = 0), 1000)
-        setTimeout(() => (visibleSection = 1), 3000)
+        visibleSection = 0
+        await new Promise((f) => setTimeout(f, 4000))
+        visibleSection = 1
       } else {
-        setTimeout(() => (visibleSection = 0), 1000)
-        setTimeout(() => (visibleSection = 1), 4000)
-        setTimeout(() => (visibleSection = 2), 8000)
+        visibleSection = 0
+        await new Promise((f) => setTimeout(f, 3000))
+        visibleSection = 1
+        await new Promise((f) => setTimeout(f, 3000))
+        visibleSection = 2
       }
-    }, 2000)
+    }, 1000)
   })
 </script>
 
-<div class="w-full h-full flex flex-col justify-evenly items-center px-6 md:p-0">
+<div class="w-full h-full flex flex-col justify-around items-center px-6 md:p-0">
   {#if player?.role === "liberal"}
     <div
       class="flex flex-col gap-2 opacity-0 transition-opacity duration-1000"
       class:opacity-100={visibleSection >= 0}
     >
-      <div class="relative w-full text-center">Enact 5 liberal policies</div>
+      <div class="relative w-full text-center">To win, enact 5 liberal policies</div>
       <div class="flex">
         {#each Array(5) as _, policyIndex}
+          <!--          shadow-[0px_0px_8px_4px_#0000008a]-->
           <div
-            class="rounded-md h-24 aspect-[397/555] bg-policy-liberal bg-contain bg-center -ml-2
-                  z-{4 * 10 - policyIndex * 10}"
+            class="rounded-md h-24 aspect-[7/10] bg-policy-liberal bg-contain bg-center -ml-5
+                  z-{4 * 10 - policyIndex * 10} shadow-card-small"
           />
         {/each}
       </div>
@@ -44,10 +47,10 @@
       class="flex flex-col items-center gap-4 opacity-0 transition-opacity duration-1000"
       class:opacity-100={visibleSection >= 1}
     >
-      <div class="relative w-full text-center">or kill the Secret Hitler.</div>
+      <div class="relative w-full text-center">Or kill the Secret Hitler</div>
       <div class="relative w-48 h-48">
         <div
-          class="absolute inset-0 bg-player-hitler bg-contain bg-center rounded-full border-[6px] border-[#f7e1c1]"
+          class="absolute inset-0 bg-player-hitler bg-contain bg-center rounded-full border-[6px] border-sh-beige"
         />
         <div class="absolute inset-0 bg-hand-drawn-x bg-contain bg-center opacity-80" />
       </div>
@@ -59,9 +62,9 @@
     >
       <div class="relative w-full text-center">
         {#if player?.role === "fascist"}
-          Hitler plays for your team.
+          Hitler plays for your team
         {:else}
-          You play for the fascist team.
+          You play for the fascist team
         {/if}
       </div>
       <div class="flex">
@@ -70,15 +73,27 @@
             class="flex flex-col items-center z-{(players?.fascists?.length ?? 0) * 10 -
               index * 10} -ml-5"
           >
-            <span class:invisible={index % 2 === 1}>{fascist?.name}</span>
+            <div class:invisible={index % 2 === 1}>
+              {#if player.id === fascist.id || player?.role !== "hitler" || players?.all?.length < 7}
+                <span>{fascist?.name}</span>
+              {:else}
+                <div class="bg-red-fascist w-12 h-3 mb-2 blur-xxs" />
+              {/if}
+            </div>
             <div
-              class="w-24 h-24 bg-contain bg-center rounded-full border-4 border-[#f7e1c1]"
+              class="w-20 h-20 bg-contain bg-center rounded-full border-4 border-sh-beige"
               class:bg-player-fascist-frog={fascist?.assetReference === "fascist_frog"}
               class:bg-player-fascist-lizard={fascist?.assetReference === "fascist_lizard"}
               class:bg-player-fascist-snake={fascist?.assetReference === "fascist_snake"}
               class:bg-player-hitler={fascist?.assetReference === "hitler"}
             />
-            <span class:invisible={index % 2 === 0}>{fascist?.name}</span>
+            <div class:invisible={index % 2 === 0}>
+              {#if player.id === fascist.id || player?.role !== "hitler" || players?.all?.length < 7}
+                <span>{fascist?.name}</span>
+              {:else}
+                <div class="bg-red-fascist w-12 h-3 mt-2 blur-xxs" />
+              {/if}
+            </div>
           </div>
         {/each}
       </div>
@@ -88,12 +103,12 @@
       class="flex flex-col gap-2 opacity-0 transition-opacity duration-1000"
       class:opacity-100={visibleSection >= 1}
     >
-      <div class="relative w-full text-center">Enact 6 fascist policies</div>
+      <div class="relative w-full text-center">To win, enact 6 fascist policies</div>
       <div class="flex">
         {#each Array(6) as _, policyIndex}
           <div
-            class="rounded-md h-20 aspect-[397/555] bg-policy-fascist bg-contain bg-center -ml-4
-                  z-{5 * 10 - policyIndex * 10}"
+            class="rounded-md h-20 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-4
+                  z-{5 * 10 - policyIndex * 10} shadow-card-small"
           />
         {/each}
       </div>
@@ -105,27 +120,27 @@
     >
       <div class="relative w-full text-center">
         {#if player?.role === "fascist"}
-          or elect Hitler as Chancellor<br />(with three or more Fascist Policies on the board).
+          Or elect Hitler as Chancellor<br />(with 3+ Fascist policies on the board)
         {:else}
-          or be elected as Chancellor<br />(with three or more Fascist Policies on the board).
+          Or be elected as Chancellor<br />(with 3+ Fascist policies on the board)
         {/if}
       </div>
       <div class="relative w-48 h-48">
         <div
-          class="absolute inset-0 bg-player-hitler bg-contain bg-center rounded-full border-[6px] border-[#f7e1c1]"
+          class="absolute inset-0 bg-player-hitler bg-contain bg-center rounded-full border-[6px] border-sh-beige"
         />
         <div
           class="absolute inset-x-0 bottom-0 aspect-[1321/349] bg-placard-chancellor bg-contain bg-center"
         />
         <div class="absolute bottom-10 right-0 flex">
           <div
-            class="rounded-sm h-10 -rotate-12 aspect-[397/555] bg-policy-fascist bg-contain bg-center -ml-2 z-20"
+            class="rounded-sm h-10 -rotate-12 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-2 z-20 shadow-md"
           />
           <div
-            class="rounded-sm h-10 -mt-0.5 aspect-[397/555] bg-policy-fascist bg-contain bg-center -ml-2 z-10"
+            class="rounded-sm h-10 -mt-0.5 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-2 z-10 shadow-md"
           />
           <div
-            class="rounded-sm h-10 rotate-12 aspect-[397/555] bg-policy-fascist bg-contain bg-center -ml-2"
+            class="rounded-sm h-10 rotate-12 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-2 shadow-md"
           />
         </div>
       </div>

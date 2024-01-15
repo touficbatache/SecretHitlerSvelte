@@ -1,43 +1,25 @@
 <script lang="ts">
-  import { browser } from "$app/environment"
+  import { quartOut } from "svelte/easing"
+  import { fade } from "svelte/transition"
 
-  export let alwaysShowOnMobile = false
-  export let allowDismiss = true
-  export let isOpen = false
+  import { clickOutside } from "$lib/click_outside"
 
-  const id = "backgroundClickCatcher"
-
-  const eventListener = () => (isOpen = false)
-
-  const timeout = () => {
-    document.getElementById(id)?.classList.remove("fixed")
-  }
-
-  $: if (browser) {
-    if (isOpen) {
-      clearTimeout(timeout)
-      document.getElementById(id)?.classList.remove("opacity-0")
-      document.getElementById(id)?.classList.add("fixed", "opacity-100")
-      if (allowDismiss) {
-        document.getElementById(id)?.addEventListener("click", eventListener)
-      }
-    } else {
-      document.getElementById(id)?.classList.add("opacity-0")
-      document.getElementById(id)?.classList.remove("opacity-100")
-      setTimeout(timeout, 150)
-      if (allowDismiss) {
-        document.getElementById(id)?.removeEventListener("click", eventListener)
-      }
-    }
-  }
+  export let allowDismiss: boolean = true
+  export let classes: string = ""
+  export let open: boolean = false
 </script>
 
-{#if !alwaysShowOnMobile}
-  <div class="z-[9999] transition-opacity" class:opacity-0={!isOpen} class:opacity-1={isOpen}>
-    <slot />
-  </div>
-{:else}
-  <div class="z-[9999] transition-opacity" class:md:opacity-0={!isOpen} class:md:opacity-1={isOpen}>
-    <slot />
+{#if open}
+  <div
+    class="absolute inset-0 z-max flex justify-center items-center"
+    transition:fade={{ duration: 300, easing: quartOut }}
+  >
+    <div class="-z-10 absolute inset-0 bg-black bg-opacity-60" />
+    <div
+      class={classes}
+      use:clickOutside={allowDismiss ? { callback: () => (open = false) } : undefined}
+    >
+      <slot />
+    </div>
   </div>
 {/if}
