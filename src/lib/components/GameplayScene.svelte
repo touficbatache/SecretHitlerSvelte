@@ -31,8 +31,8 @@
 
   const electionTrackerX: number[] = [-4.09, -1.475, 1.14, 3.755] //x diff = 2.615
 
+  // TODO: temp fix
   // $: aspectRatio = $size.width / $size.height
-
   let aspectRatio: number = 1
 
   interactivity()
