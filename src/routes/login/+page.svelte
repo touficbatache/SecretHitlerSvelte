@@ -35,11 +35,16 @@
   $: isButtonEnabled =
     !isSendingOTP &&
     !isSigningIn &&
-    (!isOTPSent ? phoneNumber.trim().length > 0 : otp.trim().length > 0)
+    (!isOTPSent ? phoneNumber.trim().length > 0 : otp.trim().length === 6)
 
   onMount(() => {
     // Get a reference to the Auth instance
     auth = getAuth(app)
+
+    //TODO: remove?
+    if ($page.data.devMode) {
+      auth.settings.appVerificationDisabledForTesting = true
+    }
 
     // Create and pre-render the Recaptcha Verifier
     window.recaptchaVerifier = new RecaptchaVerifier(auth, "btn-sign-in", { size: "invisible" })

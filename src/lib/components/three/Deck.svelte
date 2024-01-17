@@ -10,7 +10,11 @@
 
   function getPolicyFaceMaterial(policy: string, index: number) {
     if (index === 0) {
-      return policy === "liberal" ? "/policy_liberal.png" : "/policy_fascist.png"
+      return policy === "liberal"
+        ? "/policy_liberal.png"
+        : policy === "fascist"
+        ? "/policy_fascist.png"
+        : "/policy_backcover.png"
     }
     if (index === 1) {
       return "/policy_backcover.png"

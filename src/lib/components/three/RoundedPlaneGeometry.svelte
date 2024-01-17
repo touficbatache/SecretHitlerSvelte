@@ -36,8 +36,6 @@
     const geometry: BufferGeometry = new BufferGeometry()
     geometry.setIndex(new BufferAttribute(new Uint32Array(indices), 1))
     geometry.setAttribute("position", new BufferAttribute(new Float32Array(positions), 3))
-
-    console.log(uvs)
     geometry.setAttribute("uv", new BufferAttribute(new Float32Array(uvs), 2))
 
     // add multimaterial groups for front, back, framing

@@ -5,7 +5,7 @@ export interface CodeResponse {
 }
 
 export interface ApiResponse {
-  success: any
+  success: { [key: string]: string } | undefined
   error:
     | {
         code: number
@@ -165,6 +165,73 @@ export async function chancellorDiscardPolicy(code: string, policy: string): Pro
       policy,
     }),
   )
+
+  if (!res.ok) {
+    return handleError(res)
+  }
+
+  return handleSuccess(res)
+}
+
+async function presidentialPower(
+  code: string,
+  extras?: { [key: string]: any },
+): Promise<ApiResponse> {
+  const endpoint: string = "presidentialPower"
+  const res: Response = await callApi(
+    endpoint,
+    JSON.stringify({
+      code,
+      ...extras,
+    }),
+  )
+
+  if (!res.ok) {
+    return handleError(res)
+  }
+
+  return handleSuccess(res)
+}
+
+export async function presidentialPower_policyPeek(code: string): Promise<ApiResponse> {
+  return presidentialPower(code)
+}
+
+export async function presidentialPower_investigation(
+  code: string,
+  player?: string,
+): Promise<ApiResponse> {
+  return presidentialPower(code, { player })
+}
+
+export async function presidentialPower_specialElection(
+  code: string,
+  player: string,
+): Promise<ApiResponse> {
+  return presidentialPower(code, { player })
+}
+
+export async function presidentialPower_execution(
+  code: string,
+  player: string,
+): Promise<ApiResponse> {
+  return presidentialPower(code, { player })
+}
+
+export async function askForVeto(code: string): Promise<ApiResponse> {
+  const endpoint: string = "askForVeto"
+  const res: Response = await callApi(endpoint, JSON.stringify({ code }))
+
+  if (!res.ok) {
+    return handleError(res)
+  }
+
+  return handleSuccess(res)
+}
+
+export async function answerVeto(code: string, refuseVeto: boolean): Promise<ApiResponse> {
+  const endpoint: string = "answerVeto"
+  const res: Response = await callApi(endpoint, JSON.stringify({ code, refuseVeto }))
 
   if (!res.ok) {
     return handleError(res)

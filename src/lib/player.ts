@@ -8,7 +8,9 @@ export interface Player {
   readonly membership: PlayerMembership
   readonly self: boolean
   readonly isExecuted: boolean
+  readonly isInvestigated: boolean
   readonly isPresident: boolean
+  isPreviousPresident?: boolean
   readonly isChancellor: boolean
   readonly isPreviousChancellor: boolean
   readonly vote: () => boolean

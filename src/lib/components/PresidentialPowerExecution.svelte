@@ -1,23 +1,47 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte"
+  import { fly } from "svelte/transition"
 
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import Players from "$lib/components/Players.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
-  import type { GameDataPlayers } from "$lib/game_data"
+  import type { GameDataPlayers, PresidentialPower } from "$lib/game_data"
   import type { Player } from "$lib/player"
 
   export let open: boolean
   export let players: GameDataPlayers | undefined = undefined
   export let president: Player | undefined = undefined
+  export let presidentialPower: PresidentialPower | undefined = undefined
 
   const dispatch = createEventDispatcher()
 
-  let selectedPlayer: Player | undefined
+  let countDown: number = 4
+  let isSetup: boolean = false
+  let selectedPlayer: Player | undefined = undefined
 
+  $: alivePlayers = players?.others.filter((player) => !player.isExecuted) ?? []
   $: isPresident = players?.self?.isPresident ?? false
   $: visiblePlayerIds = players?.visiblePlayerIds() ?? []
+
+  $: if (presidentialPower === "done") {
+    setupCountdown()
+  }
+
+  function setupCountdown() {
+    if (isSetup) {
+      return
+    }
+
+    isSetup = true
+
+    setTimeout(async () => {
+      while (countDown > 0) {
+        countDown--
+        await new Promise((f) => setTimeout(f, 1000))
+      }
+    }, 2000)
+  }
 </script>
 
 <FloatingWindow
@@ -47,13 +71,13 @@
     <div class="w-full flex flex-col items-center gap-10">
       <span class="text-xl text-center mb-2 md:whitespace-nowrap">
         {#if isPresident}
-          Choose your Chancellor
+          Execute a player
         {:else}
-          The President is choosing their Chancellor...
+          The President is executing&nbsp;a&nbsp;player...
         {/if}
       </span>
       <Players
-        players={players?.alive().filter((player) => !player.isPresident)}
+        players={alivePlayers}
         cols={3}
         hideExtras={true}
         hidePlacards={true}
@@ -64,17 +88,30 @@
       />
       {#if isPresident}
         <PlayfulButton
-          enabled={selectedPlayer !== undefined}
+          enabled={selectedPlayer !== undefined && presidentialPower === undefined}
           on:click={() => {
-            dispatch("click", selectedPlayer.id)
-            open = false
-            selectedPlayer = undefined
+            if (selectedPlayer !== undefined) {
+              dispatch("click", selectedPlayer.id)
+              selectedPlayer = undefined
+            }
           }}
           small={true}
         >
-          Nominate
+          Execute
         </PlayfulButton>
       {/if}
+      <div class="relative">
+        <span class="text-2xl invisible">{countDown}</span>
+        {#key countDown}
+          <span
+            class="absolute inset-0 text-2xl"
+            in:fly={{ duration: 700, y: "30px" }}
+            out:fly={{ duration: 200, y: "-30px" }}
+          >
+            {4 > countDown && countDown > 0 ? countDown : ""}
+          </span>
+        {/key}
+      </div>
     </div>
   </div>
 </FloatingWindow>

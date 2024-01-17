@@ -35,42 +35,42 @@
 <svelte:window bind:innerWidth />
 
 {#if $mounted && gameData?.players}
+  {#if innerWidth >= 768}
+    <div
+      class="absolute left-0 inset-y-16 w-[19rem] flex flex-col justify-between ml-16 mr-4 p-7 frame bg-[#141414]"
+      transition:fade={{ duration: 500, easing: quartOut }}
+    >
+      <Players
+        cols={3}
+        players={gameData?.players?.others}
+        showRoles={gameData?.players?.visiblePlayerIds()}
+      />
+
+      <div class="grid items-center grid-cols-3 gap-7">
+        <button
+          class="w-fit h-fit justify-self-start flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
+          on:click={() => (infoOpen = !infoOpen)}
+        >
+          <iconify-icon class="text-2xl" icon="material-symbols:info-outline" />
+        </button>
+
+        <PlayerView player={gameData?.players?.self} showRole={true} revealCards={true} />
+
+        <button
+          class="w-fit h-fit justify-self-end flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
+          on:click={ApiClient.leaveGame}
+        >
+          <iconify-icon class="text-2xl" icon="material-symbols:logout" />
+        </button>
+      </div>
+    </div>
+  {/if}
+
   <div
-    class="w-full h-full flex flex-col justify-between md:justify-center"
+    class="relative w-full h-full flex flex-col justify-between md:justify-center"
     transition:fade={{ delay: 500, duration: 500, easing: quartOut }}
   >
-    {#if innerWidth >= 768}
-      <div
-        class="flex flex-col justify-between absolute left-0 inset-y-16 w-[19rem] ml-16 mr-4 p-7 frame bg-[#141414]"
-        transition:fade={{ duration: 500, easing: quartOut }}
-      >
-        <Players
-          cols={3}
-          players={gameData?.players?.others}
-          showRoles={gameData?.players?.visiblePlayerIds()}
-        />
-
-        <div class="grid items-center grid-cols-3 gap-7">
-          <button
-            class="w-fit h-fit justify-self-start flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
-            on:click={() => (infoOpen = !infoOpen)}
-          >
-            <iconify-icon class="text-2xl" icon="material-symbols:info-outline" />
-          </button>
-
-          <PlayerView player={gameData?.players?.self} showRole={true} revealCards={true} />
-
-          <button
-            class="w-fit h-fit justify-self-end flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
-            on:click={ApiClient.leaveGame}
-          >
-            <iconify-icon class="text-2xl" icon="material-symbols:logout" />
-          </button>
-        </div>
-      </div>
-    {/if}
-
-    <div class="block md:hidden">
+    <div class="absolute inset-x-6 top-4 block md:hidden">
       <Players
         cols={5}
         players={gameData?.players?.others}
@@ -81,7 +81,7 @@
     <slot />
 
     <PaperBack
-      classes="w-full block md:hidden"
+      classes="!absolute inset-x-6 bottom-4 block md:hidden"
       contentClasses="flex justify-center gap-6 px-10 py-2"
       backgroundColor={gameData?.players.self.role === "liberal" ? "#0091b3" : "#d60d00"}
     >

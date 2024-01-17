@@ -27,7 +27,7 @@
   export let revealCards: boolean = false
 </script>
 
-<div class="flex flex-col items-center" class:opacity-30={player?.isDummy} on:click>
+<div class="flex flex-col items-center" class:opacity-30={player?.isDummy || player?.isExecuted} on:click>
   <div class="relative w-full aspect-square">
     <div
       class="z-50 absolute w-full aspect-square bg-contain bg-center rounded-full"
@@ -49,6 +49,8 @@
         class="z-50 absolute bottom-0 w-full aspect-[1321/349] bg-contain bg-center"
         class:bg-placard-president={player?.isPresident}
         class:bg-placard-chancellor={player?.isChancellor || player?.isPreviousChancellor}
+        class:opacity-50={(player?.isPreviousChancellor && !player?.isChancellor) ||
+          player?.isPreviousPresident}
       />
     {/if}
     {#if !hideVotes}

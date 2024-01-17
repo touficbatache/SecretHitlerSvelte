@@ -6,7 +6,23 @@
 </script>
 
 <Canvas>
-<!--  <Theatre>-->
-    <GameplayScene />
-<!--  </Theatre>-->
+  <!--  <Theatre>-->
+  <GameplayScene
+    policies={{
+      board: { liberal: 2, fascist: 3 },
+      drawPile: [
+        "fascist",
+        "liberal",
+        "fascist",
+        "liberal",
+        "fascist",
+        "liberal",
+        "fascist",
+        "fascist",
+        "liberal",
+      ],
+      discardPileCount: () => 3,
+    }}
+  />
+  <!--  </Theatre>-->
 </Canvas>

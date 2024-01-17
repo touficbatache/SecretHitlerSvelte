@@ -46,7 +46,11 @@
   }
 </script>
 
-<FloatingWindow allowDismiss={false} bind:open classes="w-full px-4 md:w-auto md:h-full md:py-4 md:flex md:items-center">
+<FloatingWindow
+  allowDismiss={false}
+  bind:open
+  classes="w-full px-4 md:w-auto md:h-full md:py-4 md:flex md:items-center"
+>
   <div class="w-full max-h-full p-10 shadow-frame bg-[#141414] rounded-lg">
     <div class="flex flex-col items-center gap-4">
       {#if president !== undefined && chancellor !== undefined}
@@ -82,7 +86,7 @@
           class:bg-black={vote === true}
           on:click={() => (vote = true)}
         >
-          <img class="w-full rounded-lg aspect-[7/10] bg-contain bg-center bg-card-ballot-ja" />
+          <div class="w-full rounded-lg aspect-[7/10] bg-contain bg-center bg-card-ballot-ja" />
           {#if vote === true}
             <iconify-icon
               class="absolute -left-3 -top-3 -rotate-90 text-2xl text-white bg-black rounded-full"
@@ -97,9 +101,7 @@
           class:bg-black={vote === false}
           on:click={() => (vote = false)}
         >
-          <img
-            class="w-full rounded-lg aspect-[7/10] bg-contain bg-center bg-card-ballot-nein"
-          />
+          <div class="w-full rounded-lg aspect-[7/10] bg-contain bg-center bg-card-ballot-nein" />
           {#if vote === false}
             <iconify-icon
               class="absolute -left-3 -top-3 -rotate-90 text-2xl text-white bg-black rounded-full"

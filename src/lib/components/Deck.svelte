@@ -190,6 +190,10 @@
     margin-top: 0;
   }
 
+  .deck .card:not(.liberal):not(.fascist) {
+    @apply bg-[url(policy_backcover.png)] bg-cover;
+  }
+
   .deck .card.fascist {
     @apply bg-[url(policy_fascist.png)] bg-cover;
   }
@@ -214,7 +218,8 @@
       -5.5px 6px 0px -0.5px #ececec, -9px 9px 20px 0px rgba(0, 145, 179, 0.3);
   }
 
-  .deck .reveal .card.noshadow {
+  .deck .reveal .card.noshadow,
+  .deck .reveal .card:not(.liberal):not(.fascist) {
     box-shadow: -1.5px 1.5px 0px 0.5px #ececec, -3px 3.3px 0px 0.4px #9e9e9e,
       -5.5px 6px 0px -0.5px #ececec;
   }

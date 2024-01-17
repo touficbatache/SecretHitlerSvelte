@@ -1,13 +1,13 @@
-import { type FirebaseApp, type FirebaseOptions, initializeApp } from "firebase/app"
+import { initializeApp, type FirebaseApp, type FirebaseOptions } from "firebase/app"
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
 import {
+  signOut as _signOut,
   getAuth,
   onIdTokenChanged,
-  signOut as _signOut,
-  type Auth,
   updateProfile,
+  type Auth,
 } from "firebase/auth"
-import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
-import { type Database, getDatabase } from "firebase/database"
+import { getDatabase, type Database } from "firebase/database"
 
 import { browser } from "$app/environment"
 import { invalidateAll } from "$app/navigation"
@@ -111,7 +111,9 @@ export function castGameData(snapshotValue: any): GameData {
     ownerId,
     players,
     policies,
+    presidentialPower,
     settings,
+    specialElectionPlayer,
     startedAt,
     status,
     subStatus,
@@ -137,6 +139,7 @@ export function castGameData(snapshotValue: any): GameData {
     membership: player.role === "liberal" ? "liberal" : "fascist",
     self: player.id === user?.uid,
     isExecuted: player.isExecuted ?? false,
+    isInvestigated: player.isInvestigated ?? false,
     isPresident: player.id === currentSessionObj?.presidentId,
     isChancellor: player.id === currentSessionObj?.chancellorId,
     isPreviousChancellor: player.id === lastSuccessfulChancellorId,
@@ -181,6 +184,7 @@ export function castGameData(snapshotValue: any): GameData {
       others: otherPlayers,
       fascists: allPlayers.filter((player) => player.membership === "fascist"),
       liberals: allPlayers.filter((player) => player.membership === "liberal"),
+      alive: () => allPlayers.filter((player) => !player.isExecuted),
       eligible: () =>
         otherPlayers.filter((player) => !player.isPreviousChancellor && !player.isExecuted),
       visiblePlayerIds: () => canSeeRoles(currentPlayer, allPlayers, gameType),
@@ -192,9 +196,11 @@ export function castGameData(snapshotValue: any): GameData {
       discardPileCount: () =>
         (policiesObj?.discardPile?.liberal ?? 0) + (policiesObj?.discardPile?.fascist ?? 0),
     },
+    presidentialPower,
     settings,
     startedAt,
     status,
+    specialElectionPlayer,
     subStatus,
   }
 }

@@ -71,7 +71,7 @@
   {#each pinArray as digit, index}
     <input
       id="pin-input-{index}"
-      class="outline-none appearance-none inline w-10 h-12 rounded-lg text-2xl text-center pointer-events-none transition-colors duration-300 ease-out {activeIndex ===
+      class="outline-none appearance-none inline w-10 h-12 rounded-lg text-2xl text-center transition-colors duration-300 ease-out {activeIndex ===
       index
         ? activeClass
         : inactiveClass}"
@@ -80,10 +80,10 @@
       pattern="[0-9]*"
       maxlength="1"
       bind:value={digit}
+      on:click={updateActive}
       on:input={(e) => handleInput(e, index)}
       on:keydown={(e) => handleBackspace(e, index)}
       on:paste={(e) => handlePaste(e)}
-      readonly={index !== activeIndex}
     />
   {/each}
 </div>
