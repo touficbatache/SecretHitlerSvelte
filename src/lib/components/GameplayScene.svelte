@@ -8,7 +8,7 @@
     TransformControls,
     useTexture,
   } from "@threlte/extras"
-  import { type CameraHelper, type DirectionalLightHelper, Vector3 } from "three"
+  import type { CameraHelper, DirectionalLightHelper } from "three"
   import { DEG2RAD } from "three/src/math/MathUtils"
 
   import RoundedPlaneGeometry from "$lib/components/three/RoundedPlaneGeometry.svelte"
@@ -31,7 +31,9 @@
 
   const electionTrackerX: number[] = [-4.09, -1.475, 1.14, 3.755] //x diff = 2.615
 
-  $: aspectRatio = $size.width / $size.height
+  // $: aspectRatio = $size.width / $size.height
+
+  let aspectRatio: number = 1
 
   interactivity()
 </script>
