@@ -1,4 +1,4 @@
-import { FIREBASE_SERVER_CONFIG } from "$env/static/private"
+import { PRIVATE_FIREBASE_SERVER_CONFIG } from "$env/static/private"
 import { PUBLIC_FIREBASE_CONFIG } from "$env/static/public"
 
 import admin from "firebase-admin"

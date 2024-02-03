@@ -11,7 +11,6 @@ export const load: LayoutServerLoad = async ({
   devMode?: boolean
   firebaseAppConfig?: FirebaseOptions
   gameCode?: string
-  lastUpdate: number
   user?: User
 }> => {
   const { user, gameCode } = locals
@@ -22,7 +21,6 @@ export const load: LayoutServerLoad = async ({
     devMode: config.devMode,
     firebaseAppConfig: config.firebaseAppConfig,
     gameCode,
-    lastUpdate,
     user,
   }
 }
