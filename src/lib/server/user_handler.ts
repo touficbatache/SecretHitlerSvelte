@@ -1,5 +1,5 @@
-import type { UserRecord } from "firebase-admin/auth"
 import type { Handle } from "@sveltejs/kit"
+import type { UserRecord } from "firebase-admin/auth"
 
 import { deleteSession, getSession, type SHSession } from "$lib/server/cookies"
 import { verifyIdToken } from "$lib/server/firebase"

@@ -3,9 +3,9 @@
   import { fly } from "svelte/transition"
 
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
-  import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import Players from "$lib/components/Players.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
+  import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import type { GameDataPlayers, PresidentialPower } from "$lib/game_data"
   import type { Player } from "$lib/player"
 

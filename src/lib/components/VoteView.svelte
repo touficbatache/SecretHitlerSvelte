@@ -2,12 +2,12 @@
   import { createEventDispatcher } from "svelte"
   import { fly } from "svelte/transition"
 
-  import PlayfulButton from "$lib/components/PlayfulButton.svelte"
+  import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import Players from "$lib/components/Players.svelte"
+  import PlayerView from "$lib/components/PlayerView.svelte"
+  import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import { Compact } from "$lib/enums"
   import type { GameDataPlayers, GameDataSession } from "$lib/game_data"
-  import PlayerView from "$lib/components/PlayerView.svelte"
-  import FloatingWindow from "$lib/components/FloatingWindow.svelte"
 
   export let currentSession: GameDataSession | undefined = undefined
   export let open: boolean

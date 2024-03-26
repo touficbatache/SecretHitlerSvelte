@@ -51,5 +51,8 @@
     "uuid": "^9.0.0",
     "vite": "^4.4.2"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "eslint-plugin-import": "^2.29.1"
+  }
 }

@@ -5,11 +5,11 @@
   import type { ApiResponse } from "$lib/api_client"
   import * as ApiClient from "$lib/api_client"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
+  import Players from "$lib/components/Players.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import type { GameDataPlayers, PresidentialPower } from "$lib/game_data"
   import type { Player } from "$lib/player"
-  import Players from "$lib/components/Players.svelte"
 
   export let gameCode: string
   export let open: boolean

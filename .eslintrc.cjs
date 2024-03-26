@@ -3,6 +3,9 @@ module.exports = {
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
     "plugin:svelte/recommended",
     "prettier",
   ],
@@ -38,6 +41,25 @@ module.exports = {
         variableDeclaration: true,
       },
     ],
-    //   "import/no-unresolved": 0,
+    "import/order": [
+      "warn",
+      {
+        alphabetize: {
+          order: "asc",
+          caseInsensitive: true,
+        },
+        "newlines-between": "always",
+      },
+    ],
+    "import/no-unresolved": "off",
+  },
+  settings: {
+    "svelte3/typescript": () => require("typescript"),
+    "import/resolver": {
+      node: {
+        paths: ["src"],
+        extensions: [".js", ".jsx", ".ts", ".tsx", ".svelte"],
+      },
+    },
   },
 }

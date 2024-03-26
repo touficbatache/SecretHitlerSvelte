@@ -11,8 +11,8 @@
   import type { CameraHelper, DirectionalLightHelper } from "three"
   import { DEG2RAD } from "three/src/math/MathUtils"
 
-  import RoundedPlaneGeometry from "$lib/components/three/RoundedPlaneGeometry.svelte"
   import Deck from "$lib/components/three/Deck.svelte"
+  import RoundedPlaneGeometry from "$lib/components/three/RoundedPlaneGeometry.svelte"
   import type { GameDataPolicies } from "$lib/game_data"
   import { attachMaterial } from "$lib/three_helper"
 

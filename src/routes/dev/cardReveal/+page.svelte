@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { fade } from "svelte/transition"
   import { expoOut } from "svelte/easing"
+  import { fade } from "svelte/transition"
 
   import Deck from "$lib/components/Deck.svelte"
 

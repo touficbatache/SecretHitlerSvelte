@@ -5,13 +5,13 @@
   import { fade } from "svelte/transition"
 
   import * as ApiClient from "$lib/api_client"
+  import FloatingWindow from "$lib/components/FloatingWindow.svelte"
+  import PaperBack from "$lib/components/PaperBack.svelte"
   import PinInput from "$lib/components/PinInput.svelte"
   import Players from "$lib/components/Players.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
   import type { GameData } from "$lib/game_data"
   import { mounted } from "$lib/mounted"
-  import FloatingWindow from "$lib/components/FloatingWindow.svelte"
-  import PaperBack from "$lib/components/PaperBack.svelte"
 
   export let gameCode: string
   export let gameData: GameData | undefined

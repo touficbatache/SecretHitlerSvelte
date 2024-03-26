@@ -4,12 +4,12 @@
   import { fade, fly } from "svelte/transition"
 
   import { browser } from "$app/environment"
-  import type { GameData } from "$lib/game_data"
   import IntroStep1 from "$lib/components/intro/IntroStep1.svelte"
   import IntroStep2 from "$lib/components/intro/IntroStep2.svelte"
   import IntroStep3 from "$lib/components/intro/IntroStep3.svelte"
   import IntroStep4 from "$lib/components/intro/IntroStep4.svelte"
   import RoleHeader from "$lib/components/RoleHeader.svelte"
+  import type { GameData } from "$lib/game_data"
 
   interface Step {
     text: string

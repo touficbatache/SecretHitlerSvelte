@@ -12,8 +12,8 @@
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import Settings from "$lib/components/Settings.svelte"
   import SimpleButton from "$lib/components/SimpleButton.svelte"
-  import type { GameData } from "$lib/game_data"
   import { Compact } from "$lib/enums"
+  import type { GameData } from "$lib/game_data"
 
   const gameCode: string = $page.data.gameCode
   const gameData: Readable<GameData> = getContext("gameData") as Readable<GameData>

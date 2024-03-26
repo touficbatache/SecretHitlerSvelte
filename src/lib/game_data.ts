@@ -1,9 +1,8 @@
-import type { Database } from "firebase/database"
-import { type DatabaseReference, onValue, ref as dbRef } from "firebase/database"
+import { type Database, type DatabaseReference, onValue, ref as dbRef } from "firebase/database"
 import { type Readable, readable } from "svelte/store"
 
-import type { Player } from "$lib/player"
 import { castGameData } from "$lib/firebase"
+import type { Player } from "$lib/player"
 
 export interface GameData {
   readonly currentSession: GameDataSession | undefined

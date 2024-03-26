@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte"
+
   import PlayerView from "$lib/components/PlayerView.svelte"
   import { Compact } from "$lib/enums"
   import type { Player } from "$lib/player"
-  import { createEventDispatcher } from "svelte"
 
   export let cols: number = 5
   export let compact: Compact = Compact.always

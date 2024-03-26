@@ -1,8 +1,8 @@
-import { PRIVATE_FIREBASE_SERVER_CONFIG } from "$env/static/private"
-import { PUBLIC_FIREBASE_CONFIG } from "$env/static/public"
-
 import admin from "firebase-admin"
 import type { UserRecord } from "firebase-admin/auth"
+
+import { PRIVATE_FIREBASE_SERVER_CONFIG } from "$env/static/private"
+import { PUBLIC_FIREBASE_CONFIG } from "$env/static/public"
 
 export interface FirebaseServerConfig {
   type: string

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte"
 
-  import FloatingWindow from "$lib/components/FloatingWindow.svelte"
-  import PlayfulButton from "$lib/components/PlayfulButton.svelte"
-  import PlayerView from "$lib/components/PlayerView.svelte"
-  import type { GameDataPlayers, GameDataSession } from "$lib/game_data"
   import Deck from "$lib/components/Deck.svelte"
+  import FloatingWindow from "$lib/components/FloatingWindow.svelte"
+  import PlayerView from "$lib/components/PlayerView.svelte"
+  import PlayfulButton from "$lib/components/PlayfulButton.svelte"
+  import type { GameDataPlayers, GameDataSession } from "$lib/game_data"
 
   export let currentSession: GameDataSession | undefined = undefined
   export let open: boolean

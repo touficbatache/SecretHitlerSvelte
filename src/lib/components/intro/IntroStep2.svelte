@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte"
 
-  import type { Player } from "$lib/player"
   import type { GameDataPlayers } from "$lib/game_data"
+  import type { Player } from "$lib/player"
 
   export let player: Player | undefined
   export let players: GameDataPlayers | undefined

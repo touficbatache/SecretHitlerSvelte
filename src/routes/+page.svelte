@@ -5,8 +5,8 @@
   import Logo from "$lib/components/Logo.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import PlayfulIconButton from "$lib/components/PlayfulIconButton.svelte"
-  import { setUserName, signOut } from "$lib/firebase"
   import TwoPaneView from "$lib/components/TwoPaneView.svelte"
+  import { setUserName, signOut } from "$lib/firebase"
 
   let inputName = $page.data.user?.name
   let isUpdatingUserName = false

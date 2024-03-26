@@ -4,6 +4,8 @@
   import { setContext } from "svelte"
   import { writable, type Writable } from "svelte/store"
 
+  import type { LayoutData } from "./$types"
+
   import { browser } from "$app/environment"
   import * as ApiClient from "$lib/api_client"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
@@ -11,8 +13,6 @@
   import PlayfulTextField from "$lib/components/PlayfulTextField.svelte"
   import { initializeFirebase, rtdb, setUserName } from "$lib/firebase"
   import { gameDataStore } from "$lib/game_data"
-
-  import type { LayoutData } from "./$types"
 
   export let data: LayoutData
 
