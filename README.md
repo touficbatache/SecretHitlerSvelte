@@ -1,6 +1,8 @@
 # Secret Hitler - SvelteKit Frontend
 
-This project is the frontend for the Secret Hitler game. It is written in SvelteKit and is designed to work with the backend implemented using Firebase Functions. The frontend can also be deployed to Firebase Hosting.
+This project is the frontend for the Secret Hitler game, intended to be deployed to Firebase Hosting. It is written in SvelteKit and is designed to work with the backend, deployed to Firebase Functions.
+
+Secret Hitler Firebase : https://github.com/touficbatache/SecretHitlerFirebase
 
 ## Prerequisites
 
