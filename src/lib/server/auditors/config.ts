@@ -40,6 +40,18 @@ export function auditConfig(audit: Audit, dataUnknown: unknown): [unknown, unkno
   const errors: { [key: string]: unknown } = {}
   const remainingKeys = new Set(Object.keys(data))
 
+  audit.attribute(
+    data,
+    "apiURL",
+    true,
+    errors,
+    remainingKeys,
+    auditHttpUrl,
+    // Ensure there is a single trailing "/" in URL.
+    auditFunction((url) => url.replace(/\/$/, "") + "/"),
+    auditRequire,
+  )
+
   // booleans
   for (const key of ["devMode"]) {
     audit.attribute(

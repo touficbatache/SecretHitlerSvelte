@@ -11,7 +11,8 @@
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "format": "prettier --plugin-search-dir . --write .",
     "deploy:dev": "firebase use dev && firebase deploy",
-    "deploy:prod": "firebase use production && firebase deploy"
+    "deploy:prod": "firebase use production && firebase deploy",
+    "link": "cp example.firebaserc .firebaserc && cp functions/example.env functions/.env.production && cp functions/example.env functions/.env.dev && cp functions/example.env functions/.env.local && ed -s .firebaserc <<ED_COMMANDS\n,s/FIREBASEPROJECT/${npm_config_project}/g\nw\nED_COMMANDS"
   },
   "dependencies": {
     "@auditors/core": "^0.7.0",

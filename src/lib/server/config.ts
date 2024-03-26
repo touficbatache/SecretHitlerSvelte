@@ -5,6 +5,7 @@ import { validateConfig } from "$lib/server/auditors/config"
 import type { FirebaseServerConfig } from "$lib/server/firebase"
 
 export interface Config {
+  apiURL: string
   devMode: boolean
   firebaseAppConfig: FirebaseOptions
   firebaseServerConfig: FirebaseServerConfig
@@ -12,6 +13,7 @@ export interface Config {
 }
 
 const [config, error] = validateConfig({
+  apiURL: process.env["PUBLIC_API_URL"],
   devMode: process.env["PUBLIC_DEV"],
   firebaseAppConfig: process.env["PUBLIC_FIREBASE_CONFIG"],
   firebaseServerConfig: process.env["PRIVATE_FIREBASE_SERVER_CONFIG"],

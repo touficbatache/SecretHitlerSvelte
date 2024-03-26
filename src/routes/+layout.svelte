@@ -33,7 +33,7 @@
     }
 
     if (data.user?.token) {
-      ApiClient.init(data.user.token)
+      ApiClient.init(data.apiURL, data.user.token)
     }
 
     if (data.gameCode !== undefined && data.user?.uid !== undefined) {

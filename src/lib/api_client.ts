@@ -16,24 +16,23 @@ export interface ApiResponse {
 
 export let userIdToken: string | undefined
 
-export function init(token: string) {
+let apiURL: string
+
+export function init(apiUrl: string, token: string) {
+  apiURL = apiUrl
   userIdToken = token
 }
 
-// https://us-central1-secret-hitler-app.cloudfunctions.net/api/${endpoint}
 async function callApi(endpoint: string, body?: string) {
-  return await fetch(
-    `https://us-central1-secret-hitler-test-app.cloudfunctions.net/api/${endpoint}`,
-    {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json; charset=utf-8",
-        Authorization: `Bearer ${userIdToken}`,
-      },
-      body,
+  return await fetch(new URL(endpoint, apiURL).toString(), {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json; charset=utf-8",
+      Authorization: `Bearer ${userIdToken}`,
     },
-  )
+    body,
+  })
 }
 
 async function setGameCodeCookie(code: string) {

@@ -8,6 +8,7 @@ import type { User } from "$lib/user"
 export const load: LayoutServerLoad = async ({
   locals,
 }): Promise<{
+  apiURL: string
   devMode?: boolean
   firebaseAppConfig?: FirebaseOptions
   gameCode?: string
@@ -17,6 +18,7 @@ export const load: LayoutServerLoad = async ({
   const { user, gameCode } = locals
 
   return {
+    apiURL: config.apiURL,
     devMode: config.devMode,
     firebaseAppConfig: config.firebaseAppConfig,
     gameCode,
