@@ -1,12 +1,6 @@
 import { initializeApp, type FirebaseApp, type FirebaseOptions } from "firebase/app"
 import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
-import {
-  signOut as _signOut,
-  getAuth,
-  onIdTokenChanged,
-  updateProfile,
-  type Auth,
-} from "firebase/auth"
+import { getAuth, onIdTokenChanged, updateProfile, signOut as _signOut } from "firebase/auth"
 import { getDatabase, type Database } from "firebase/database"
 
 import { browser } from "$app/environment"
@@ -20,6 +14,7 @@ export let rtdb: Database
 
 export function initializeFirebase(
   firebaseConfig: FirebaseOptions | undefined,
+  recaptchaSiteKey: string | undefined,
   devMode: boolean = false,
 ): void {
   if (!browser) {
@@ -31,37 +26,23 @@ export function initializeFirebase(
     return
   }
 
+  if (recaptchaSiteKey === undefined) {
+    console.error("ReCaptcha Enterprise site key is undefined.")
+    return
+  }
+
   if (!app) {
     app = initializeApp(firebaseConfig)
-    rtdb = getDatabase(app)
     if (devMode) {
       self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
     }
     initializeAppCheck(app, {
-      provider: new ReCaptchaEnterpriseProvider("6LfGHDUoAAAAAFX-EBTpFEbo-v7n08QGyQPPk5yo"),
+      provider: new ReCaptchaEnterpriseProvider(recaptchaSiteKey),
       isTokenAutoRefreshEnabled: true,
     })
+    rtdb = getDatabase(app)
     listenForAuthChanges()
   }
-}
-
-function listenForAuthChanges() {
-  const auth: Auth = getAuth(app)
-
-  // In addition to sign-in and sign-out, this observer will
-  // fire if a token has expired (> 1 hour), generating a new one
-  onIdTokenChanged(
-    auth,
-    async (user) => {
-      if (user) {
-        const token: string = await user.getIdToken()
-        await setTokenCookie(token)
-      } else {
-        await setTokenCookie(undefined)
-      }
-    },
-    (err) => console.error(err.message),
-  )
 }
 
 async function setTokenCookie(token: string | undefined) {
@@ -76,6 +57,24 @@ async function setTokenCookie(token: string | undefined) {
   await fetch("/api/login", options)
 
   await invalidateAll()
+}
+
+function listenForAuthChanges() {
+  // Fire on:
+  //    - sign in
+  //    - token expiry (> 1 hour), generating a new one
+  //    - sign out
+  onIdTokenChanged(
+    getAuth(app),
+    async (user) => {
+      if (user) {
+        await setTokenCookie(await user.getIdToken())
+      } else {
+        await setTokenCookie(undefined)
+      }
+    },
+    (err) => console.error(err.message),
+  )
 }
 
 export function setUserName(name: string) {
@@ -97,8 +96,10 @@ export function setUserName(name: string) {
 }
 
 export async function signOut() {
-  const auth: Auth = getAuth(app)
-  await _signOut(auth)
+  // Success is handled by auth change listener
+  _signOut(getAuth(app)).catch((reason) => {
+    console.error(reason)
+  })
 }
 
 export function castGameData(snapshotValue: any): GameData {
@@ -152,19 +153,15 @@ export function castGameData(snapshotValue: any): GameData {
   ]
   const policiesObj:
     | {
-        board:
-          | {
-              liberal: number
-              fascist: number
-            }
-          | undefined
-        drawPile: string[]
-        discardPile:
-          | {
-              liberal: number
-              fascist: number
-            }
-          | undefined
+        board?: {
+          liberal: number
+          fascist: number
+        }
+        drawPile: string
+        discardPile?: {
+          liberal: number
+          fascist: number
+        }
       }
     | undefined = policies
   return {
@@ -191,8 +188,8 @@ export function castGameData(snapshotValue: any): GameData {
     },
     policies: {
       ...policies,
-      drawPile: policiesObj?.drawPile?.split(","),
-      drawPileCount: () => policiesObj?.drawPile?.split(",").length ?? 0,
+      drawPile: policiesObj?.drawPile.split(","),
+      drawPileCount: () => policiesObj?.drawPile.split(",").length ?? 0,
       discardPileCount: () =>
         (policiesObj?.discardPile?.liberal ?? 0) + (policiesObj?.discardPile?.fascist ?? 0),
     },

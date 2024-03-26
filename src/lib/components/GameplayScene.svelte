@@ -14,6 +14,7 @@
   import RoundedPlaneGeometry from "$lib/components/three/RoundedPlaneGeometry.svelte"
   import Deck from "$lib/components/three/Deck.svelte"
   import type { GameDataPolicies } from "$lib/game_data"
+  import { attachMaterial } from "$lib/three_helper"
 
   export let disableRotation: boolean = false
   export let electionTracker: number = 0
@@ -123,23 +124,13 @@
           {#await useTexture(material) then texture}
             <T.MeshStandardMaterial
               map={texture}
-              attach={(parent, self) => {
-                if (!Array.isArray(parent.material)) {
-                  parent.material = []
-                }
-                parent.material.splice(i, 0, self)
-              }}
+              attach={(parent, self) => attachMaterial(parent, self, i)}
             />
           {/await}
         {:else}
           <T.MeshStandardMaterial
             color={material}
-            attach={(parent, self) => {
-              if (!Array.isArray(parent.material)) {
-                parent.material = []
-              }
-              parent.material.splice(i, 0, self)
-            }}
+            attach={(parent, self) => attachMaterial(parent, self, i)}
           />
         {/if}
       {/each}
@@ -169,23 +160,13 @@
               {#await useTexture(material) then texture}
                 <T.MeshStandardMaterial
                   map={texture}
-                  attach={(parent, self) => {
-                    if (!Array.isArray(parent.material)) {
-                      parent.material = []
-                    }
-                    parent.material.splice(i, 0, self)
-                  }}
+                  attach={(parent, self) => attachMaterial(parent, self, i)}
                 />
               {/await}
             {:else}
               <T.MeshStandardMaterial
                 color={material}
-                attach={(parent, self) => {
-                  if (!Array.isArray(parent.material)) {
-                    parent.material = []
-                  }
-                  parent.material.splice(i, 0, self)
-                }}
+                attach={(parent, self) => attachMaterial(parent, self, i)}
               />
             {/if}
           {/each}
@@ -208,23 +189,13 @@
           {#await useTexture(material) then texture}
             <T.MeshStandardMaterial
               map={texture}
-              attach={(parent, self) => {
-                if (!Array.isArray(parent.material)) {
-                  parent.material = []
-                }
-                parent.material.splice(i, 0, self)
-              }}
+              attach={(parent, self) => attachMaterial(parent, self, i)}
             />
           {/await}
         {:else}
           <T.MeshStandardMaterial
             color={material}
-            attach={(parent, self) => {
-              if (!Array.isArray(parent.material)) {
-                parent.material = []
-              }
-              parent.material.splice(i, 0, self)
-            }}
+            attach={(parent, self) => attachMaterial(parent, self, i)}
           />
         {/if}
       {/each}
@@ -239,23 +210,13 @@
               {#await useTexture(material) then texture}
                 <T.MeshStandardMaterial
                   map={texture}
-                  attach={(parent, self) => {
-                    if (!Array.isArray(parent.material)) {
-                      parent.material = []
-                    }
-                    parent.material.splice(i, 0, self)
-                  }}
+                  attach={(parent, self) => attachMaterial(parent, self, i)}
                 />
               {/await}
             {:else}
               <T.MeshStandardMaterial
                 color={material}
-                attach={(parent, self) => {
-                  if (!Array.isArray(parent.material)) {
-                    parent.material = []
-                  }
-                  parent.material.splice(i, 0, self)
-                }}
+                attach={(parent, self) => attachMaterial(parent, self, i)}
               />
             {/if}
           {/each}

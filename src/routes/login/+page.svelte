@@ -1,36 +1,33 @@
 <script lang="ts">
-  import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth"
+  import {
+    getAuth,
+    RecaptchaVerifier,
+    signInWithPhoneNumber,
+    type Auth,
+    type ConfirmationResult,
+  } from "firebase/auth"
   import { onMount } from "svelte"
 
-  import { browser } from "$app/environment"
-  import { goto } from "$app/navigation"
   import { page } from "$app/stores"
-  import { app } from "$lib/firebase"
   import Logo from "$lib/components/Logo.svelte"
   import PinInput from "$lib/components/PinInput.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import PlayfulTextField from "$lib/components/PlayfulTextField.svelte"
-  import SHButton from "$lib/components/SHButton.svelte"
   import TwoPaneView from "$lib/components/TwoPaneView.svelte"
+  import { app } from "$lib/firebase"
 
-  let auth
+  let auth: Auth
 
-  let error = ""
+  let error: string = ""
 
-  let isSendingOTP = false
-  let isOTPSent = false
-  let isSigningIn = false
+  let isSendingOTP: boolean = false
+  let isOTPSent: boolean = false
+  let isSigningIn: boolean = false
 
-  let phoneNumber = ""
-  let otp = ""
+  let phoneNumber: string = ""
+  let otp: string = ""
 
-  let confirmationResult
-
-  $: if (browser) {
-    if ($page.data.user) {
-      goto("/")
-    }
-  }
+  let confirmationResult: ConfirmationResult
 
   $: isButtonEnabled =
     !isSendingOTP &&
@@ -73,12 +70,8 @@
         confirmationResult = confirmationRes
         isOTPSent = true
         isSendingOTP = false
-        // console.log("success send otp")
       })
       .catch((e) => {
-        // window.recaptchaVerifier.render().then((widgetId) => {
-        //   window.grecaptcha.reset(widgetId)
-        // })
         // Error: SMS not sent
         if (e.code === "auth/invalid-phone-number") {
           error = "Please enter a valid phone number"
@@ -93,22 +86,17 @@
   function confirmOTP() {
     isSigningIn = true
 
-    confirmationResult
-      .confirm(otp)
-      // .then((userCredential) => {
-      // User signed in successfully.
-      // console.log("success sign in")
-      // console.log(userCredential.user)
-      // })
-      .catch((e) => {
-        // User couldn't sign in (bad verification code?)
-        if (e.code === "auth/invalid-verification-code") {
-          error = "Invalid OTP"
-        } else {
-          error = e.message
-        }
-        console.error(e)
-      })
+    // Success is handled by auth change listener
+    confirmationResult.confirm(otp).catch((e) => {
+      // User couldn't sign in (bad verification code?)
+      if (e.code === "auth/invalid-verification-code") {
+        error = "Invalid OTP"
+      } else {
+        error = e.message
+      }
+      console.error(e)
+      isSigningIn = false
+    })
   }
 </script>
 
@@ -128,14 +116,6 @@
 
     <div class="self-stretch flex flex-col gap-1">
       {#if !isOTPSent}
-        <!--        <SHTextField-->
-        <!--          label="Phone number"-->
-        <!--          type="tel"-->
-        <!--          placeholder="+1 23 456 789"-->
-        <!--          bind:value={phoneNumber}-->
-        <!--          on:input={onInput}-->
-        <!--        />-->
-
         <PlayfulTextField
           bind:value={phoneNumber}
           label="Phone number"
@@ -147,11 +127,6 @@
       {/if}
 
       {#if isOTPSent}
-        <!--        <PinInput-->
-        <!--          inactiveClass="bg-button-500 text-sh-yellow-500"-->
-        <!--          activeClass="bg-sh-yellow-500 bg-opacity-70 text-sh-yellow-500 border-2 border-sh-yellow-500 border-opacity-70"-->
-        <!--          bind:pin={otp}-->
-        <!--        />-->
         <PinInput
           inactiveClass="bg-button-500 text-white text-opacity-80"
           activeClass="bg-white bg-opacity-70 text-white text-opacity-80 border-2 border-white border-opacity-70"
@@ -191,75 +166,6 @@
     </div>
   </form>
 </TwoPaneView>
-
-<!--<div class="w-full h-full px-12 py-36 md:py-24 flex flex-col justify-between">-->
-<!--  <Logo />-->
-
-<!--  <form class="w-full flex flex-col items-center gap-4">-->
-<!--    <span class="text-xl text-center text-on-background text-opacity-70">-->
-<!--      {#if !isOTPSent}-->
-<!--        Sign in-->
-<!--      {:else}-->
-<!--        Enter OTP for {phoneNumber}-->
-<!--      {/if}-->
-<!--    </span>-->
-
-<!--    <div class="self-stretch flex flex-col gap-1">-->
-<!--      {#if !isOTPSent}-->
-<!--        <SHTextField-->
-<!--          label="Phone number"-->
-<!--          type="tel"-->
-<!--          placeholder="+1 23 456 789"-->
-<!--          bind:value={phoneNumber}-->
-<!--          on:input={onInput}-->
-<!--        />-->
-<!--      {/if}-->
-
-<!--      {#if isOTPSent}-->
-<!--        &lt;!&ndash;        <PinInput&ndash;&gt;-->
-<!--        &lt;!&ndash;          inactiveClass="bg-button-500 text-sh-yellow-500"&ndash;&gt;-->
-<!--        &lt;!&ndash;          activeClass="bg-sh-yellow-500 bg-opacity-70 text-sh-yellow-500 border-2 border-sh-yellow-500 border-opacity-70"&ndash;&gt;-->
-<!--        &lt;!&ndash;          bind:pin={otp}&ndash;&gt;-->
-<!--        &lt;!&ndash;        />&ndash;&gt;-->
-<!--        <PinInput-->
-<!--          inactiveClass="bg-button-500 text-white text-opacity-80"-->
-<!--          activeClass="bg-white bg-opacity-70 text-white text-opacity-80 border-2 border-white border-opacity-70"-->
-<!--          bind:pin={otp}-->
-<!--        />-->
-<!--      {/if}-->
-
-<!--      {#if error.length > 0}-->
-<!--        <span class="text-[#B71C1C]">Error: {error}</span>-->
-<!--      {/if}-->
-<!--    </div>-->
-
-<!--    <div class="recaptcha-container self-stretch">-->
-<!--      <SHButton-->
-<!--        id="btn-sign-in"-->
-<!--        extraClasses="w-full"-->
-<!--        enabled={isButtonEnabled}-->
-<!--        type="submit"-->
-<!--        on:click={() => {-->
-<!--          if (!isOTPSent) {-->
-<!--            sendOTP()-->
-<!--          } else {-->
-<!--            confirmOTP()-->
-<!--          }-->
-<!--        }}-->
-<!--      >-->
-<!--        {#if !isOTPSent && !isSendingOTP}-->
-<!--          Send OTP-->
-<!--        {:else if isSendingOTP}-->
-<!--          Sending OTP...-->
-<!--        {:else if !isSigningIn}-->
-<!--          Sign in-->
-<!--        {:else}-->
-<!--          Signing in...-->
-<!--        {/if}-->
-<!--      </SHButton>-->
-<!--    </div>-->
-<!--  </form>-->
-<!--</div>-->
 
 <style>
   .recaptcha-container > div {

@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte"
 
-  export let value
+  export let value: string
 
-  let textarea
+  let textarea: HTMLElement
 
   onMount(() => {
     textarea.select()
@@ -11,4 +11,4 @@
   })
 </script>
 
-<textarea bind:value bind:this={textarea} />
+<textarea bind:this={textarea} bind:value />

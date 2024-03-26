@@ -1,21 +1,21 @@
 import type { Handle } from "@sveltejs/kit"
 
+import { getSession, setSession, type SHSession } from "$lib/server/cookies"
+import { verifyGameCode } from "$lib/server/firebase"
+
 export const gameHandler: Handle = async ({ event, resolve }) => {
   const { cookies, locals } = event
 
-  const code = cookies.get("gameCode")
-  if (code !== undefined) {
+  const session: SHSession = getSession(cookies)
+  if (session.gameCode !== undefined) {
     try {
-      locals.gameCode = code as string
+      locals.gameCode = await verifyGameCode(session.gameCode)
     } catch (e) {
-      console.warn(`Invalid game code : ${code}. ${e}`)
-      cookies.delete("gameCode", { path: "/" })
+      console.warn(`Invalid game code : ${session.gameCode}. ${e}`)
+      delete session.gameCode
+      setSession(cookies, session)
     }
   }
 
-  const response: Response = await resolve(event)
-
-  // Here: modify response as needed, ex: add headers
-
-  return response
+  return resolve(event)
 }

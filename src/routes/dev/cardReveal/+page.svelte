@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
   import { fade } from "svelte/transition"
   import { expoOut } from "svelte/easing"
 
   import Deck from "$lib/components/Deck.svelte"
 
-  let reveal = false
+  let reveal: boolean = false
 </script>
 
 <main class="flex flex-col">

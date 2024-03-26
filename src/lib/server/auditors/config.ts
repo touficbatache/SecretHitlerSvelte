@@ -1,9 +1,7 @@
 import {
   auditBoolean,
-  auditCleanArray,
   auditFunction,
   auditHttpUrl,
-  auditInteger,
   auditRequire,
   auditSetNullish,
   auditString,
@@ -11,7 +9,6 @@ import {
   auditStringToNumber,
   auditSwitch,
   auditTrimString,
-  auditUnique,
   cleanAudit,
   type Audit,
   auditObject,
@@ -52,6 +49,19 @@ export function auditConfig(audit: Audit, dataUnknown: unknown): [unknown, unkno
       errors,
       remainingKeys,
       auditSwitch([auditTrimString, auditStringToBoolean], auditBoolean),
+      auditSetNullish(false),
+      auditRequire,
+    )
+  }
+
+  for (const key of ["recaptchaSiteKey"]) {
+    audit.attribute(
+      data,
+      key,
+      true,
+      errors,
+      remainingKeys,
+      auditSwitch([auditTrimString, auditString]),
       auditSetNullish(false),
       auditRequire,
     )

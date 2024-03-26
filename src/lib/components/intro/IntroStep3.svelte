@@ -4,7 +4,7 @@
 
   export let player: Player | undefined
 
-  let visibleSection = -1
+  let visibleSection: number = -1
   onMount(() => {
     setTimeout(async () => {
       if (player?.role === "liberal") {

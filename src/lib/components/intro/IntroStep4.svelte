@@ -2,7 +2,7 @@
   import { onMount } from "svelte"
   import { fly } from "svelte/transition"
 
-  let countDown = 4
+  let countDown: number = 4
   onMount(() => {
     setTimeout(async () => {
       while (countDown > 0) {

@@ -32,7 +32,7 @@
     </div>
 
     <div
-      class="w-full h-full flex flex-col justify-end gap-16 md:justify-around md:gap-0 items-center px-10"
+      class="w-full h-full flex flex-col justify-end gap-16 md:justify-around md:gap-5 items-center px-10"
       slot="second"
     >
       <!--      <div class="w-full flex flex-col bg-white bg-opacity-30 focus:bg-opacity-10 border-2 border-white border-opacity-50 focus:border-opacity-70 rounded-md px-4 py-2 transition duration-200 ease-material-deceleration">-->

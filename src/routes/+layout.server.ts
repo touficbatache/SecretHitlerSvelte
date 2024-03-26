@@ -11,16 +11,16 @@ export const load: LayoutServerLoad = async ({
   devMode?: boolean
   firebaseAppConfig?: FirebaseOptions
   gameCode?: string
+  recaptchaSiteKey?: string
   user?: User
 }> => {
   const { user, gameCode } = locals
-
-  const lastUpdate = Date.now()
 
   return {
     devMode: config.devMode,
     firebaseAppConfig: config.firebaseAppConfig,
     gameCode,
+    recaptchaSiteKey: config.recaptchaSiteKey,
     user,
   }
 }

@@ -1,17 +1,17 @@
 import { json } from "@sveltejs/kit"
 
+import { getSession, setSession, type SHSession } from "$lib/server/cookies"
+
 import type { RequestHandler } from "./$types"
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
-  const payload = await request.json()
-  const code = payload.code
+  const { code } = await request.json()
+  const session: SHSession = getSession(cookies)
   if (code) {
-    cookies.set("gameCode", code, {
-      path: "/",
-      httpOnly: true,
-    })
+    session.gameCode = code
   } else {
-    cookies.delete("gameCode", { path: "/" })
+    delete session.gameCode
   }
+  setSession(cookies, session)
   return json({})
 }

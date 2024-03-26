@@ -1,18 +1,15 @@
 import { json } from "@sveltejs/kit"
 
+import { deleteSession, getSession, setSession } from "$lib/server/cookies"
+
 import type { RequestHandler } from "./$types"
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
-  const payload = await request.json()
-  const token = payload.token
+  const { token } = await request.json()
   if (token) {
-    cookies.set("token", token, {
-      path: "/",
-      httpOnly: true,
-    })
+    setSession(cookies, { ...getSession(cookies), token })
   } else {
-    cookies.delete("token", { path: "/" })
-    cookies.delete("gameCode", { path: "/" })
+    deleteSession(cookies)
   }
   return json({})
 }

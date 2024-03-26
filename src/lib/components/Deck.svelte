@@ -4,14 +4,15 @@
   export let cards: string[]
   export let center: boolean = false
   export let debug: boolean = false
+  export let expanded: boolean = false
   export let interactive: boolean = false
   export let selectable: boolean = false
   export let shadow: boolean = true
 
   const dispatch = createEventDispatcher()
 
-  let deckEl = undefined
-  let isContainerExpanded: boolean = false
+  let deckEl: HTMLElement | undefined = undefined
+  let isContainerExpanded: boolean = expanded
   let revealedElementIndex: number | undefined = undefined
 
   // Helper function to check if the touch position is inside an element
@@ -191,15 +192,15 @@
   }
 
   .deck .card:not(.liberal):not(.fascist) {
-    @apply bg-[url(policy_backcover.png)] bg-cover;
+    @apply bg-[url(/policy_backcover.png)] bg-cover;
   }
 
   .deck .card.fascist {
-    @apply bg-[url(policy_fascist.png)] bg-cover;
+    @apply bg-[url(/policy_fascist.png)] bg-cover;
   }
 
   .deck .card.liberal {
-    @apply bg-[url(policy_liberal.png)] bg-cover;
+    @apply bg-[url(/policy_liberal.png)] bg-cover;
   }
 
   .deck .reveal .card {

@@ -1,4 +1,9 @@
+import type { Database } from "firebase/database"
+import { type DatabaseReference, onValue, ref as dbRef } from "firebase/database"
+import { type Readable, readable } from "svelte/store"
+
 import type { Player } from "$lib/player"
+import { castGameData } from "$lib/firebase"
 
 export interface GameData {
   readonly currentSession: GameDataSession | undefined
@@ -62,3 +67,19 @@ export interface GameDataSession {
 export type GameType = "fiveSix" | "sevenEight" | "nineTen"
 
 export type PresidentialPower = "consumed" | "done"
+
+// https://sveltefire.fireship.io/
+/**
+ * @param {Database} rtdb - Firebase Realtime Database instance.
+ * @param {string} gameCode - Code of the requested game.
+ * @returns a store with realtime updates on individual database nodes.
+ */
+export function gameDataStore(rtdb: Database, gameCode: string): Readable<GameData | undefined> {
+  const dataRef: DatabaseReference = dbRef(rtdb, `ongoingGames/${gameCode}`)
+
+  return readable<GameData | undefined>(undefined, (set) => {
+    return onValue(dataRef, (snapshot) => {
+      set(castGameData(snapshot.val()) as GameData)
+    })
+  })
+}

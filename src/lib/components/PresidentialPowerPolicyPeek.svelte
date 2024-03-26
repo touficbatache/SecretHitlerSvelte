@@ -75,7 +75,13 @@
   }
 </script>
 
-<FloatingWindow allowDismiss={false} bind:open classes="w-full md:w-fit px-4">
+<FloatingWindow
+  allowDismiss={false}
+  allowMinimize={true}
+  bind:open
+  classes="w-full md:w-fit px-4"
+  on:minimize
+>
   <div
     class="md:w-screen md:max-w-4xl flex flex-col md:flex-row justify-center items-center px-6 md:px-16 py-8 shadow-frame bg-[#141414] rounded-lg gap-10 md:gap-48"
   >

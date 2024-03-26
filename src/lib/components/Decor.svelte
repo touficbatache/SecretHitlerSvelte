@@ -99,7 +99,7 @@
         <!--          on:click={() => (showInfo = !showInfo)}-->
         <!--        />-->
 
-        <div class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/5 z-max">
+        <div class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/5 z-50">
           <PlayerView revealCards={true} player={gameData?.players?.self} showRole={true} />
         </div>
 

@@ -27,7 +27,11 @@
   export let revealCards: boolean = false
 </script>
 
-<div class="flex flex-col items-center" class:opacity-30={player?.isDummy || player?.isExecuted} on:click>
+<div
+  class="flex flex-col items-center"
+  class:opacity-30={player?.isDummy || player?.isExecuted}
+  on:click
+>
   <div class="relative w-full aspect-square">
     <div
       class="z-50 absolute w-full aspect-square bg-contain bg-center rounded-full"

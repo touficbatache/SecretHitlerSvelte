@@ -48,8 +48,10 @@
 
 <FloatingWindow
   allowDismiss={false}
+  allowMinimize={true}
   bind:open
   classes="w-full px-4 md:w-auto md:h-full md:py-4 md:flex md:items-center"
+  on:minimize
 >
   <div class="w-full max-h-full p-10 shadow-frame bg-[#141414] rounded-lg">
     <div class="flex flex-col items-center gap-4">

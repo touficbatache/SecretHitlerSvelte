@@ -1,26 +1,24 @@
+import type { UserRecord } from "firebase-admin/auth"
 import type { Handle } from "@sveltejs/kit"
 
-import { verifyToken } from "$lib/server/firebase"
+import { deleteSession, getSession, type SHSession } from "$lib/server/cookies"
+import { verifyIdToken } from "$lib/server/firebase"
 import type { User } from "$lib/user"
 
 export const userHandler: Handle = async ({ event, resolve }) => {
   const { cookies, locals } = event
 
-  const token = cookies.get("token")
-  if (token !== undefined) {
+  const session: SHSession = getSession(cookies)
+  if (session.token !== undefined) {
     try {
-      const decodedToken = await verifyToken(token)
-      const { uid, name, phone_number } = decodedToken
-      locals.user = { uid, name, phone_number, token } as User
+      const decodedToken: UserRecord = await verifyIdToken(session.token)
+      const { uid, displayName, phoneNumber } = decodedToken
+      locals.user = { uid, name: displayName, phoneNumber, token: session.token } as User
     } catch (e) {
-      console.warn(`Invalid token : ${token}. ${e}`)
-      cookies.delete("token", { path: "/" })
+      console.warn(`Invalid token : ${session.token}. ${e}`)
+      deleteSession(cookies)
     }
   }
 
-  const response: Response = await resolve(event)
-
-  // Here: modify response as needed, ex: add headers
-
-  return response
+  return resolve(event)
 }

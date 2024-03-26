@@ -3,6 +3,9 @@ export default {
   content: ["./src/**/*.{html,js,svelte,ts}"],
   theme: {
     extend: {
+      animation: {
+        "pulse-slow": "pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
       backgroundImage: {
         "board-election-tracker": "url('/board_election_tracker.png')",
         "board-liberal": "url('/board_liberal.png')",
