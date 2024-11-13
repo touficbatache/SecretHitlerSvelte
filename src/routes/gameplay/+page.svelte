@@ -27,6 +27,14 @@
 
   let isMinimized: boolean = false
 
+  let importantGameStatuses = [
+    "election_voting",
+    "presidentialPower_investigateLoyalty",
+    "presidentialPower_policyPeek",
+    "presidentialPower_callSpecialElection",
+    "presidentialPower_execution"
+  ]
+
   $: if (browser) {
     if ($page.data.gameCode === undefined) {
       goto("/")
@@ -41,8 +49,8 @@
     }
   }
 
-  function statusText() {
-    switch ($gameData?.subStatus) {
+  function statusText(subStatus: string | undefined): string | undefined {
+    switch (subStatus) {
       case "election_presidentChoosingChancellor":
         return "The President is choosing their Chancellor"
       case "election_voting":
@@ -149,13 +157,17 @@
       president={$gameData?.currentSession?.president()}
       presidentialPower={$gameData?.presidentialPower}
     />
-  {:else}
+  {:else if statusText($gameData?.subStatus) !== undefined}
+    {@const isImportant = importantGameStatuses.includes($gameData?.subStatus)}
     <button
       class="absolute inset-x-6 bottom-36 md:bottom-6 flex items-center gap-4 px-4 py-2 shadow-frame bg-[#141414] rounded-lg animate-pulse-slow"
+      class:border-2={isImportant}
+      class:border-red-fascist={isImportant && $gameData?.players.self.membership === "fascist"}
+      class:border-blue-liberal={isImportant && $gameData?.players.self.membership === "liberal"}
       on:click={() => (isMinimized = false)}
     >
       <Icon icon="fa:window-restore" />
-      {statusText($gameData?.subStatus) ?? "..."}
+      {statusText($gameData?.subStatus)}
     </button>
   {/if}
 </Decor>
