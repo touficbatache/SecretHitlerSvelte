@@ -98,7 +98,7 @@
         hideVotes={true}
         highlight={true}
         players={$gameData?.players?.all}
-        showTitle={true}
+        showCount={true}
       />
 
       <p class="text-center opacity-80 md:text-base">

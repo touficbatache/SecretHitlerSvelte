@@ -11,9 +11,9 @@
   export let highlight: boolean = false
   export let highlightPlayer: string | undefined = undefined
   export let players: Player[] | undefined
+  export let showCount: boolean = false
   export let showRoles: string[] | undefined = undefined
   export let showSelf: boolean = true
-  export let showTitle: boolean = false
 
   const dispatch = createEventDispatcher()
 
@@ -48,7 +48,7 @@
   class:gap-y-7={compact === Compact.never || compact === Compact.desktop}
   class:md:gap-y-7={compact === Compact.mobile || compact === Compact.desktop}
 >
-  {#if showTitle}
+  {#if showCount}
     <span>Players {players?.length ?? 0}/10</span>
   {/if}
 

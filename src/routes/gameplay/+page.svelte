@@ -11,6 +11,7 @@
   import ChancellorPolicyChooseView from "$lib/components/ChancellorPolicyChooseView.svelte"
   import ChooseChancellorView from "$lib/components/ChooseChancellorView.svelte"
   import Decor from "$lib/components/Decor.svelte"
+  import GameEnding from "$lib/components/GameEnding.svelte"
   import GameplayScene from "$lib/components/GameplayScene.svelte"
   import PresidentialPowerExecution from "$lib/components/PresidentialPowerExecution.svelte"
   import PresidentialPowerInvestigation from "$lib/components/PresidentialPowerInvestigation.svelte"
@@ -20,6 +21,7 @@
   import PresidentReviewingVeto from "$lib/components/PresidentReviewingVeto.svelte"
   import VoteView from "$lib/components/VoteView.svelte"
   import type { GameData } from "$lib/game_data"
+  import type { PlayerMembership } from "$lib/player"
 
   const gameCode: string = $page.data.gameCode
   const gameData: Readable<GameData | undefined> = getContext("gameData") as Readable<
@@ -48,6 +50,15 @@
     if ($gameData?.status === "settingUp") {
       goto("/intro")
     }
+  }
+
+  $: hasGameEnded =
+    $gameData?.subStatus !== undefined && $gameData.subStatus.startsWith("gameEnded")
+
+  function getGameWinningTeam(hasGameEnded: boolean): PlayerMembership | undefined {
+    if (!hasGameEnded) return
+
+    return $gameData.subStatus.split("gameEnded_")[1] as PlayerMembership
   }
 
   function statusText(subStatus: string | undefined): string | undefined {
@@ -169,6 +180,12 @@
       players={$gameData?.players}
       president={$gameData?.currentSession?.president()}
       presidentialPower={$gameData?.presidentialPower}
+    />
+
+    <GameEnding
+      open={hasGameEnded}
+      players={$gameData?.players}
+      winningTeam={getGameWinningTeam(hasGameEnded)}
     />
   {:else if statusText($gameData?.subStatus) !== undefined}
     {@const isImportant = importantGameStatuses.includes($gameData?.subStatus)}
