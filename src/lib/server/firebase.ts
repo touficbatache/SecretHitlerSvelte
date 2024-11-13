@@ -18,9 +18,11 @@ export interface FirebaseServerConfig {
   universe_domain: string
 }
 
-// If firebase goes crazy when deploying with functions,
-// just unwrap this code from the if...
-if (!admin.apps.length) {
+// Correct way of doing is using  `if (!admin.apps.length)` but
+// Firebase goes crazy when deploying with functions, so:
+const initialized = admin.apps.some((app) => app.name === "[DEFAULT]")
+
+if (!initialized) {
   const publicConfig = JSON.parse(PUBLIC_FIREBASE_CONFIG)
   const serviceAccount = JSON.parse(PRIVATE_FIREBASE_SERVER_CONFIG)
   admin.initializeApp({
