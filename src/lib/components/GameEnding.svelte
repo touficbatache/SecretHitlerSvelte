@@ -17,9 +17,11 @@
   classes="w-full md:w-auto md:h-full flex flex-col px-4 md:py-4 md:flex md:items-center"
 >
   {#if winningTeam === "fascist"}
-    <div
-      class="relative mx-20 aspect-[1535/1986] bg-illustration-fascist bg-cover shadow-xl shadow-red-fascist/30"
-    />
+    <div class="relative px-20">
+      <div
+        class="aspect-[1535/1986] bg-illustration-fascist bg-cover shadow-xl shadow-red-fascist/30"
+      />
+    </div>
     <div class="flex flex-col gap-4 -mt-10 px-4 pb-6 pt-14 shadow-frame bg-[#141414] rounded-lg">
       <div class="flex flex-col items-center">
         <h3 class="font-eskapade_fraktur text-6xl uppercase">Fascists</h3>
@@ -52,9 +54,11 @@
       />
     </div>
   {:else if winningTeam === "liberal"}
-    <div
-      class="relative z-10 mx-10 aspect-square bg-illustration-liberal bg-cover bg-center before:absolute before:inset-6 before:rounded-full before:shadow-xl before:shadow-blue-liberal/30"
-    />
+    <div class="relative px-10">
+      <div
+        class="aspect-square bg-illustration-liberal bg-cover bg-center before:absolute before:inset-6 before:rounded-full before:shadow-xl before:shadow-blue-liberal/30"
+      />
+    </div>
     <div class="flex flex-col gap-4 -mt-24 px-6 pb-6 pt-20 shadow-frame bg-[#141414] rounded-lg">
       <div class="flex flex-col items-center">
         <h3 class="font-eskapade_fraktur text-6xl uppercase">Liberals</h3>
