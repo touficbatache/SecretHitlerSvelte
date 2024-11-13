@@ -49,13 +49,26 @@
       class:shadow-player-frame={highlight && !player?.isDummy}
     />
     {#if !hidePlacards}
-      <div
-        class="z-50 absolute bottom-0 w-full aspect-[1321/349] bg-contain bg-center"
-        class:bg-placard-president={player?.isPresident}
-        class:bg-placard-chancellor={player?.isChancellor || player?.isPreviousChancellor}
-        class:opacity-50={(player?.isPreviousChancellor && !player?.isChancellor) ||
-          player?.isPreviousPresident}
-      />
+      {#if player?.isPresident}
+        <div
+          class="z-50 absolute bottom-0 w-full aspect-[1321/349] bg-placard-president bg-contain bg-center"
+        />
+      {:else if player?.isChancellor}
+        <div
+          class="z-50 absolute bottom-0 w-full aspect-[1321/349] bg-placard-chancellor bg-contain bg-center"
+        />
+      {:else}
+        {#if player?.isPreviousPresident}
+          <div
+            class="z-50 absolute bottom-0 w-full aspect-[1321/349] bg-placard-president bg-contain bg-center opacity-50"
+          />
+        {/if}
+        {#if player?.isPreviousChancellor}
+          <div
+            class="z-50 absolute bottom-0 w-full aspect-[1321/349] bg-placard-chancellor bg-contain bg-center opacity-50"
+          />
+        {/if}
+      {/if}
     {/if}
     {#if !hideVotes}
       <div
