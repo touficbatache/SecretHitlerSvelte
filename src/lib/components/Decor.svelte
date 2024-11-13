@@ -70,7 +70,9 @@
     class="relative w-full h-full flex flex-col justify-between md:justify-center"
     transition:fade={{ delay: 500, duration: 500, easing: quartOut }}
   >
-    <div class="absolute inset-x-6 top-4 block md:hidden">
+    <div
+      class="pointer-events-none absolute inset-x-0 top-0 px-6 py-4 block md:hidden bg-gradient-to-b from-black to-transparent"
+    >
       <Players
         cols={5}
         players={gameData?.players?.others}
