@@ -29,8 +29,8 @@ export interface GameDataPlayers {
   readonly fascists: Player[]
   readonly liberals: Player[]
   readonly alive: () => Player[]
-  readonly eligible: () => Player[]
-  readonly visiblePlayerIds: () => string[]
+  readonly eligibleForChancellor: () => Player[]
+  readonly visibleRolePlayerIds: () => string[]
 }
 
 export interface GameDataPolicies {

@@ -66,13 +66,13 @@
             player={president}
             hideExtras={true}
             hideVotes={true}
-            showRole={players?.visiblePlayerIds().includes(president.id)}
+            showRole={players?.visibleRolePlayerIds().includes(president.id)}
           />
           <PlayerView
             player={chancellor}
             hideExtras={true}
             hideVotes={true}
-            showRole={players?.visiblePlayerIds().includes(chancellor.id)}
+            showRole={players?.visibleRolePlayerIds().includes(chancellor.id)}
           />
         </div>
       {/if}
@@ -131,7 +131,7 @@
           hideExtras={true}
           hidePlacards={true}
           players={players?.all}
-          showRoles={players?.visiblePlayerIds()}
+          showRoles={players?.visibleRolePlayerIds()}
         />
         {#if waiting}
           <span> Waiting for all votes... </span>

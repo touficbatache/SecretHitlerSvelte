@@ -43,7 +43,7 @@
       <Players
         cols={3}
         players={gameData?.players?.others}
-        showRoles={gameData?.players?.visiblePlayerIds()}
+        showRoles={gameData?.players?.visibleRolePlayerIds()}
       />
 
       <div class="grid items-center grid-cols-3 gap-7">
@@ -74,7 +74,7 @@
       <Players
         cols={5}
         players={gameData?.players?.others}
-        showRoles={gameData?.players?.visiblePlayerIds()}
+        showRoles={gameData?.players?.visibleRolePlayerIds()}
       />
     </div>
 

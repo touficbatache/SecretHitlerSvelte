@@ -17,7 +17,7 @@
   let selectedPlayer: Player | undefined
 
   $: isPresident = players?.self?.isPresident ?? false
-  $: visiblePlayerIds = players?.visiblePlayerIds() ?? []
+  $: visibleRolePlayerIds = players?.visibleRolePlayerIds() ?? []
 </script>
 
 <FloatingWindow
@@ -42,7 +42,7 @@
           player={president}
           hideExtras={true}
           hideVotes={true}
-          showRole={visiblePlayerIds.includes(president?.id)}
+          showRole={visibleRolePlayerIds.includes(president?.id)}
         />
       </div>
     </div>
@@ -55,14 +55,14 @@
         {/if}
       </span>
       <Players
-        players={players?.alive().filter((player) => !player.isPresident)}
+        players={players?.eligibleForChancellor()}
         cols={3}
         hideExtras={true}
         hidePlacards={true}
         hideVotes={true}
         highlightPlayer={selectedPlayer?.id}
         on:click={isPresident ? ({ detail }) => (selectedPlayer = detail) : undefined}
-        showRoles={visiblePlayerIds}
+        showRoles={visibleRolePlayerIds}
       />
       {#if isPresident}
         <PlayfulButton

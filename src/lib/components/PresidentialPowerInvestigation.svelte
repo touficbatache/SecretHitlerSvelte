@@ -28,7 +28,7 @@
   $: nonInvestigatedPlayers =
     players?.alive().filter((player) => !player.isPresident && !player.isInvestigated) ?? []
   $: isPresident = players?.self?.isPresident ?? false
-  $: visiblePlayerIds = players?.visiblePlayerIds() ?? []
+  $: visibleRolePlayerIds = players?.visibleRolePlayerIds() ?? []
 
   $: if (presidentialPower === "done") {
     setupCountdown()
@@ -123,7 +123,7 @@
           player={president}
           hideExtras={true}
           hideVotes={true}
-          showRole={visiblePlayerIds.includes(president.id)}
+          showRole={visibleRolePlayerIds.includes(president.id)}
         />
       </div>
     </div>
@@ -144,7 +144,7 @@
           hideVotes={true}
           highlightPlayer={selectedPlayer?.id}
           on:click={isPresident ? ({ detail }) => (selectedPlayer = detail) : undefined}
-          showRoles={visiblePlayerIds}
+          showRoles={visibleRolePlayerIds}
         />
         {#if isPresident}
           <PlayfulButton

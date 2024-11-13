@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
-
   import Logo from "$lib/components/Logo.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import PlayfulIconButton from "$lib/components/PlayfulIconButton.svelte"

@@ -17,7 +17,7 @@
 
   $: isPresident = players?.self?.isPresident ?? false
   $: isChancellor = players?.self?.isChancellor ?? false
-  $: visiblePlayerIds = players?.visiblePlayerIds() ?? []
+  $: visibleRolePlayerIds = players?.visibleRolePlayerIds() ?? []
 </script>
 
 <FloatingWindow
@@ -44,13 +44,13 @@
             player={currentSession.president()}
             hideExtras={true}
             hideVotes={true}
-            showRole={visiblePlayerIds.includes(currentSession.presidentId)}
+            showRole={visibleRolePlayerIds.includes(currentSession.presidentId)}
           />
           <PlayerView
             player={currentSession.chancellor()}
             hideExtras={true}
             hideVotes={true}
-            showRole={visiblePlayerIds.includes(currentSession.chancellorId)}
+            showRole={visibleRolePlayerIds.includes(currentSession.chancellorId)}
           />
         </div>
       </div>

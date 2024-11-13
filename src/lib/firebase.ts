@@ -182,9 +182,11 @@ export function castGameData(snapshotValue: any): GameData {
       fascists: allPlayers.filter((player) => player.membership === "fascist"),
       liberals: allPlayers.filter((player) => player.membership === "liberal"),
       alive: () => allPlayers.filter((player) => !player.isExecuted),
-      eligible: () =>
-        otherPlayers.filter((player) => !player.isPreviousChancellor && !player.isExecuted),
-      visiblePlayerIds: () => canSeeRoles(currentPlayer, allPlayers, gameType),
+      eligibleForChancellor: () =>
+        allPlayers.filter(
+          (player) => !player.isPresident && !player.isPreviousChancellor && !player.isExecuted,
+        ),
+      visibleRolePlayerIds: () => canSeeRoles(currentPlayer, allPlayers, gameType),
     },
     policies: {
       ...policies,

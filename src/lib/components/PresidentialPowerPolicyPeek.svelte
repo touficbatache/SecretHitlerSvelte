@@ -97,7 +97,7 @@
           player={president}
           hideExtras={true}
           hideVotes={true}
-          showRole={(players?.visiblePlayerIds() ?? []).includes(president.id)}
+          showRole={(players?.visibleRolePlayerIds() ?? []).includes(president.id)}
         />
       </div>
       <span class="text-center">
