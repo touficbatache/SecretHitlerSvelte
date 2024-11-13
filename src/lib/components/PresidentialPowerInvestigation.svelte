@@ -11,6 +11,7 @@
   import type { GameDataPlayers, PresidentialPower } from "$lib/game_data"
   import type { Player } from "$lib/player"
 
+  export let beingInvestigatedPlayerId: string | undefined
   export let gameCode: string
   export let open: boolean
   export let players: GameDataPlayers | undefined = undefined
@@ -39,6 +40,15 @@
     )
     membership = storageJson.membership
     selectedPlayer = storageJson.player
+  }
+
+  $: if (beingInvestigatedPlayerId !== undefined) {
+    selectedPlayer = players?.all.find((player) => player.id === beingInvestigatedPlayerId)
+    if (beingInvestigatedPlayerId === players?.self.id) {
+      membership = players?.self?.membership
+    } else {
+      membership = undefined
+    }
   }
 
   function setupCountdown() {
@@ -149,6 +159,8 @@
         <span class="text-center">
           {#if isPresident}
             You're seeing {selectedPlayer?.name}'s&nbsp;membership&nbsp;card
+          {:else if players?.self.id === selectedPlayer?.id}
+            The President is seeing your&nbsp;membership&nbsp;card
           {:else}
             The President is seeing {selectedPlayer?.name}'s&nbsp;membership&nbsp;card
           {/if}

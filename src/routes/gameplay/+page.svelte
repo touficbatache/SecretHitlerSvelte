@@ -122,6 +122,7 @@
     />
 
     <PresidentialPowerInvestigation
+      beingInvestigatedPlayerId={$gameData?.currentSession?.beingInvestigatedPlayerId}
       {gameCode}
       on:minimize={() => (isMinimized = true)}
       open={$gameData?.subStatus === "presidentialPower_investigateLoyalty"}

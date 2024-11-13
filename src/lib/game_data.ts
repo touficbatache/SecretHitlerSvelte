@@ -61,6 +61,8 @@ export interface GameDataSession {
   readonly votes: {
     readonly [playerId: string]: boolean
   }
+  readonly beingInvestigatedPlayerId: string | undefined
+  readonly isVetoRefused: boolean | undefined
 }
 
 export type GameType = "fiveSix" | "sevenEight" | "nineTen"
