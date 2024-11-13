@@ -14,7 +14,7 @@
 <FloatingWindow
   allowDismiss={false}
   bind:open
-  classes="w-full px-4 md:w-auto md:h-full md:py-4 md:flex md:items-center"
+  classes="w-full md:w-auto md:h-full flex flex-col px-4 md:py-4 md:flex md:items-center"
 >
   {#if winningTeam === "fascist"}
     <div

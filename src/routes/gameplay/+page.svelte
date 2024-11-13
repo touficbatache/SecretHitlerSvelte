@@ -52,11 +52,10 @@
     }
   }
 
-  $: hasGameEnded =
-    $gameData?.subStatus !== undefined && $gameData.subStatus.startsWith("gameEnded")
+  $: hasGameEnded = $gameData?.status !== undefined && $gameData.status === "gameEnded"
 
   function getGameWinningTeam(hasGameEnded: boolean): PlayerMembership | undefined {
-    if (!hasGameEnded) return
+    if (!hasGameEnded || $gameData?.subStatus === undefined) return
 
     return $gameData.subStatus.split("gameEnded_")[1] as PlayerMembership
   }
