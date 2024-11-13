@@ -17,6 +17,7 @@
   import PresidentialPowerPolicyPeek from "$lib/components/PresidentialPowerPolicyPeek.svelte"
   import PresidentialPowerSpecialElection from "$lib/components/PresidentialPowerSpecialElection.svelte"
   import PresidentPolicyChooseView from "$lib/components/PresidentPolicyChooseView.svelte"
+  import PresidentReviewingVeto from "$lib/components/PresidentReviewingVeto.svelte"
   import VoteView from "$lib/components/VoteView.svelte"
   import type { GameData } from "$lib/game_data"
 
@@ -32,7 +33,7 @@
     "presidentialPower_investigateLoyalty",
     "presidentialPower_policyPeek",
     "presidentialPower_callSpecialElection",
-    "presidentialPower_execution"
+    "presidentialPower_execution",
   ]
 
   $: if (browser) {
@@ -61,6 +62,8 @@
         return "The President is discarding a policy"
       case "legislativeSession_chancellorDiscardingPolicy":
         return "The Chancellor is discarding a policy"
+      case "legislativeSession_chancellorSeekingVeto":
+        return "The Chancellor is seeking a Veto"
       case "presidentialPower_policyPeek":
         return "The President is peeking at the policies"
       case "presidentialPower_investigateLoyalty":
@@ -113,10 +116,20 @@
     />
 
     <ChancellorPolicyChooseView
+      boardFascistPolicyCount={$gameData?.policies.board?.fascist}
       currentSession={$gameData?.currentSession}
       on:click={({ detail }) => ApiClient.chancellorDiscardPolicy(gameCode, detail)}
+      on:veto={() => ApiClient.askForVeto(gameCode)}
       on:minimize={() => (isMinimized = true)}
       open={$gameData?.subStatus === "legislativeSession_chancellorDiscardingPolicy"}
+      players={$gameData?.players}
+    />
+
+    <PresidentReviewingVeto
+      currentSession={$gameData?.currentSession}
+      on:answer={({ detail: isAccepted }) => ApiClient.answerVeto(gameCode, !isAccepted)}
+      on:minimize={() => (isMinimized = true)}
+      open={$gameData?.subStatus === "legislativeSession_chancellorSeekingVeto"}
       players={$gameData?.players}
     />
 
