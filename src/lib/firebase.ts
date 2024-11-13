@@ -190,8 +190,8 @@ export function castGameData(snapshotValue: any): GameData {
     },
     policies: {
       ...policies,
-      drawPile: policiesObj?.drawPile.split(","),
-      drawPileCount: () => policiesObj?.drawPile.split(",").length ?? 0,
+      drawPile: policiesObj?.drawPile?.split(","),
+      drawPileCount: () => policiesObj?.drawPile?.split(",").length ?? 0,
       discardPileCount: () =>
         (policiesObj?.discardPile?.liberal ?? 0) + (policiesObj?.discardPile?.fascist ?? 0),
     },
