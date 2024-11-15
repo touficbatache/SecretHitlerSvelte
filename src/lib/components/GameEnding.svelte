@@ -19,7 +19,7 @@
   {#if winningTeam === "fascist"}
     <div class="relative px-20">
       <div
-        class="aspect-[1535/1986] bg-illustration-fascist bg-cover shadow-xl shadow-red-fascist/30"
+        class="aspect-[1535/1986] bg-illustration-fascist bg-cover drop-shadow-[0_0_50px_rgba(214,13,0,0.7)]"
       />
     </div>
     <div class="flex flex-col gap-4 -mt-10 px-4 pb-6 pt-14 shadow-frame bg-[#141414] rounded-lg">
@@ -54,18 +54,18 @@
       />
     </div>
   {:else if winningTeam === "liberal"}
-    <div class="relative px-10">
+    <div class="px-24">
       <div
-        class="aspect-square bg-illustration-liberal bg-cover bg-center before:absolute before:inset-6 before:rounded-full before:shadow-xl before:shadow-blue-liberal/30"
+        class="aspect-square bg-illustration-liberal bg-cover bg-center drop-shadow-[0_0_50px_rgba(0,145,179,0.7)] shadow-blue-liberal/30"
       />
     </div>
-    <div class="flex flex-col gap-4 -mt-24 px-6 pb-6 pt-20 shadow-frame bg-[#141414] rounded-lg">
+    <div class="flex flex-col gap-4 -mt-16 px-6 pb-6 pt-20 shadow-frame bg-[#141414] rounded-lg">
       <div class="flex flex-col items-center">
         <h3 class="font-eskapade_fraktur text-6xl uppercase">Liberals</h3>
         <span class="font-futura text-lg uppercase tracking-widest">won the game</span>
       </div>
       <Players
-        cols={Math.min(players?.liberals.length ?? 0, 4)}
+        cols={4}
         hideExtras={true}
         hidePlacards={true}
         hideVotes={true}
@@ -81,7 +81,7 @@
     </div>
     <div class="flex flex-col gap-4 p-6 shadow-frame bg-[#141414] rounded-lg">
       <Players
-        cols={Math.min(players?.fascists.length ?? 0, 4)}
+        cols={4}
         hideExtras={true}
         hidePlacards={true}
         hideVotes={true}

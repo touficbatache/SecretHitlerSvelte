@@ -61,7 +61,7 @@
       </div>
     </PaperBack>
     <PlayfulIconButton
-      extraClasses="!absolute top-6 left-6 px-2.5 py-2"
+      extraClasses="h-8 !absolute top-6 left-6 px-2.5 py-2"
       icon="fa:arrow-left"
       on:click={() => window.history.back()}
     />
@@ -212,6 +212,6 @@
   }
 
   td > div {
-    @apply w-full h-full flex justify-center items-center bg-neutral-50/5 shadow-frame;
+    @apply w-full h-full py-3 flex justify-center items-center bg-neutral-50/5 shadow-frame;
   }
 </style>
