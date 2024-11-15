@@ -5,12 +5,29 @@ export interface CodeResponse {
 }
 
 export interface ApiResponse {
-  success: { [key: string]: string } | undefined
+  success: any | undefined
   error:
     | {
         code: number
         message: string
       }
+    | undefined
+}
+
+export interface GameplayApiResponse extends ApiResponse {
+  success: { [key: string]: string } | undefined
+}
+
+export interface GameinfoApiResponse extends ApiResponse {
+  success:
+    | {
+        code: string
+        createdAt: number
+        playerCount: number
+        startedAt: number
+        status: string
+        subStatus: string
+      }[]
     | undefined
 }
 
@@ -63,7 +80,7 @@ export async function newGame(): Promise<boolean> {
   return true
 }
 
-export async function joinGame(code: string): Promise<ApiResponse> {
+export async function joinGame(code: string): Promise<GameplayApiResponse> {
   const endpoint: string = "joinGame"
   const res: Response = await callApi(endpoint, JSON.stringify({ code }))
 
@@ -86,7 +103,7 @@ export async function startGame(
   code: string,
   hidePicsGameInfo: boolean,
   skipLongIntro: boolean,
-): Promise<ApiResponse> {
+): Promise<GameplayApiResponse> {
   const endpoint: string = "startGame"
   const res: Response = await callApi(
     endpoint,
@@ -104,7 +121,10 @@ export async function startGame(
   return handleSuccess(res)
 }
 
-export async function chooseChancellor(code: string, chancellorId: string): Promise<ApiResponse> {
+export async function chooseChancellor(
+  code: string,
+  chancellorId: string,
+): Promise<GameplayApiResponse> {
   const endpoint: string = "chooseChancellor"
   const res: Response = await callApi(
     endpoint,
@@ -121,7 +141,7 @@ export async function chooseChancellor(code: string, chancellorId: string): Prom
   return handleSuccess(res)
 }
 
-export async function vote(code: string, vote: boolean): Promise<ApiResponse> {
+export async function vote(code: string, vote: boolean): Promise<GameplayApiResponse> {
   const endpoint: string = "vote"
   const res: Response = await callApi(
     endpoint,
@@ -138,7 +158,10 @@ export async function vote(code: string, vote: boolean): Promise<ApiResponse> {
   return handleSuccess(res)
 }
 
-export async function presidentDiscardPolicy(code: string, policy: string): Promise<ApiResponse> {
+export async function presidentDiscardPolicy(
+  code: string,
+  policy: string,
+): Promise<GameplayApiResponse> {
   const endpoint: string = "presidentDiscardPolicy"
   const res: Response = await callApi(
     endpoint,
@@ -155,7 +178,10 @@ export async function presidentDiscardPolicy(code: string, policy: string): Prom
   return handleSuccess(res)
 }
 
-export async function chancellorDiscardPolicy(code: string, policy: string): Promise<ApiResponse> {
+export async function chancellorDiscardPolicy(
+  code: string,
+  policy: string,
+): Promise<GameplayApiResponse> {
   const endpoint: string = "chancellorDiscardPolicy"
   const res: Response = await callApi(
     endpoint,
@@ -175,7 +201,7 @@ export async function chancellorDiscardPolicy(code: string, policy: string): Pro
 async function presidentialPower(
   code: string,
   extras?: { [key: string]: any },
-): Promise<ApiResponse> {
+): Promise<GameplayApiResponse> {
   const endpoint: string = "presidentialPower"
   const res: Response = await callApi(
     endpoint,
@@ -192,32 +218,32 @@ async function presidentialPower(
   return handleSuccess(res)
 }
 
-export async function presidentialPower_policyPeek(code: string): Promise<ApiResponse> {
+export async function presidentialPower_policyPeek(code: string): Promise<GameplayApiResponse> {
   return presidentialPower(code)
 }
 
 export async function presidentialPower_investigation(
   code: string,
   player?: string,
-): Promise<ApiResponse> {
+): Promise<GameplayApiResponse> {
   return presidentialPower(code, { player })
 }
 
 export async function presidentialPower_specialElection(
   code: string,
   player: string,
-): Promise<ApiResponse> {
+): Promise<GameplayApiResponse> {
   return presidentialPower(code, { player })
 }
 
 export async function presidentialPower_execution(
   code: string,
   player: string,
-): Promise<ApiResponse> {
+): Promise<GameplayApiResponse> {
   return presidentialPower(code, { player })
 }
 
-export async function askForVeto(code: string): Promise<ApiResponse> {
+export async function askForVeto(code: string): Promise<GameplayApiResponse> {
   const endpoint: string = "askForVeto"
   const res: Response = await callApi(endpoint, JSON.stringify({ code }))
 
@@ -228,7 +254,7 @@ export async function askForVeto(code: string): Promise<ApiResponse> {
   return handleSuccess(res)
 }
 
-export async function answerVeto(code: string, refuseVeto: boolean): Promise<ApiResponse> {
+export async function answerVeto(code: string, refuseVeto: boolean): Promise<GameplayApiResponse> {
   const endpoint: string = "answerVeto"
   const res: Response = await callApi(endpoint, JSON.stringify({ code, refuseVeto }))
 
@@ -241,6 +267,17 @@ export async function answerVeto(code: string, refuseVeto: boolean): Promise<Api
 
 export async function leaveGame(): Promise<void> {
   await setGameCodeCookie("")
+}
+
+export async function getGamesForSelf(): Promise<GameinfoApiResponse> {
+  const endpoint: string = "getGamesForSelf"
+  const res: Response = await callApi(endpoint)
+
+  if (!res.ok) {
+    return handleError(res)
+  }
+
+  return handleSuccess(res)
 }
 
 async function handleError(res: Response): Promise<ApiResponse> {

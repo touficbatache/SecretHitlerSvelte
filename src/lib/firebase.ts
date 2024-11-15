@@ -86,6 +86,7 @@ export function setUserName(name: string) {
       .then(async () => {
         const token = await getAuth(app).currentUser?.getIdToken()
         await setTokenCookie(token)
+        location.reload()
       })
       .catch((reason) => {
         console.error(reason)

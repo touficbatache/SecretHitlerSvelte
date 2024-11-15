@@ -1,7 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte"
 
-  export let btn: HTMLElement
+  export let btn: HTMLButtonElement | undefined = undefined
   export let disabled: boolean = false
   export let extraClasses: string | undefined
   export let icon: string | undefined

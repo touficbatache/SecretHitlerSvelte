@@ -6,7 +6,7 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
-  import type { ApiResponse } from "$lib/api_client"
+  import type { GameplayApiResponse } from "$lib/api_client"
   import PinInput from "$lib/components/PinInput.svelte"
   import Players from "$lib/components/Players.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
@@ -40,7 +40,11 @@
 
   async function start() {
     isStarting = true
-    const response: ApiResponse = await ApiClient.startGame(gameCode, hideAvatars, skipLongIntro)
+    const response: GameplayApiResponse = await ApiClient.startGame(
+      gameCode,
+      hideAvatars,
+      skipLongIntro,
+    )
     if (response.error) {
       isStarting = false
     }

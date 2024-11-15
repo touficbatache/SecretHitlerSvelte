@@ -86,7 +86,7 @@
               open = false
               selectedPolicy = undefined
             }}
-            small={true}
+            size="small"
           >
             Discard
           </PlayfulButton>
@@ -97,7 +97,7 @@
                 open = false
                 selectedPolicy = undefined
               }}
-              small={true}>Ask for Veto</PlayfulButton
+              size="small">Ask for Veto</PlayfulButton
             >
           {/if}
         </div>

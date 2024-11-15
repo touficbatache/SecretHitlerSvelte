@@ -2,12 +2,12 @@
   import Icon from "@iconify/svelte"
   import { createEventDispatcher, type EventDispatcher } from "svelte"
 
-  export let btn: HTMLElement | undefined = undefined
+  export let btn: HTMLButtonElement | undefined = undefined
   export let enabled: boolean = true
   export let extraClasses: string | undefined = undefined
   export let forceActiveState: boolean = false
   export let icon: string | undefined = undefined
-  export let small: boolean = false
+  export let size: "extra-small" | "small" | "normal" = "normal"
 
   const dispatch: EventDispatcher = createEventDispatcher()
 </script>
@@ -21,7 +21,8 @@
   class:cursor-default={!enabled}
   class:enabled
   class:forceActiveState
-  class:small
+  class:extra-small={size === "extra-small"}
+  class:small={size === "small"}
   disabled={!enabled}
   on:click={() => {
     if (enabled) {
@@ -49,7 +50,9 @@
   </span>
 
   <span class="flex gap-2 justify-center">
-    <Icon class="text-base m-auto" {icon} />
+    {#if icon !== undefined}
+      <Icon class="text-base my-auto" {icon} />
+    {/if}
 
     <slot />
   </span>
@@ -63,7 +66,6 @@
     color: #fbe1c0;
     border-radius: 6px;
     background: none;
-    padding: 14px 0;
     letter-spacing: 1px;
     outline: none;
     position: relative;
@@ -74,6 +76,10 @@
   .small {
     @apply text-xl;
     padding: 7px 21px;
+  }
+  .extra-small {
+    @apply text-base;
+    padding: 3px 14px;
   }
   button .overlay {
     width: calc(100% - 12px);

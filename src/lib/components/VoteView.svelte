@@ -117,7 +117,7 @@
             dispatch("vote", vote)
             vote = undefined
           }}
-          small={true}
+          size="small"
         >
           Vote
         </PlayfulButton>

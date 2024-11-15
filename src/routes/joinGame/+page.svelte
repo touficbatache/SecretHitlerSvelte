@@ -4,6 +4,7 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
+  import type { GameplayApiResponse } from "$lib/api_client"
   import PinInput from "$lib/components/PinInput.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import PlayfulIconButton from "$lib/components/PlayfulIconButton.svelte"
@@ -15,7 +16,7 @@
   async function join() {
     error = ""
     isJoining = true
-    const response: ApiClient.ApiResponse = await ApiClient.joinGame(gameCode)
+    const response: GameplayApiResponse = await ApiClient.joinGame(gameCode)
     if (response.success) {
       await goto("/waitingRoom")
     }
@@ -33,12 +34,13 @@
 </script>
 
 {#if $page.data.gameCode === undefined}
-  <div class="w-full h-full px-6 md:px-60 flex flex-col justify-center items-center gap-10">
+  <form class="w-full h-full px-6 md:px-60 flex flex-col justify-center items-center gap-10">
     <div class="absolute top-0 left-0">
       <PlayfulIconButton
         extraClasses="w-10 h-[36px] m-4 aspect-square"
         icon="fa:arrow-left"
         on:click={() => window.history.back()}
+        type="button"
       />
     </div>
     <span class="text-2xl">Enter game code</span>
@@ -55,6 +57,7 @@
       enabled={gameCode.length === 6 && !isJoining}
       extraClasses="w-full"
       on:click={join}
+      type="submit"
     >
       {#if !isJoining}
         Join
@@ -62,5 +65,5 @@
         Joining...
       {/if}
     </PlayfulButton>
-  </div>
+  </form>
 {/if}

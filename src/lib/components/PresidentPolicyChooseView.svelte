@@ -93,7 +93,7 @@
             open = false
             selectedPolicy = undefined
           }}
-          small={true}
+          size="small"
         >
           Discard
         </PlayfulButton>

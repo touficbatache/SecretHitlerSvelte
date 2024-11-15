@@ -2,7 +2,7 @@
   import { fly } from "svelte/transition"
 
   import { browser } from "$app/environment"
-  import type { ApiResponse } from "$lib/api_client"
+  import type { GameplayApiResponse } from "$lib/api_client"
   import * as ApiClient from "$lib/api_client"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import Players from "$lib/components/Players.svelte"
@@ -69,7 +69,7 @@
   async function investigateLoyalty() {
     if (isPresident && selectedPlayer !== undefined) {
       isRequestSent = true
-      const response: ApiResponse = await ApiClient.presidentialPower_investigation(
+      const response: GameplayApiResponse = await ApiClient.presidentialPower_investigation(
         gameCode,
         selectedPlayer.id,
       )
@@ -150,7 +150,7 @@
           <PlayfulButton
             enabled={selectedPlayer !== undefined && !isRequestSent}
             on:click={investigateLoyalty}
-            small={true}
+            size="small"
           >
             Investigate
           </PlayfulButton>
@@ -172,7 +172,7 @@
           class:bg-card-membership-backcover={membership === undefined}
         />
         {#if isPresident}
-          <PlayfulButton enabled={presidentialPower !== "done"} on:click={nextElection} small={true}
+          <PlayfulButton enabled={presidentialPower !== "done"} on:click={nextElection} size="small"
             >Done</PlayfulButton
           >
         {/if}

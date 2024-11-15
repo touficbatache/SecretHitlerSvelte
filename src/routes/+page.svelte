@@ -1,14 +1,20 @@
 <script lang="ts">
+  import { backInOut } from "svelte/easing"
+  import { scale } from "svelte/transition"
+
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
+  import { clickOutside } from "$lib/click_outside"
   import Logo from "$lib/components/Logo.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
-  import PlayfulIconButton from "$lib/components/PlayfulIconButton.svelte"
+  import SimpleIconButton from "$lib/components/SimpleIconButton.svelte"
   import TwoPaneView from "$lib/components/TwoPaneView.svelte"
   import { setUserName, signOut } from "$lib/firebase"
 
-  let inputName = $page.data.user?.name
-  let isUpdatingUserName = false
+  let btnMenu: HTMLButtonElement
+  let inputName: string | undefined = $page.data.user?.name
+  let isUpdatingUserName: boolean = false
+  let isMenuOpen: boolean = false
 
   $: hasModifiedName = inputName !== $page.data.user?.name
   $: if (!hasModifiedName) {
@@ -17,11 +23,31 @@
 </script>
 
 <div class="relative w-full h-full">
-  <div class="absolute right-0">
-    <PlayfulIconButton
-      extraClasses="w-10 h-[36px] m-4 aspect-square"
-      icon="fa:sign-out"
-      on:click={signOut}
+  <div class="absolute right-0 flex items-start">
+    <!--    <PlayfulIconButton-->
+    <!--      extraClasses="w-10 h-[36px] m-4 aspect-square"-->
+    <!--      icon="fa:sign-out"-->
+    <!--      on:click={signOut}-->
+    <!--    />-->
+    <!--    <PlayfulIconButton extraClasses="w-10 h-[36px] m-4 aspect-square" icon="fa:bars" />-->
+    {#if isMenuOpen}
+      <div
+        class="relative z-50 flex flex-col gap-4 mt-3.5 py-4 px-3 bg-neutral-800 shadow-frame rounded-lg"
+        transition:scale={{ duration: 200, easing: backInOut, start: 0.9 }}
+        use:clickOutside={{ callback: () => (isMenuOpen = false), excluded: [btnMenu] }}
+      >
+        <PlayfulButton icon="fa:th-list" on:click={() => goto("/history")} size="small"
+          >Game history</PlayfulButton
+        >
+        <div class="h-0.25 mt-1 mx-2 bg-neutral-50/30" />
+        <PlayfulButton icon="fa:sign-out" on:click={signOut} size="small">Sign out</PlayfulButton>
+      </div>
+    {/if}
+    <SimpleIconButton
+      bind:btn={btnMenu}
+      classes="m-4"
+      icon="fa:bars"
+      on:click={() => (isMenuOpen = !isMenuOpen)}
     />
   </div>
 

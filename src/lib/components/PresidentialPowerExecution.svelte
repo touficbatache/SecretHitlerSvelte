@@ -97,7 +97,7 @@
               selectedPlayer = undefined
             }
           }}
-          small={true}
+          size="small"
         >
           Execute
         </PlayfulButton>

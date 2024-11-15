@@ -78,7 +78,7 @@
         </div>
         <PlayfulButton
           extraClasses="w-fit self-end"
-          small={true}
+          size="small"
           on:click={() => {
             if (nickname.trim().length === 0) {
               error = "Enter a nickname"

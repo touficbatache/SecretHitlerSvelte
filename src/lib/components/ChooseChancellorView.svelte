@@ -72,7 +72,7 @@
             open = false
             selectedPlayer = undefined
           }}
-          small={true}
+          size="small"
         >
           Nominate
         </PlayfulButton>

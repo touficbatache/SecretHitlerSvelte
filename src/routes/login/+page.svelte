@@ -144,7 +144,6 @@
         id="btn-sign-in"
         extraClasses="w-full"
         enabled={isButtonEnabled}
-        type="submit"
         on:click={() => {
           if (!isOTPSent) {
             sendOTP()
@@ -152,6 +151,7 @@
             confirmOTP()
           }
         }}
+        type="submit"
       >
         {#if !isOTPSent && !isSendingOTP}
           Send OTP

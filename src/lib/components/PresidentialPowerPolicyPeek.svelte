@@ -2,7 +2,7 @@
   import { fly } from "svelte/transition"
 
   import { browser } from "$app/environment"
-  import type { ApiResponse } from "$lib/api_client"
+  import type { GameplayApiResponse } from "$lib/api_client"
   import * as ApiClient from "$lib/api_client"
   import Deck from "$lib/components/Deck.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
@@ -53,7 +53,7 @@
       if (sessionStorageCache != null) {
         cards = sessionStorageCache.split(",")
       } else if (presidentialPower === undefined) {
-        const response: ApiResponse = await ApiClient.presidentialPower_policyPeek(gameCode)
+        const response: GameplayApiResponse = await ApiClient.presidentialPower_policyPeek(gameCode)
         if (response.error === undefined && response.success?.policies !== undefined) {
           cards = response.success?.policies.split(",")
           sessionStorage.setItem(sessionStorageKey, response.success?.policies)
@@ -114,7 +114,7 @@
         <PlayfulButton
           enabled={presidentialPower === "consumed"}
           on:click={nextElection}
-          small={true}
+          size="small"
         >
           Done
         </PlayfulButton>

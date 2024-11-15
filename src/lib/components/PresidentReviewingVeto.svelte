@@ -87,7 +87,7 @@
               dispatch("answer", false)
               open = false
             }}
-            small={true}
+            size="small"
           >
             Reject
           </PlayfulButton>
@@ -96,7 +96,7 @@
               dispatch("answer", true)
               open = false
             }}
-            small={true}
+            size="small"
           >
             Accept veto
           </PlayfulButton>

@@ -105,7 +105,7 @@
                 selectedPlayer = undefined
               }
             }}
-            small={true}
+            size="small"
           >
             Designate
           </PlayfulButton>

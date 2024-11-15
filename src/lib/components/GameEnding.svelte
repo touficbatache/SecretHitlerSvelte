@@ -92,6 +92,6 @@
     </div>
   {/if}
   <div class="w-full flex justify-center py-4">
-    <PlayfulButton on:click={ApiClient.leaveGame} small={true}>Leave</PlayfulButton>
+    <PlayfulButton on:click={ApiClient.leaveGame} size="small">Leave</PlayfulButton>
   </div>
 </FloatingWindow>
