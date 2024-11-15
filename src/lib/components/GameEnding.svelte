@@ -17,18 +17,18 @@
   classes="w-full md:w-auto md:h-full flex flex-col px-4 md:py-4 md:flex md:items-center"
 >
   {#if winningTeam === "fascist"}
-    <div class="relative px-20">
+    <div class="px-24">
       <div
         class="aspect-[1535/1986] bg-illustration-fascist bg-cover drop-shadow-[0_0_50px_rgba(214,13,0,0.7)]"
       />
     </div>
     <div class="flex flex-col gap-4 -mt-10 px-4 pb-6 pt-14 shadow-frame bg-[#141414] rounded-lg">
       <div class="flex flex-col items-center">
-        <h3 class="font-eskapade_fraktur text-6xl uppercase">Fascists</h3>
-        <span class="font-futura text-lg uppercase tracking-widest">won the game</span>
+        <h3 class="font-eskapade_fraktur text-5xl md:text-6xl uppercase">Fascists</h3>
+        <span class="font-futura text-base md:text-lg uppercase tracking-widest">won the game</span>
       </div>
       <Players
-        cols={Math.min(players?.fascists.length ?? 0, 4)}
+        cols={Math.min(Math.max(players?.fascists.length ?? 0, 3), 4)}
         hideExtras={true}
         hidePlacards={true}
         hideVotes={true}
@@ -37,12 +37,12 @@
         showRoles={players?.fascists.map((p) => p.id)}
       />
     </div>
-    <div class="flex items-center gap-4 py-5">
+    <div class="flex items-center gap-4 py-1">
       <div class="flex-1 h-0.5 bg-neutral-50/30" />
-      <h3 class="font-futura text-lg uppercase tracking-widest">vs</h3>
+      <h3 class="font-futura text-base md:text-lg uppercase tracking-widest">vs</h3>
       <div class="flex-1 h-0.5 bg-neutral-50/30" />
     </div>
-    <div class="flex flex-col gap-4 p-6 shadow-frame bg-[#141414] rounded-lg">
+    <div class="flex flex-col gap-4 px-6 py-3 shadow-frame bg-[#141414] rounded-lg">
       <Players
         cols={4}
         hideExtras={true}
@@ -61,8 +61,8 @@
     </div>
     <div class="flex flex-col gap-4 -mt-16 px-6 pb-6 pt-20 shadow-frame bg-[#141414] rounded-lg">
       <div class="flex flex-col items-center">
-        <h3 class="font-eskapade_fraktur text-6xl uppercase">Liberals</h3>
-        <span class="font-futura text-lg uppercase tracking-widest">won the game</span>
+        <h3 class="font-eskapade_fraktur text-5xl md:text-6xl uppercase">Liberals</h3>
+        <span class="font-futura text-base md:text-lg uppercase tracking-widest">won the game</span>
       </div>
       <Players
         cols={Math.min(players?.liberals.length ?? 0, 4)}
@@ -74,12 +74,12 @@
         showRoles={players?.liberals.map((p) => p.id)}
       />
     </div>
-    <div class="flex items-center gap-4 py-5">
+    <div class="flex items-center gap-4 py-1">
       <div class="flex-1 h-0.5 bg-neutral-50/30" />
-      <h3 class="font-futura text-lg uppercase tracking-widest">vs</h3>
+      <h3 class="font-futura text-base md:text-lg uppercase tracking-widest">vs</h3>
       <div class="flex-1 h-0.5 bg-neutral-50/30" />
     </div>
-    <div class="flex flex-col gap-4 p-6 shadow-frame bg-[#141414] rounded-lg">
+    <div class="flex flex-col gap-4 px-6 py-3 shadow-frame bg-[#141414] rounded-lg">
       <Players
         cols={4}
         hideExtras={true}
@@ -91,7 +91,7 @@
       />
     </div>
   {/if}
-  <div class="w-full flex justify-center py-4">
+  <div class="w-full flex justify-center pt-3 pb-4">
     <PlayfulButton on:click={ApiClient.leaveGame} size="small">Leave</PlayfulButton>
   </div>
 </FloatingWindow>
