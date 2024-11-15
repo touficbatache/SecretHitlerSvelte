@@ -44,7 +44,7 @@
     </div>
     <div class="flex flex-col gap-4 p-6 shadow-frame bg-[#141414] rounded-lg">
       <Players
-        cols={Math.min(players?.liberals.length ?? 0, 4)}
+        cols={4}
         hideExtras={true}
         hidePlacards={true}
         hideVotes={true}
@@ -65,7 +65,7 @@
         <span class="font-futura text-lg uppercase tracking-widest">won the game</span>
       </div>
       <Players
-        cols={4}
+        cols={Math.min(players?.liberals.length ?? 0, 4)}
         hideExtras={true}
         hidePlacards={true}
         hideVotes={true}
