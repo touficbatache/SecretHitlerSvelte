@@ -7,9 +7,9 @@
 
   onMount(() => {
     if ($page.data.gameCode === undefined) {
-      goto("/")
+      goto("/", { replaceState: true })
     } else {
-      setTimeout(() => goto("/waitingRoom"), 3000)
+      setTimeout(() => goto("/waitingRoom", { replaceState: true }), 3000)
     }
   })
 </script>

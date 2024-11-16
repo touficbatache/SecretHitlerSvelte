@@ -11,11 +11,11 @@
       setTimeout(async () => {
         const success: boolean = await ApiClient.newGame()
         if (success) {
-          await goto("/waitingRoom")
+          await goto("/waitingRoom", { replaceState: true })
         }
       }, 1000)
     } else {
-      goto("/reconnect")
+      goto("/reconnect", { replaceState: true })
     }
   })
 </script>

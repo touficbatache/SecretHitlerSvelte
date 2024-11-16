@@ -40,15 +40,15 @@
 
   $: if (browser) {
     if ($page.data.gameCode === undefined) {
-      goto("/")
+      goto("/", { replaceState: true })
     }
 
     if ($gameData?.status === "waiting") {
-      goto("/waitingRoom")
+      goto("/waitingRoom", { replaceState: true })
     }
 
     if ($gameData?.status === "settingUp") {
-      goto("/intro")
+      goto("/intro", { replaceState: true })
     }
   }
 

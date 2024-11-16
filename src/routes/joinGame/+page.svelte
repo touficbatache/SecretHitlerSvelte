@@ -18,7 +18,7 @@
     isJoining = true
     const response: GameplayApiResponse = await ApiClient.joinGame(gameCode)
     if (response.success) {
-      await goto("/waitingRoom")
+      await goto("/waitingRoom", { replaceState: true })
     }
     if (response.error !== undefined) {
       error = `${response.error.code} - ${response.error.message}`
@@ -28,7 +28,7 @@
 
   onMount(() => {
     if ($page.data.gameCode !== undefined) {
-      goto("/reconnect")
+      goto("/reconnect", { replaceState: true })
     }
   })
 </script>
