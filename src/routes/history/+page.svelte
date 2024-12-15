@@ -3,6 +3,7 @@
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import type { GameplayApiResponse } from "$lib/api_client"
+  import { copyToClipboard } from "$lib/clipboard"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PaperBack from "$lib/components/PaperBack.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
@@ -16,9 +17,23 @@
   let errorAlertOpen: boolean = false
   let isJoining: boolean = false
 
+  let revealGameCode: boolean = !$page.data.streamerModeEnabled
+  let copiedGameCode: string | undefined = undefined
+
+  $: hideGameCode = $page.data.streamerModeEnabled && !revealGameCode
+
   function camelCaseToWords(s: string) {
     const result: string = s.replace(/([A-Z])/g, " $1")
     return result.charAt(0).toLowerCase() + result.slice(1).toLowerCase()
+  }
+
+  function copyGameCode(gameCode: string) {
+    copyToClipboard(gameCode, () => {
+      copiedGameCode = gameCode
+      setTimeout(() => {
+        copiedGameCode = undefined
+      }, 2000)
+    })
   }
 
   async function join(code: string) {
@@ -136,13 +151,46 @@
           {@const winningTeam = subStatus?.split("gameEnded_")[1]}
           <tr class="h-20 [&>*]:font-normal">
             <td>
-              <div class="gap-1 px-1.5 rounded-l-lg">
-                {#each code.split("") as digit}
-                  <span
-                    class="rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-lg px-1 md:px-2 md:py-0.5"
-                    >{digit}</span
-                  >
-                {/each}
+              <div class="!grid grid-cols-2 md:!flex gap-1 rounded-l-lg">
+                <div class="col-span-2 justify-self-center flex gap-0.5 md:gap-1">
+                  {#each code.split("") as digit}
+                    <span
+                      class="w-5 md:w-7 rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-center text-lg px-1 md:px-2 md:py-0.5"
+                    >
+                      {#if !hideGameCode} {digit} {:else} •{/if}
+                    </span>
+                  {/each}
+                </div>
+                <div class="hidden md:block h-5 w-0.25 md:mx-2 bg-neutral-700" />
+                <PlayfulIconButton
+                  colors={{
+                    background: "#2c2c2c",
+                    backgroundLight: "#2f2f2f",
+                    backgroundRaised: "#222222",
+                    reflection: "rgba(255, 255, 255, 0.3)",
+                    text: "#d1d1d1",
+                  }}
+                  extraClasses="w-8 h-7 md:w-9 md:h-8 aspect-square justify-self-end"
+                  icon={copiedGameCode === code ? "fa:check" : "ion:copy"}
+                  on:click={() => copyGameCode(code)}
+                />
+                {#if $page.data.streamerModeEnabled === true}
+                  <PlayfulIconButton
+                    colors={{
+                      background: "#2c2c2c",
+                      backgroundLight: "#2f2f2f",
+                      backgroundRaised: "#222222",
+                      reflection: "rgba(255, 255, 255, 0.3)",
+                      text: "#d1d1d1",
+                    }}
+                    extraClasses="w-8 h-7 md:w-9 md:h-8 aspect-square justify-self-start"
+                    icon="ion:eye-off-sharp"
+                    on:mousedown={() => (revealGameCode = true)}
+                    on:touchstart={() => (revealGameCode = true)}
+                    on:mouseup={() => (revealGameCode = false)}
+                    on:touchend={() => (revealGameCode = false)}
+                  />
+                {/if}
               </div>
             </td>
             <td class="hidden md:table-cell">

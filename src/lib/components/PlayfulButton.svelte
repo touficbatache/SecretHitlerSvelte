@@ -2,24 +2,20 @@
   import Icon from "@iconify/svelte"
   import { createEventDispatcher, type EventDispatcher } from "svelte"
 
-  interface Colors {
-    background?: string
-    backgroundLight?: string
-    backgroundRaised?: string
-    text?: string
-  }
+  import type { PlayfulButtonColors } from "$lib/buttons"
 
   export let btn: HTMLButtonElement | undefined = undefined
-  export let colors: Colors | undefined = undefined
+  export let colors: PlayfulButtonColors | undefined = undefined
   export let enabled: boolean = true
   export let extraClasses: string | undefined = undefined
   export let icon: string | undefined = undefined
   export let size: "extra-small" | "small" | "normal" = "normal"
 
-  const defaultColors: Colors = {
+  const defaultColors: Required<PlayfulButtonColors> = {
     background: "#ea6148",
     backgroundLight: "#ef664a",
     backgroundRaised: "#bb612b",
+    reflection: "rgba(255, 255, 255, 0.75)",
     text: "#fbe1c0",
   }
   const dispatch: EventDispatcher = createEventDispatcher()
@@ -41,12 +37,15 @@
     }
   }}
   on:mousedown
+  on:touchstart
   on:mouseup
+  on:touchend
   {...$$restProps}
   style="--btn-bg-primary: {colors?.background ??
     defaultColors.background}; --btn-bg-secondary: {colors?.backgroundLight ??
     defaultColors.backgroundLight}; --btn-bg-raised: {colors?.backgroundRaised ??
-    defaultColors.backgroundRaised}; --btn-text: {colors?.text ?? defaultColors.text};"
+    defaultColors.backgroundRaised}; --btn-reflection: {colors?.reflection ??
+    defaultColors.reflection}; --btn-text: {colors?.text ?? defaultColors.text};"
 >
   <div class="overlay transition-all duration-200 ease-material-standard" />
   <div class="overlay" />
@@ -114,7 +113,7 @@
   button .overlay + .overlay {
     width: 4px;
     height: 6px;
-    background: rgba(255, 255, 255, 0.75);
+    background: var(--btn-reflection);
     border-radius: 100%;
     right: 1px;
     top: -0.5px;

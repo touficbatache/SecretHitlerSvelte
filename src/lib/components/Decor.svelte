@@ -152,6 +152,7 @@
               background: "#2c2c2c",
               backgroundLight: "#2f2f2f",
               backgroundRaised: "#222222",
+              reflection: "rgba(255, 255, 255, 0.3)",
               text: "#d1d1d1",
             }}
             extraClasses={!streamerModeEnabled ? "col-span-2" : ""}
@@ -171,6 +172,7 @@
                 background: "#2c2c2c",
                 backgroundLight: "#2f2f2f",
                 backgroundRaised: "#222222",
+                reflection: "rgba(255, 255, 255, 0.3)",
                 text: "#d1d1d1",
               }}
               icon="ion:eye-off-sharp"

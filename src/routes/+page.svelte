@@ -46,6 +46,7 @@
                 background: "#2c2c2c",
                 backgroundLight: "#2f2f2f",
                 backgroundRaised: "#222222",
+                reflection: "rgba(255, 255, 255, 0.3)",
                 text: "#afafaf",
               }
             : {
