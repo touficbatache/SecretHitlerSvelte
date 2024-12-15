@@ -14,6 +14,8 @@
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import type { GameData } from "$lib/game_data"
   import { mounted } from "$lib/mounted"
+  import Icon from "@iconify/svelte"
+  import PlayfulIcon from "$lib/components/PlayfulIcon.svelte"
 
   export let gameCode: string
   export let gameData: GameData | undefined
@@ -62,23 +64,38 @@
         showRoles={gameData?.players?.visibleRolePlayerIds()}
       />
 
-      <div class="grid items-center grid-cols-3 gap-7">
+      <PaperBack
+        contentClasses="flex justify-between items-center gap-7 px-3 py-2"
+        backgroundColor={gameData?.players.self.role === "liberal" ? "#0091b3" : "#d60d00"}
+      >
         <button
-          class="w-fit h-fit justify-self-start flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
+          class="w-fit h-fit justify-self-start flex p-3 rounded-full hover:scale-95 active:scale-90 hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
           on:click={() => (infoOpen = !infoOpen)}
         >
-          <iconify-icon class="text-2xl" icon="material-symbols:info-outline" />
+          <PlayfulIcon
+            class="text-xl {gameData?.players.self.role === 'liberal'
+              ? 'text-neutral-200'
+              : 'text-[#fbe1c0]'}"
+            icon="fa:info-circle"
+          />
         </button>
 
-        <PlayerView player={gameData?.players?.self} showRole={true} revealCards={true} />
+        <div class="absolute left-1/2 -translate-x-1/2 -translate-y-1/4 w-1/4 z-50">
+          <PlayerView player={gameData?.players?.self} showRole={true} revealCards={true} />
+        </div>
 
         <button
-          class="w-fit h-fit justify-self-end flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
+          class="w-fit h-fit justify-self-end flex p-3 rounded-full hover:scale-95 active:scale-90 hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
           on:click={ApiClient.leaveGame}
         >
-          <iconify-icon class="text-2xl" icon="material-symbols:logout" />
+          <PlayfulIcon
+            class="text-xl {gameData?.players.self.role === 'liberal'
+              ? 'text-neutral-200'
+              : 'text-[#fbe1c0]'}"
+            icon="fa:sign-out"
+          />
         </button>
-      </div>
+      </PaperBack>
     </div>
   {/if}
 
@@ -105,10 +122,10 @@
     >
       <div class="w-full flex justify-between">
         <button
-          class="w-fit h-fit flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
+          class="w-fit h-fit flex p-3 rounded-full hover:scale-95 active:scale-90 hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
           on:click={() => (infoOpen = !infoOpen)}
         >
-          <iconify-icon class="text-2xl" icon="material-symbols:info-outline" />
+          <PlayfulIcon class="text-2xl" icon="fa:info-circle" />
         </button>
 
         <!--        <PlayfulIconButton-->
@@ -122,10 +139,10 @@
         </div>
 
         <button
-          class="w-fit h-fit flex p-3 rounded-full hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
+          class="w-fit h-fit flex p-3 rounded-full hover:scale-95 active:scale-90 hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
           on:click={ApiClient.leaveGame}
         >
-          <iconify-icon class="text-2xl" icon="material-symbols:logout" />
+          <PlayfulIcon class="text-2xl" icon="fa:sign-out" />
         </button>
       </div>
     </PaperBack>

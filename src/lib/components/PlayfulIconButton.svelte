@@ -6,8 +6,9 @@
   export let btn: HTMLButtonElement | undefined = undefined
   export let colors: PlayfulButtonColors | undefined = undefined
   export let disabled: boolean = false
-  export let extraClasses: string | undefined
-  export let icon: string | undefined
+  export let extraClasses: string | undefined = undefined
+  export let icon: string
+  export let iconClasses: string | undefined = undefined
 
   const defaultColors: Required<PlayfulButtonColors> = {
     background: "#ea6148",
@@ -45,13 +46,13 @@
     class="w-full absolute -z-[1] left-1/2 top-[calc(50%+.7px)] -translate-x-1/2 -translate-y-1/2"
   >
     <Icon
-      class="text-base overflow-visible text-black m-auto"
+      class="text-base m-auto {iconClasses} !overflow-visible !text-black"
       {icon}
       style="stroke: black; stroke-width: 12.5%; stroke-linecap: round;"
     />
   </span>
 
-  <Icon class="text-base m-auto" {icon} />
+  <Icon class="text-base m-auto {iconClasses}" {icon} />
 </button>
 
 <style lang="postcss">
