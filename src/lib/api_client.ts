@@ -35,7 +35,7 @@ export let userIdToken: string | undefined
 
 let apiURL: string
 
-export function init(apiUrl: string, token: string) {
+export async function init(apiUrl: string, token: string) {
   apiURL = apiUrl
   userIdToken = token
 }

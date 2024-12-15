@@ -20,7 +20,7 @@ export const load: LayoutServerLoad = async ({
   const { user, gameCode, streamerModeEnabled } = locals
 
   if (user?.token) {
-    ApiClient.init(config.apiURL, user.token)
+    await ApiClient.init(config.apiURL, user.token)
   }
 
   return {
