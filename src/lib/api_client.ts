@@ -52,6 +52,20 @@ async function callApi(endpoint: string, body?: string) {
   })
 }
 
+export async function setStreamerMode(enabled: boolean) {
+  const options: RequestInit = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+    },
+    body: JSON.stringify({ enabled }),
+  }
+
+  await fetch("/api/setStreamerMode", options)
+
+  await invalidateAll()
+}
+
 async function setGameCodeCookie(code: string) {
   const options: RequestInit = {
     method: "POST",

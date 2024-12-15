@@ -3,6 +3,7 @@ import type { Cookies } from "@sveltejs/kit"
 export interface SHSession {
   token?: string
   gameCode?: string
+  streamerModeEnabled?: boolean
 }
 
 export function getSession(cookies: Cookies): SHSession {

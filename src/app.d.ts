@@ -9,6 +9,7 @@ declare global {
       firebaseAppConfig: import("@firebase/app").FirebaseOptions
       gameCode?: string
       recaptchaSiteKey: string
+      streamerModeEnabled?: boolean
       user?: import("$lib/user").User
     }
     // interface PageData {}

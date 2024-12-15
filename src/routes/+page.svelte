@@ -4,6 +4,7 @@
 
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
+  import * as ApiClient from "$lib/api_client"
   import { clickOutside } from "$lib/click_outside"
   import Logo from "$lib/components/Logo.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
@@ -38,6 +39,25 @@
       >
         <PlayfulButton icon="fa:th-list" on:click={() => goto("/history")} size="small"
           >Game history</PlayfulButton
+        >
+        <PlayfulButton
+          colors={!$page.data.streamerModeEnabled
+            ? {
+                background: "#2c2c2c",
+                backgroundLight: "#2f2f2f",
+                backgroundRaised: "#222222",
+                text: "#afafaf",
+              }
+            : {
+                background: "#ea6148",
+                backgroundLight: "#ef664a",
+                backgroundRaised: "#bb612b",
+                text: "#fbe1c0",
+              }}
+          icon="fa:video-camera"
+          on:click={() => ApiClient.setStreamerMode(!$page.data.streamerModeEnabled)}
+          size="small"
+          >Streamer mode: {!$page.data.streamerModeEnabled ? "off" : "on"}</PlayfulButton
         >
         <div class="h-0.25 mt-1 mx-2 bg-neutral-50/30" />
         <PlayfulButton icon="fa:sign-out" on:click={signOut} size="small">Sign out</PlayfulButton>

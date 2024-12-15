@@ -5,16 +5,19 @@
   import { fade } from "svelte/transition"
 
   import * as ApiClient from "$lib/api_client"
+  import { copyToClipboard } from "$lib/clipboard"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PaperBack from "$lib/components/PaperBack.svelte"
   import PinInput from "$lib/components/PinInput.svelte"
   import Players from "$lib/components/Players.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
+  import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import type { GameData } from "$lib/game_data"
   import { mounted } from "$lib/mounted"
 
   export let gameCode: string
   export let gameData: GameData | undefined
+  export let streamerModeEnabled: boolean
 
   const contentOverflow: Writable<boolean> = getContext("contentOverflow") as Writable<boolean>
   const contentShiftRight: Writable<boolean> = getContext("contentShiftRight") as Writable<boolean>
@@ -22,10 +25,23 @@
   let innerWidth: number
   let infoOpen: boolean = false
 
+  let revealGameCode: boolean = !streamerModeEnabled
+  let copyGameCodeSuccess: boolean = false
+
   onMount(() => {
     $contentShiftRight = true
     $contentOverflow = true
   })
+
+  function copyGameCode() {
+    copyToClipboard(gameCode, () => {
+      copyGameCodeSuccess = true
+      setTimeout(() => {
+        copyGameCodeSuccess = false
+      }, 2000)
+    })
+  }
+
   onDestroy(() => {
     $contentShiftRight = false
     $contentOverflow = false
@@ -115,18 +131,59 @@
     </PaperBack>
 
     <FloatingWindow
-      classes="py-6 flex flex-col bg-[#424242] shadow-2xl rounded-lg"
       bind:open={infoOpen}
+      classes="py-6 flex flex-col bg-[#141414] shadow-frame rounded-lg"
     >
-      <span class="w-full text-center">Game info</span>
+      <span class="w-full text-center text-lg">Game info</span>
 
       <div class="flex flex-col gap-8 mt-4 px-6">
-        <PinInput
-          isEnabled={false}
-          inactiveClass="bg-button-500 text-sh-yellow-500"
-          activeClass="bg-sh-yellow-500 bg-opacity-70 text-sh-yellow-500 border-2 border-sh-yellow-500 border-opacity-70"
-          pin={gameCode}
-        />
+        <div class="grid grid-cols-2 gap-2">
+          <PinInput
+            activeClass="bg-sh-yellow-500 bg-opacity-70 text-sh-yellow-500 border-2 border-sh-yellow-500 border-opacity-70"
+            class="col-span-2"
+            hidden={streamerModeEnabled && !revealGameCode}
+            inactiveClass="bg-button-500 text-sh-yellow-500"
+            isEnabled={false}
+            pin={gameCode}
+          />
+
+          <PlayfulButton
+            colors={{
+              background: "#2c2c2c",
+              backgroundLight: "#2f2f2f",
+              backgroundRaised: "#222222",
+              text: "#d1d1d1",
+            }}
+            extraClasses={!streamerModeEnabled ? "col-span-2" : ""}
+            icon={!copyGameCodeSuccess ? "ion:copy" : "fa:check"}
+            on:click={copyGameCode}
+            size="small"
+          >
+            {#if !copyGameCodeSuccess}
+              &nbsp;&nbsp;Copy&nbsp;&nbsp;
+            {:else}
+              Copied
+            {/if}
+          </PlayfulButton>
+          {#if streamerModeEnabled}
+            <PlayfulButton
+              colors={{
+                background: "#2c2c2c",
+                backgroundLight: "#2f2f2f",
+                backgroundRaised: "#222222",
+                text: "#d1d1d1",
+              }}
+              icon="ion:eye-off-sharp"
+              on:mousedown={() => (revealGameCode = true)}
+              on:touchstart={() => (revealGameCode = true)}
+              on:mouseup={() => (revealGameCode = false)}
+              on:touchend={() => (revealGameCode = false)}
+              size="small"
+            >
+              Reveal
+            </PlayfulButton>
+          {/if}
+        </div>
 
         <div class="flex flex-col gap-2">
           <span>

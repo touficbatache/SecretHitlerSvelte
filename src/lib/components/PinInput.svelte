@@ -3,10 +3,11 @@
   import { clickOutside } from "$lib/click_outside"
 
   export let activeClass: string
+  export let hidden: boolean = false
   export let inactiveClass: string
   export let isEnabled: boolean = true
   export let pin: string
-  export let size: null = 6
+  export let size: number | undefined = 6
 
   let pinArray: string[] =
     pin?.length > 0
@@ -19,6 +20,8 @@
   }
 
   $: pin = pinArray.join("")
+
+  $: type = !hidden ? "number" : "password"
 
   function updateActive() {
     if (!browser) return
@@ -71,19 +74,19 @@
   {#each pinArray as digit, index}
     <input
       id="pin-input-{index}"
+      bind:value={digit}
       class="outline-none appearance-none inline w-10 h-12 rounded-lg text-2xl text-center transition-colors duration-300 ease-out {activeIndex ===
       index
         ? activeClass
         : inactiveClass}"
-      type="number"
       inputmode="numeric"
-      pattern="[0-9]*"
       maxlength="1"
-      bind:value={digit}
       on:click={updateActive}
       on:input={(e) => handleInput(e, index)}
       on:keydown={(e) => handleBackspace(e, index)}
       on:paste={(e) => handlePaste(e)}
+      pattern="[0-9]*"
+      {...{ type }}
     />
   {/each}
 </div>

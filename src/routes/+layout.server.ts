@@ -14,9 +14,10 @@ export const load: LayoutServerLoad = async ({
   firebaseAppConfig?: FirebaseOptions
   gameCode?: string
   recaptchaSiteKey?: string
+  streamerModeEnabled?: boolean
   user?: User
 }> => {
-  const { user, gameCode } = locals
+  const { user, gameCode, streamerModeEnabled } = locals
 
   if (user?.token) {
     ApiClient.init(config.apiURL, user.token)
@@ -28,6 +29,7 @@ export const load: LayoutServerLoad = async ({
     firebaseAppConfig: config.firebaseAppConfig,
     gameCode,
     recaptchaSiteKey: config.recaptchaSiteKey,
+    streamerModeEnabled,
     user,
   }
 }

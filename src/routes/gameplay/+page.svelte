@@ -86,7 +86,7 @@
   }
 </script>
 
-<Decor {gameCode} gameData={$gameData}>
+<Decor {gameCode} gameData={$gameData} streamerModeEnabled={$page.data.streamerModeEnabled === true}>
   {#if $gameData?.players?.all}
     <Canvas>
       <GameplayScene
