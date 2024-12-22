@@ -51,12 +51,12 @@
   <div class="overlay" />
 
   <span
-    class="w-full flex justify-center gap-2 absolute -z-[1] left-1/2 top-[calc(50%+0.5px)] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+    class="w-full flex justify-center gap-2 text-nowrap absolute -z-[1] left-1/2 top-[calc(50%+0.5px)] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
     style="-webkit-text-stroke: black 3.2px;"
   >
     {#if icon !== undefined}
       <Icon
-        class="text-base overflow-visible text-black my-auto"
+        class="{size === 'normal' ? 'text-xl' : 'text-base'} overflow-visible text-black my-auto"
         {icon}
         style="stroke: black; stroke-width: 16%; stroke-linecap: round;"
       />
@@ -65,9 +65,9 @@
     <slot />
   </span>
 
-  <span class="flex gap-2 justify-center">
+  <span class="flex justify-center gap-2 text-nowrap">
     {#if icon !== undefined}
-      <Icon class="text-base my-auto" {icon} />
+      <Icon class="{size === 'normal' ? 'text-xl' : 'text-base'} my-auto" {icon} />
     {/if}
 
     <slot />

@@ -1,6 +1,17 @@
 /** @type {import("tailwindcss").Config} */
 export default {
   content: ["./src/**/*.{html,js,svelte,ts}"],
+  safelist: [
+    "font-thin",
+    "font-extralight",
+    "font-light",
+    "font-normal",
+    "font-medium",
+    "font-semibold",
+    "font-bold",
+    "font-extrabold",
+    "font-black",
+  ],
   theme: {
     extend: {
       animation: {
@@ -78,6 +89,8 @@ export default {
         depth: "0px 1px 0px 4px black",
         frame:
           "inset 0px 2px 0px 0px rgba(255, 255, 255, 0.15), 0px 3px 0px 0px rgba(255, 255, 255, 0.15)",
+        "frame-glowing":
+          "inset 0px 2px 0px 0px rgba(255, 255, 255, 0.15), 0px 3px 0px 0px rgba(255, 255, 255, 0.15), 0 25px 50px -12px rgb(255 255 255 / 0.1)",
         "player-frame": "0px 0px 0px 5px #d7cba1",
         "card-small":
           "1px 1.3px 0px 0.5px #ececec, 2px 2.2px 0px 0.4px #9e9e9e, 3.3px 3.3px 0px 0px #ececec, 6px 2px 5px 0px rgb(0 0 0 / 22%)",

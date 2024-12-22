@@ -49,7 +49,7 @@
   class:md:pr-16={$contentShiftRight}
 >
   <main
-    class="w-full h-full mx-auto flex justify-center items-center md:frame md:bg-[#141414]"
+    class="w-full h-full mx-auto flex justify-center items-center md:frame-indented md:bg-[#141414]"
     class:relative={!$contentOverflow}
     class:overflow-hidden={!$contentOverflow}
   >
@@ -61,15 +61,21 @@
     classes="w-full md:w-auto px-10 md:px-0"
     open={data.user !== undefined && data.user.name === undefined}
   >
-    <div class="py-6 flex flex-col bg-[#424242] shadow-2xl shadow-white/10 rounded-lg">
+    <div class="py-6 flex flex-col shadow-frame-glowing bg-neutral-900 rounded-lg">
       <div class="flex flex-col gap-6 px-6">
         <span>Your teammates still can't recognize you!</span>
-        <span>What would you like to go by?</span>
+        <span>Choose a nickname 😎</span>
         <div class="flex flex-col">
           <PlayfulTextField
             bind:value={nickname}
             label="Your nickname"
-            on:input={() => (error = "")}
+            on:input={() => {
+              error = ""
+              nickname = nickname
+                .toLowerCase()
+                .replace(/[^a-z]+/g, "")
+                .slice(0, 10)
+            }}
             type="text"
           />
           <span class="text-[#B71C1C] transition-opacity" class:opacity-0={error.length === 0}>

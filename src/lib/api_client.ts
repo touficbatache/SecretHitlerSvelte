@@ -29,6 +29,17 @@ export interface GameinfoApiResponse extends ApiResponse {
         subStatus: string
       }[]
     | undefined
+export interface GameInfoApiResponse extends ApiResponse {
+  success: GameInfo[] | undefined
+}
+
+export interface GameInfo {
+  code: string
+  createdAt: number
+  playerCount: number
+  startedAt: number
+  status: string
+  subStatus: string
 }
 
 export let userIdToken: string | undefined

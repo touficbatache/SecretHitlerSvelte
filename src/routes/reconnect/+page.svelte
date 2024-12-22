@@ -3,6 +3,7 @@
 
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
+  import ElevatedText from "$lib/components/ElevatedText.svelte"
   import PlayfulSpinner from "$lib/components/PlayfulSpinner.svelte"
 
   onMount(() => {
@@ -14,18 +15,12 @@
   })
 </script>
 
-<div class="w-full h-full px-6 flex flex-col justify-evenly items-center">
-  <div class="w-full flex flex-col items-center gap-5">
-    <!--    <div class="w-10 h-10">-->
-    <!--      <Spinner color="#fff" />-->
-    <!--    </div>-->
+<div class="w-full h-full flex flex-col justify-center items-center gap-5 px-6">
+  <PlayfulSpinner color="#fff" />
 
-    <PlayfulSpinner color="#fff" />
-
-    <span class="text-xl text-center">
-      You're already in a game
-      <br />
-      Reconnecting...
-    </span>
-  </div>
+  <ElevatedText class="text-xl md:text-2xl text-center" weight="extrabold">
+    You're already in a game
+    <br />
+    Reconnecting...
+  </ElevatedText>
 </div>

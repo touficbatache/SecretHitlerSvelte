@@ -6,6 +6,7 @@
 
   import * as ApiClient from "$lib/api_client"
   import { copyToClipboard } from "$lib/clipboard"
+  import ElevatedText from "$lib/components/ElevatedText.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PaperBack from "$lib/components/PaperBack.svelte"
   import PinInput from "$lib/components/PinInput.svelte"
@@ -55,7 +56,7 @@
 {#if $mounted && gameData?.players}
   {#if innerWidth >= 768}
     <div
-      class="absolute left-0 inset-y-16 w-[19rem] flex flex-col justify-between ml-16 mr-4 p-7 frame bg-[#141414]"
+      class="absolute left-0 inset-y-16 w-[19rem] flex flex-col justify-between ml-16 mr-4 p-7 frame-indented bg-[#141414]"
       transition:fade={{ duration: 500, easing: quartOut }}
     >
       <Players
@@ -72,12 +73,11 @@
           class="w-fit h-fit justify-self-start flex p-3 rounded-full hover:scale-95 active:scale-90 hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
           on:click={() => (infoOpen = !infoOpen)}
         >
-          <PlayfulIcon
-            class="text-xl {gameData?.players.self.role === 'liberal'
+          <ElevatedText weight="black">
+            <Icon class="text-xl {gameData?.players.self.role === 'liberal'
               ? 'text-neutral-200'
-              : 'text-[#fbe1c0]'}"
-            icon="fa:info-circle"
-          />
+              : 'text-[#fbe1c0]'}" icon="fa:info-circle" />
+          </ElevatedText>
         </button>
 
         <div class="absolute left-1/2 -translate-x-1/2 -translate-y-1/4 w-1/4 z-50">
@@ -88,12 +88,11 @@
           class="w-fit h-fit justify-self-end flex p-3 rounded-full hover:scale-95 active:scale-90 hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
           on:click={ApiClient.leaveGame}
         >
-          <PlayfulIcon
-            class="text-xl {gameData?.players.self.role === 'liberal'
+          <ElevatedText weight="black">
+            <Icon class="text-xl {gameData?.players.self.role === 'liberal'
               ? 'text-neutral-200'
-              : 'text-[#fbe1c0]'}"
-            icon="fa:sign-out"
-          />
+              : 'text-[#fbe1c0]'}" icon="fa:sign-out" />
+          </ElevatedText>
         </button>
       </PaperBack>
     </div>
@@ -125,14 +124,10 @@
           class="w-fit h-fit flex p-3 rounded-full hover:scale-95 active:scale-90 hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
           on:click={() => (infoOpen = !infoOpen)}
         >
-          <PlayfulIcon class="text-2xl" icon="fa:info-circle" />
+          <ElevatedText>
+            <Icon class="text-2xl" icon="fa:info-circle" />
+          </ElevatedText>
         </button>
-
-        <!--        <PlayfulIconButton-->
-        <!--          extraClasses="w-10 h-10"-->
-        <!--          icon="fa:info"-->
-        <!--          on:click={() => (showInfo = !showInfo)}-->
-        <!--        />-->
 
         <div class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/5 z-50">
           <PlayerView revealCards={true} player={gameData?.players?.self} showRole={true} />
@@ -142,7 +137,9 @@
           class="w-fit h-fit flex p-3 rounded-full hover:scale-95 active:scale-90 hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
           on:click={ApiClient.leaveGame}
         >
-          <PlayfulIcon class="text-2xl" icon="fa:sign-out" />
+          <ElevatedText>
+            <Icon class="text-2xl" icon="fa:sign-out" />
+          </ElevatedText>
         </button>
       </div>
     </PaperBack>
