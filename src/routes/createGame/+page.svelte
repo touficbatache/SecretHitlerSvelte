@@ -2,13 +2,13 @@
   import { onMount } from "svelte"
 
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
   import * as ApiClient from "$lib/api_client"
   import ElevatedText from "$lib/components/ElevatedText.svelte"
   import PlayfulSpinner from "$lib/components/PlayfulSpinner.svelte"
 
   onMount(() => {
-    if ($page.data.gameCode === undefined) {
+    if (page.data.gameCode === undefined) {
       setTimeout(async () => {
         const success: boolean = await ApiClient.newGame()
         if (success) {
@@ -21,7 +21,7 @@
   })
 </script>
 
-{#if $page.data.gameCode === undefined}
+{#if page.data.gameCode === undefined}
   <div class="w-full h-full flex flex-col justify-center items-center gap-5 px-6">
     <PlayfulSpinner color="#fff" />
 

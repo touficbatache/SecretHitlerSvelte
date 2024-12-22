@@ -14,6 +14,7 @@
   import Players from "$lib/components/Players.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
+  import PlayfulIconButton from "$lib/components/PlayfulIconButton.svelte"
   import PlayfulSpinner from "$lib/components/PlayfulSpinner.svelte"
   import type { GameData } from "$lib/game_data"
   import { mounted } from "$lib/mounted"
@@ -181,8 +182,10 @@
 
     <FloatingWindow
       bind:open={infoOpen}
-      classes="py-6 flex flex-col bg-[#141414] shadow-frame rounded-lg"
+      classes="relative flex flex-col py-6 bg-[#141414] shadow-frame rounded-lg"
     >
+      <PlayfulIconButton extraClasses="!absolute top-4 right-4 w-8 h-7" icon="fa:times" on:click={() => (infoOpen = false)} />
+
       <span class="w-full text-center text-lg">Game info</span>
 
       <div class="flex flex-col gap-8 mt-4 px-6">

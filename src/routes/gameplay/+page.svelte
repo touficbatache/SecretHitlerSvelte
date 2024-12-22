@@ -13,7 +13,7 @@
 
   import { browser } from "$app/environment"
   import { beforeNavigate, goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
   import * as ApiClient from "$lib/api_client"
   import ChancellorPolicyChooseView from "$lib/components/ChancellorPolicyChooseView.svelte"
   import ChooseChancellorView from "$lib/components/ChooseChancellorView.svelte"
@@ -31,7 +31,7 @@
   import type { GameData } from "$lib/game_data"
   import type { PlayerMembership } from "$lib/player"
 
-  const gameCode: string = $page.data.gameCode
+  const gameCode: string = page.data.gameCode
   const gameData: Readable<GameData | undefined> = getContext("gameData") as Readable<
     GameData | undefined
   >
@@ -49,7 +49,7 @@
   ]
 
   $: if (browser) {
-    if ($page.data.gameCode === undefined) {
+    if (page.data.gameCode === undefined) {
       goto("/", { replaceState: true })
     }
 
@@ -69,10 +69,10 @@
   })
 
   function setupPresence(gameCode: any) {
-    if (gameCode !== undefined && $page.data.user?.uid !== undefined) {
+    if (gameCode !== undefined && page.data.user?.uid !== undefined) {
       const gameUserConnectedRef: DatabaseReference = dbRef(
         rtdb,
-        `ongoingGames/${gameCode}/connected/${$page.data.user.uid}`,
+        `ongoingGames/${gameCode}/connected/${page.data.user.uid}`,
       )
       const connectedRef: DatabaseReference = dbRef(rtdb, ".info/connected")
       presenceListenerUnsubscribe = onValue(connectedRef, (snapshot) => {
@@ -122,7 +122,7 @@
       }
       const gameUserConnectedRef: DatabaseReference = dbRef(
         rtdb,
-        `ongoingGames/${gameCode}/connected/${$page.data.user.uid}`,
+        `ongoingGames/${gameCode}/connected/${page.data.user.uid}`,
       )
       setRef(gameUserConnectedRef, false)
     }
@@ -132,7 +132,7 @@
 <Decor
   {gameCode}
   gameData={$gameData}
-  streamerModeEnabled={$page.data.streamerModeEnabled === true}
+  streamerModeEnabled={page.data.streamerModeEnabled === true}
 >
   {#if $gameData?.players?.all}
     <Canvas>

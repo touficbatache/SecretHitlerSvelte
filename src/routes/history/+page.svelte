@@ -2,7 +2,7 @@
   import Icon from "@iconify/svelte"
 
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
   import * as ApiClient from "$lib/api_client"
   import type { GameplayApiResponse } from "$lib/api_client"
   import { copyToClipboard } from "$lib/clipboard"
@@ -10,6 +10,7 @@
   import PaperBack from "$lib/components/PaperBack.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import PlayfulIconButton from "$lib/components/PlayfulIconButton.svelte"
+  import PlayfulSpinner from "$lib/components/PlayfulSpinner.svelte"
 
   const dateFormatter: Intl.DateTimeFormat = new Intl.DateTimeFormat("en-US", {
     month: "2-digit",
@@ -19,10 +20,10 @@
   let errorAlertOpen: boolean = false
   let isJoining: boolean = false
 
-  let revealGameCode: boolean = !$page.data.streamerModeEnabled
+  let revealGameCode: boolean = !page.data.streamerModeEnabled
   let copiedGameCode: string | undefined = undefined
 
-  $: hideGameCode = $page.data.streamerModeEnabled && !revealGameCode
+  $: hideGameCode = page.data.streamerModeEnabled && !revealGameCode
 
   function camelCaseToWords(s: string) {
     const result: string = s.replace(/([A-Z])/g, " $1")

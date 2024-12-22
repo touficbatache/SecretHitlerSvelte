@@ -5,7 +5,7 @@
   import { onMount } from "svelte"
 
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
   import * as ApiClient from "$lib/api_client"
   import type { GameplayApiResponse } from "$lib/api_client"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
@@ -28,11 +28,11 @@
   let showWatchDialog: boolean = false
 
   $: joinableGames = expandJoinableGames
-    ? $page.data.joinableGames
-    : $page.data.joinableGames.slice(0, 2)
+    ? page.data.joinableGames
+    : page.data.joinableGames.slice(0, 2)
   $: watchableGames = expandWatchableGames
-    ? $page.data.watchableGames
-    : $page.data.watchableGames.slice(0, 2)
+    ? page.data.watchableGames
+    : page.data.watchableGames.slice(0, 2)
 
   async function join(gameCode: string) {
     error = ""
@@ -48,13 +48,13 @@
   }
 
   onMount(() => {
-    if ($page.data.gameCode !== undefined) {
+    if (page.data.gameCode !== undefined) {
       goto("/reconnect", { replaceState: true })
     }
   })
 </script>
 
-{#if $page.data.gameCode === undefined}
+{#if page.data.gameCode === undefined}
   <FloatingWindow bind:open={showWatchDialog} classes="w-full md:w-auto px-10 md:px-0">
     <div class="px-6 py-6 flex flex-col items-center bg-[#141414] shadow-frame rounded-lg">
       <h5 class="text-2xl">Coming soon: watch another game</h5>
@@ -130,10 +130,10 @@
           class="flex-1 flex flex-col items-center gap-2 mt-4 px-3 pt-2 pb-3 bg-neutral-800 shadow-frame rounded-lg"
         >
           <span class="self-stretch flex items-center gap-2">
-            <Icon class="md:text-xl" icon="fa6-solid:gamepad" /> Join & play ({$page.data
+            <Icon class="md:text-xl" icon="fa6-solid:gamepad" /> Join & play ({page.data
               .joinableGames.length})
           </span>
-          {#if $page.data.joinableGames.length === 0}
+          {#if page.data.joinableGames.length === 0}
             <div class="my-auto flex flex-col items-center gap-3">
               <span>No&nbsp;one's&nbsp;playing&nbsp;right&nbsp;now, but&nbsp;you&nbsp;can:</span>
               <PlayfulButton size="extra-small" on:click={() => goto("/createGame")}
@@ -180,7 +180,7 @@
                 </li>
               {/each}
             </ul>
-            {#if $page.data.joinableGames.length > 2}
+            {#if page.data.joinableGames.length > 2}
               <PlayfulButton
                 size="extra-small"
                 on:click={() => {
@@ -203,10 +203,10 @@
           class="flex-1 flex flex-col items-center gap-2 mt-5 px-3 pt-2 pb-3 bg-neutral-800 shadow-frame rounded-lg"
         >
           <span class="self-stretch flex items-center gap-2">
-            <Icon class="md:text-xl" icon="fa6-solid:eye" /> Watch ({$page.data.watchableGames
+            <Icon class="md:text-xl" icon="fa6-solid:eye" /> Watch ({page.data.watchableGames
               .length})
           </span>
-          {#if $page.data.watchableGames.length === 0}
+          {#if page.data.watchableGames.length === 0}
             <div class="my-auto flex flex-col items-center gap-3">
               <span>No&nbsp;one's&nbsp;playing&nbsp;right&nbsp;now, but&nbsp;you&nbsp;can:</span>
               <PlayfulButton size="extra-small" on:click={() => goto("/createGame")}
@@ -255,7 +255,7 @@
                 </li>
               {/each}
             </ul>
-            {#if $page.data.watchableGames.length > 2}
+            {#if page.data.watchableGames.length > 2}
               <PlayfulButton
                 size="extra-small"
                 on:click={() => {
