@@ -85,137 +85,42 @@
     />
   </div>
 
-  <div class="flex-1 px-4 overflow-y-auto">
-    <!--{#each $page.data.games as { createdAt, code, playerCount, startedAt, status, subStatus }}-->
-    <!--  {@const winningTeam = subStatus?.split("gameEnded_")[1]}-->
-    <!--  <div-->
-    <!--    class="h-20 flex justify-around items-center [&>*]:font-normal"-->
-    <!--    class:bg-blue-liberal={winningTeam === "liberal"}-->
-    <!--    class:bg-red-fascist={winningTeam === "fascist"}-->
-    <!--  >-->
-    <!--    <div class="flex items-start gap-1">-->
-    <!--      {#each code.split("") as digit}-->
-    <!--        <span class="rounded-md bg-button-500 text-sh-yellow-500 px-1.5 py-0.5">{digit}</span>-->
-    <!--      {/each}-->
-    <!--    </div>-->
-    <!--    &lt;!&ndash;        <PinInput&ndash;&gt;-->
-    <!--    &lt;!&ndash;          class="!w-fit"&ndash;&gt;-->
-    <!--    &lt;!&ndash;          isEnabled={false}&ndash;&gt;-->
-    <!--    &lt;!&ndash;          inactiveClass="bg-button-500 text-sh-yellow-500 text-xs"&ndash;&gt;-->
-    <!--    &lt;!&ndash;          pin={}&ndash;&gt;-->
-    <!--    &lt;!&ndash;        />&ndash;&gt;-->
-    <!--    <th>{playerCount}</th>-->
-    <!--    {#if winningTeam !== undefined}-->
-    <!--      <th>{winningTeam} win </th>-->
-    <!--    {:else}-->
-    <!--      <th>{status}</th>-->
-    <!--    {/if}-->
-    <!--    <th>{dateFormatter.format(createdAt).replace("/", "-")}</th>-->
-    <!--  </div>-->
-    <!--{/each}-->
-    <!--    <div class="grid grid-cols-5">-->
-    <!--      <span>Game code</span>-->
-    <!--      <span>Players</span>-->
-    <!--      <span>Status</span>-->
-    <!--      <span>Date</span>-->
-    <!--      <span />-->
-    <!--      {#each $page.data.games as { createdAt, code, playerCount, startedAt, status, subStatus }}-->
-    <!--        {@const winningTeam = subStatus?.split("gameEnded_")[1]}-->
-    <!--        <td class="h-full flex justify-center items-center gap-1">-->
-    <!--          {#each code.split("") as digit}-->
-    <!--                <span class="rounded-md bg-button-500 text-sh-yellow-500 text-lg px-2 py-0.5"-->
-    <!--                >{digit}</span-->
-    <!--                >-->
-    <!--          {/each}-->
-    <!--        </td>-->
-    <!--        <td>{playerCount}</td>-->
-    <!--        {#if winningTeam !== undefined}-->
-    <!--          <td>{winningTeam} win </td>-->
-    <!--        {:else}-->
-    <!--          <td>{status}</td>-->
-    <!--        {/if}-->
-    <!--        <td>{dateFormatter.format(createdAt).replace("/", "-")}</td>-->
-    <!--        <td>-->
-    <!--          <PlayfulButton size="small">Join</PlayfulButton>-->
-    <!--        </td>-->
-    <!--      {/each}-->
-    <!--    </div>-->
-    <table class="w-full h-full table-auto md:text-base">
-      <thead>
-        <tr>
-          <th>Game code</th>
-          <th class="hidden md:table-cell">Players</th>
-          <th>Status</th>
-          <th class="hidden md:table-cell">Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each $page.data.games as { createdAt, code, playerCount, startedAt, visibility, status, subStatus }}
-          {@const winningTeam = subStatus?.split("gameEnded_")[1]}
-          <tr class="h-20 [&>*]:font-normal">
-            <td>
-              <div class="!hidden md:!flex gap-1 rounded-l-lg">
-                {#if visibility === "public"}
-                  <div class="mr-2 p-2 bg-green-800 rounded-full">
-                    <Icon icon="fa6-solid:tower-broadcast" />
-                  </div>
-                {/if}
-                <div class="col-span-2 justify-self-center flex gap-0.5 md:gap-1">
-                  {#each code.split("") as digit}
-                    <span
-                      class="w-5 md:w-7 rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-center text-lg px-1 md:px-2 md:py-0.5"
-                    >
-                      {#if !hideGameCode} {digit} {:else} •{/if}
-                    </span>
-                  {/each}
-                </div>
-                <div class="h-5 w-0.25 md:mx-2 bg-neutral-700" />
-                <PlayfulIconButton
-                  colors={{
-                    background: "#2c2c2c",
-                    backgroundLight: "#2f2f2f",
-                    backgroundRaised: "#222222",
-                    reflection: "rgba(255, 255, 255, 0.3)",
-                    text: "#d1d1d1",
-                  }}
-                  extraClasses="w-8 h-7 md:w-9 md:h-8 aspect-square justify-self-end"
-                  icon={copiedGameCode === code ? "fa:check" : "ion:copy"}
-                  on:click={() => copyGameCode(code)}
-                />
-                {#if $page.data.streamerModeEnabled === true}
-                  <PlayfulIconButton
-                    colors={{
-                      background: "#2c2c2c",
-                      backgroundLight: "#2f2f2f",
-                      backgroundRaised: "#222222",
-                      reflection: "rgba(255, 255, 255, 0.3)",
-                      text: "#d1d1d1",
-                    }}
-                    extraClasses="w-8 h-7 md:w-9 md:h-8 aspect-square justify-self-start"
-                    icon="ion:eye-off-sharp"
-                    on:mousedown={() => (revealGameCode = true)}
-                    on:touchstart={() => (revealGameCode = true)}
-                    on:mouseup={() => (revealGameCode = false)}
-                    on:touchend={() => (revealGameCode = false)}
-                  />
-                {/if}
-              </div>
-              <div class="md:!hidden flex flex-col gap-1 rounded-l-lg">
-                <div class="col-span-2 justify-self-center flex gap-0.5 md:gap-1">
-                  {#each code.split("") as digit}
-                    <span
-                      class="w-5 md:w-7 rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-center text-lg px-1 md:px-2 md:py-0.5"
-                    >
-                      {#if !hideGameCode} {digit} {:else} •{/if}
-                    </span>
-                  {/each}
-                </div>
-                <div class="flex gap-2">
+  {#await page.data.response}
+    <div class="flex-1 flex justify-center items-center">
+      <PlayfulSpinner color="#fff" />
+    </div>
+  {:then { success: games }}
+    <div class="flex-1 px-4 overflow-y-auto">
+      <table class="w-full h-full table-auto md:text-base">
+        <thead>
+          <tr>
+            <th>Game code</th>
+            <th class="hidden md:table-cell">Players</th>
+            <th>Status</th>
+            <th class="hidden md:table-cell">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each games as { createdAt, code, playerCount, startedAt, visibility, status, subStatus }}
+            {@const winningTeam = subStatus?.split("gameEnded_")[1]}
+            <tr class="h-20 [&>*]:font-normal">
+              <td>
+                <div class="!hidden md:!flex gap-1 rounded-l-lg">
                   {#if visibility === "public"}
-                    <div class="justify-self-center p-1.5 bg-green-800 rounded-full">
+                    <div class="mr-2 p-2 bg-green-800 rounded-full">
                       <Icon icon="fa6-solid:tower-broadcast" />
                     </div>
                   {/if}
+                  <div class="col-span-2 justify-self-center flex gap-0.5 md:gap-1">
+                    {#each code.split("") as digit}
+                      <span
+                        class="w-5 md:w-7 rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-center text-lg px-1 md:px-2 md:py-0.5"
+                      >
+                        {#if !hideGameCode} {digit} {:else} •{/if}
+                      </span>
+                    {/each}
+                  </div>
+                  <div class="h-5 w-0.25 md:mx-2 bg-neutral-700" />
                   <PlayfulIconButton
                     colors={{
                       background: "#2c2c2c",
@@ -224,11 +129,44 @@
                       reflection: "rgba(255, 255, 255, 0.3)",
                       text: "#d1d1d1",
                     }}
-                    extraClasses="w-8 h-7 md:w-9 md:h-8 aspect-square"
+                    extraClasses="w-8 h-7 md:w-9 md:h-8 aspect-square justify-self-end"
                     icon={copiedGameCode === code ? "fa:check" : "ion:copy"}
                     on:click={() => copyGameCode(code)}
                   />
-                  {#if $page.data.streamerModeEnabled === true}
+                  {#if page.data.streamerModeEnabled === true}
+                    <PlayfulIconButton
+                      colors={{
+                        background: "#2c2c2c",
+                        backgroundLight: "#2f2f2f",
+                        backgroundRaised: "#222222",
+                        reflection: "rgba(255, 255, 255, 0.3)",
+                        text: "#d1d1d1",
+                      }}
+                      extraClasses="w-8 h-7 md:w-9 md:h-8 aspect-square justify-self-start"
+                      icon="ion:eye-off-sharp"
+                      on:mousedown={() => (revealGameCode = true)}
+                      on:touchstart={() => (revealGameCode = true)}
+                      on:mouseup={() => (revealGameCode = false)}
+                      on:touchend={() => (revealGameCode = false)}
+                    />
+                  {/if}
+                </div>
+                <div class="md:!hidden flex flex-col gap-1 rounded-l-lg">
+                  <div class="col-span-2 justify-self-center flex gap-0.5 md:gap-1">
+                    {#each code.split("") as digit}
+                      <span
+                        class="w-5 md:w-7 rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-center text-lg px-1 md:px-2 md:py-0.5"
+                      >
+                        {#if !hideGameCode} {digit} {:else} •{/if}
+                      </span>
+                    {/each}
+                  </div>
+                  <div class="flex gap-2">
+                    {#if visibility === "public"}
+                      <div class="justify-self-center p-1.5 bg-green-800 rounded-full">
+                        <Icon icon="fa6-solid:tower-broadcast" />
+                      </div>
+                    {/if}
                     <PlayfulIconButton
                       colors={{
                         background: "#2c2c2c",
@@ -238,65 +176,79 @@
                         text: "#d1d1d1",
                       }}
                       extraClasses="w-8 h-7 md:w-9 md:h-8 aspect-square"
-                      icon="ion:eye-off-sharp"
-                      on:mousedown={() => (revealGameCode = true)}
-                      on:touchstart={() => (revealGameCode = true)}
-                      on:mouseup={() => (revealGameCode = false)}
-                      on:touchend={() => (revealGameCode = false)}
+                      icon={copiedGameCode === code ? "fa:check" : "ion:copy"}
+                      on:click={() => copyGameCode(code)}
                     />
-                  {/if}
+                    {#if page.data.streamerModeEnabled === true}
+                      <PlayfulIconButton
+                        colors={{
+                          background: "#2c2c2c",
+                          backgroundLight: "#2f2f2f",
+                          backgroundRaised: "#222222",
+                          reflection: "rgba(255, 255, 255, 0.3)",
+                          text: "#d1d1d1",
+                        }}
+                        extraClasses="w-8 h-7 md:w-9 md:h-8 aspect-square"
+                        icon="ion:eye-off-sharp"
+                        on:mousedown={() => (revealGameCode = true)}
+                        on:touchstart={() => (revealGameCode = true)}
+                        on:mouseup={() => (revealGameCode = false)}
+                        on:touchend={() => (revealGameCode = false)}
+                      />
+                    {/if}
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td class="hidden md:table-cell">
-              <div>
-                {playerCount}
-              </div>
-            </td>
-            <td>
-              <div class="text-sm md:text-base">
-                <div
-                  class="rounded px-2"
-                  class:bg-neutral-500={status === "waiting"}
-                  class:bg-green-600={status !== "waiting" && winningTeam === undefined}
-                  class:bg-blue-liberal={winningTeam === "liberal"}
-                  class:bg-red-fascist={winningTeam === "fascist"}
-                >
-                  {#if winningTeam !== undefined}
-                    {winningTeam} win
-                  {:else if status !== "waiting"}
-                    <span class="hidden md:inline">
-                      ongoing:
-                      <br />
-                      {camelCaseToWords(status)}
-                    </span>
-                    <span class="md:hidden"> ongoing </span>
-                  {:else}
-                    not started
-                  {/if}
+              </td>
+              <td class="hidden md:table-cell">
+                <div>
+                  {playerCount}
                 </div>
-              </div>
-            </td>
-            <td class="hidden md:table-cell">
-              <div>
-                {dateFormatter.format(createdAt).replace("/", "-")}
-              </div>
-            </td>
-            <td>
-              <div class="rounded-r-lg">
-                <PlayfulButton
-                  enabled={!isJoining}
-                  extraClasses="text-sm"
-                  on:click={() => join(code)}
-                  size="extra-small">Rejoin</PlayfulButton
-                >
-              </div>
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
+              </td>
+              <td>
+                <div class="text-sm md:text-base">
+                  <div
+                    class="rounded px-2"
+                    class:bg-neutral-500={status === "waiting"}
+                    class:bg-green-600={status !== "waiting" && winningTeam === undefined}
+                    class:bg-blue-liberal={winningTeam === "liberal"}
+                    class:bg-red-fascist={winningTeam === "fascist"}
+                  >
+                    {#if winningTeam !== undefined}
+                      {winningTeam} win
+                    {:else if status !== "waiting"}
+                      <span class="hidden md:inline">
+                        ongoing:
+                        <br />
+                        {camelCaseToWords(status)}
+                      </span>
+                      <span class="md:hidden"> ongoing </span>
+                    {:else}
+                      not started
+                    {/if}
+                  </div>
+                </div>
+              </td>
+              <td class="hidden md:table-cell">
+                <div>
+                  {dateFormatter.format(createdAt).replace("/", "-")}
+                </div>
+              </td>
+              <td>
+                <div class="rounded-r-lg">
+                  <PlayfulButton
+                    enabled={!isJoining}
+                    extraClasses="text-sm"
+                    on:click={() => join(code)}
+                    size="extra-small">Rejoin</PlayfulButton
+                  >
+                </div>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+  {/await}
 </div>
 
 <FloatingWindow bind:open={errorAlertOpen}>
