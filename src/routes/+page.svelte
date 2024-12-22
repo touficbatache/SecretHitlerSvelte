@@ -65,8 +65,7 @@
           enabled={!isModifyingStreamerMode}
           icon="fa:video-camera"
           on:click={toggleStreamerMode}
-          size="small"
-          >Streamer mode: {!page.data.streamerModeEnabled ? "off" : "on"}</PlayfulButton
+          size="small">Streamer mode: {!page.data.streamerModeEnabled ? "off" : "on"}</PlayfulButton
         >
         <div class="h-0.25 mt-1 mx-2 bg-neutral-50/30" />
         <PlayfulButton icon="fa:sign-out" on:click={signOut} size="small">Sign out</PlayfulButton>

@@ -184,7 +184,11 @@
       bind:open={infoOpen}
       classes="relative flex flex-col py-6 bg-[#141414] shadow-frame rounded-lg"
     >
-      <PlayfulIconButton extraClasses="!absolute top-4 right-4 w-8 h-7" icon="fa:times" on:click={() => (infoOpen = false)} />
+      <PlayfulIconButton
+        extraClasses="!absolute top-4 right-4 w-8 h-7"
+        icon="fa:times"
+        on:click={() => (infoOpen = false)}
+      />
 
       <span class="w-full text-center text-lg">Game info</span>
 
