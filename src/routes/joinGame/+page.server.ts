@@ -25,7 +25,7 @@ export const load: PageServerLoad = async () => {
   }
 
   return {
-    joinableGames,
+    joinableGames: joinableGames.toReversed(), // Show oldest games first (people have been waiting for more time 🤷🏻‍♂️)
     watchableGames,
   }
 }
