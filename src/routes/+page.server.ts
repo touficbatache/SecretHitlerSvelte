@@ -6,6 +6,6 @@ export const load: PageServerLoad = ({ locals }) => {
   const { user } = locals
 
   if (!user) {
-    throw redirect(302, "/login")
+    redirect(302, "/login")
   }
 }
