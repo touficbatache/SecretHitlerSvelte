@@ -3,7 +3,12 @@ import type { PageServerLoad } from "./$types"
 import * as ApiClient from "$lib/api_client"
 import { type GameInfo, type GameInfoApiResponse } from "$lib/api_client"
 
-export const load: PageServerLoad = async () => {
+interface JoinGameResponse {
+  joinableGames: GameInfo[]
+  watchableGames: GameInfo[]
+}
+
+async function getActivePublicGames(): Promise<JoinGameResponse> {
   const response: GameInfoApiResponse = await ApiClient.getActivePublicGames()
 
   const joinableGames: GameInfo[] = []
@@ -24,8 +29,18 @@ export const load: PageServerLoad = async () => {
     }
   }
 
+  console.log(joinableGames)
+
   return {
     joinableGames: joinableGames.toReversed(), // Show oldest games first (people have been waiting for more time 🤷🏻‍♂️)
     watchableGames,
+  }
+}
+
+export const load: PageServerLoad = () => {
+  const response: Promise<JoinGameResponse> = getActivePublicGames()
+
+  return {
+    response,
   }
 }
