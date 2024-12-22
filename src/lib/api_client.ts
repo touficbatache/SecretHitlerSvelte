@@ -18,17 +18,6 @@ export interface GameplayApiResponse extends ApiResponse {
   success: { [key: string]: string } | undefined
 }
 
-export interface GameinfoApiResponse extends ApiResponse {
-  success:
-    | {
-        code: string
-        createdAt: number
-        playerCount: number
-        startedAt: number
-        status: string
-        subStatus: string
-      }[]
-    | undefined
 export interface GameInfoApiResponse extends ApiResponse {
   success: GameInfo[] | undefined
 }
@@ -38,6 +27,7 @@ export interface GameInfo {
   createdAt: number
   playerCount: number
   startedAt: number
+  visibility: GameVisibility
   status: string
   subStatus: string
 }
