@@ -3,7 +3,7 @@
   import { scale } from "svelte/transition"
 
   import { goto } from "$app/navigation"
-  import { page } from "$app/state"
+  import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import { clickOutside } from "$lib/click_outside"
   import Logo from "$lib/components/Logo.svelte"
@@ -13,19 +13,19 @@
   import { setUserName, signOut } from "$lib/firebase"
 
   let btnMenu: HTMLButtonElement
-  let inputName: string | undefined = page.data.user?.name
+  let inputName: string | undefined = $page.data.user?.name
   let isUpdatingUserName: boolean = false
   let isMenuOpen: boolean = false
   let isModifyingStreamerMode: boolean = false
 
-  $: hasModifiedName = inputName !== page.data.user?.name
+  $: hasModifiedName = inputName !== $page.data.user?.name
   $: if (!hasModifiedName) {
     isUpdatingUserName = false
   }
 
   async function toggleStreamerMode() {
     isModifyingStreamerMode = true
-    await ApiClient.setStreamerMode(!page.data.streamerModeEnabled)
+    await ApiClient.setStreamerMode(!$page.data.streamerModeEnabled)
     isModifyingStreamerMode = false
   }
 </script>
@@ -48,7 +48,7 @@
           >Game history</PlayfulButton
         >
         <PlayfulButton
-          colors={!page.data.streamerModeEnabled
+          colors={!$page.data.streamerModeEnabled
             ? {
                 background: "#2c2c2c",
                 backgroundLight: "#2f2f2f",
@@ -65,7 +65,8 @@
           enabled={!isModifyingStreamerMode}
           icon="fa:video-camera"
           on:click={toggleStreamerMode}
-          size="small">Streamer mode: {!page.data.streamerModeEnabled ? "off" : "on"}</PlayfulButton
+          size="small"
+          >Streamer mode: {!$page.data.streamerModeEnabled ? "off" : "on"}</PlayfulButton
         >
         <div class="h-0.25 mt-1 mx-2 bg-neutral-50/30" />
         <PlayfulButton icon="fa:sign-out" on:click={signOut} size="small">Sign out</PlayfulButton>
@@ -92,7 +93,7 @@
       <!--        <span>Your nickname</span>-->
       <!--        <input-->
       <!--          class="bg-transparent text-2xl font-bold outline-none"-->
-      <!--          value={page.data.user?.name}-->
+      <!--          value={$page.data.user?.name}-->
       <!--        />-->
       <!--      </div>-->
 
@@ -119,7 +120,7 @@
             class:right-16={inputName?.length > 0}
             class:right-0={inputName?.length === 0}
             disabled={isUpdatingUserName}
-            on:click={() => (inputName = page.data.user?.name)}
+            on:click={() => (inputName = $page.data.user?.name)}
           >
             <iconify-icon icon="fa:undo" />
           </button>
@@ -150,9 +151,9 @@
     </div>
   </TwoPaneView>
 
-  <!--{#if page.data.user?.name !== undefined}-->
+  <!--{#if $page.data.user?.name !== undefined}-->
   <!--  <span class="absolute inset-x-0 bottom-0 text-center m-4">-->
-  <!--    Signed in as {page.data.user?.name}-->
+  <!--    Signed in as {$page.data.user?.name}-->
   <!--  </span>-->
   <!--{/if}-->
 </div>

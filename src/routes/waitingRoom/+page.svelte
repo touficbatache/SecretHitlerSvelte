@@ -12,7 +12,7 @@
 
   import { browser } from "$app/environment"
   import { beforeNavigate, goto } from "$app/navigation"
-  import { page } from "$app/state"
+  import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import { type GameplayApiResponse } from "$lib/api_client"
   import { copyToClipboard } from "$lib/clipboard"
@@ -29,7 +29,7 @@
   import { rtdb } from "$lib/firebase"
   import type { GameData } from "$lib/game_data"
 
-  const gameCode: string = page.data.gameCode
+  const gameCode: string = $page.data.gameCode
   const gameData: Readable<GameData> = getContext("gameData") as Readable<GameData>
 
   let presenceListenerUnsubscribe: Unsubscribe | undefined
@@ -49,7 +49,7 @@
   let startingError: string = ""
 
   $: if (browser) {
-    if (page.data.gameCode === undefined) {
+    if ($page.data.gameCode === undefined) {
       goto("/", { replaceState: true })
     }
 
@@ -67,10 +67,10 @@
   })
 
   function setupPresence(gameCode: any) {
-    if (page.data.user?.uid !== undefined) {
+    if ($page.data.user?.uid !== undefined) {
       const gameUserConnectedRef: DatabaseReference = dbRef(
         rtdb,
-        `ongoingGames/${gameCode}/connected/${page.data.user.uid}`,
+        `ongoingGames/${gameCode}/connected/${$page.data.user.uid}`,
       )
       const connectedRef: DatabaseReference = dbRef(rtdb, ".info/connected")
       presenceListenerUnsubscribe = onValue(connectedRef, (snapshot) => {
@@ -99,7 +99,7 @@
   }
 
   async function toggleGameVisibility(force: boolean = false) {
-    if (page.data.streamerModeEnabled && $gameData.visibility === "private" && !force) {
+    if ($page.data.streamerModeEnabled && $gameData.visibility === "private" && !force) {
       showPublicVisibilityStreamerModeWarning = true
     } else {
       modifyingGameVisibility = true
@@ -132,7 +132,7 @@
       }
       const gameUserConnectedRef: DatabaseReference = dbRef(
         rtdb,
-        `ongoingGames/${gameCode}/connected/${page.data.user.uid}`,
+        `ongoingGames/${gameCode}/connected/${$page.data.user.uid}`,
       )
       setRef(gameUserConnectedRef, false)
     }
@@ -266,7 +266,7 @@
       </div>
 
       <PinInput
-        hidden={page.data.streamerModeEnabled}
+        hidden={$page.data.streamerModeEnabled}
         isEnabled={false}
         inactiveClass="bg-button-500 text-sh-yellow-500"
         activeClass="bg-sh-yellow-500 bg-opacity-70 text-sh-yellow-500 border-2 border-sh-yellow-500 border-opacity-70"

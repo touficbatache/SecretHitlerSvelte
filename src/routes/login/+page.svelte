@@ -8,7 +8,7 @@
   } from "firebase/auth"
   import { onMount } from "svelte"
 
-  import { page } from "$app/state"
+  import { page } from "$app/stores"
   import Logo from "$lib/components/Logo.svelte"
   import PinInput from "$lib/components/PinInput.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
@@ -39,7 +39,7 @@
     auth = getAuth(app)
 
     //TODO: remove?
-    if (page.data.devMode) {
+    if ($page.data.devMode) {
       auth.settings.appVerificationDisabledForTesting = true
     }
 

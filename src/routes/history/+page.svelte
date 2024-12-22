@@ -2,7 +2,7 @@
   import Icon from "@iconify/svelte"
 
   import { goto } from "$app/navigation"
-  import { page } from "$app/state"
+  import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import type { GameplayApiResponse } from "$lib/api_client"
   import { copyToClipboard } from "$lib/clipboard"
@@ -20,10 +20,10 @@
   let errorAlertOpen: boolean = false
   let isJoining: boolean = false
 
-  let revealGameCode: boolean = !page.data.streamerModeEnabled
+  let revealGameCode: boolean = !$page.data.streamerModeEnabled
   let copiedGameCode: string | undefined = undefined
 
-  $: hideGameCode = page.data.streamerModeEnabled && !revealGameCode
+  $: hideGameCode = $page.data.streamerModeEnabled && !revealGameCode
 
   function camelCaseToWords(s: string) {
     const result: string = s.replace(/([A-Z])/g, " $1")
@@ -85,7 +85,7 @@
     />
   </div>
 
-  {#await page.data.response}
+  {#await $page.data.response}
     <div class="flex-1 flex justify-center items-center">
       <PlayfulSpinner color="#fff" />
     </div>
@@ -133,7 +133,7 @@
                     icon={copiedGameCode === code ? "fa:check" : "ion:copy"}
                     on:click={() => copyGameCode(code)}
                   />
-                  {#if page.data.streamerModeEnabled === true}
+                  {#if $page.data.streamerModeEnabled === true}
                     <PlayfulIconButton
                       colors={{
                         background: "#2c2c2c",
@@ -179,7 +179,7 @@
                       icon={copiedGameCode === code ? "fa:check" : "ion:copy"}
                       on:click={() => copyGameCode(code)}
                     />
-                    {#if page.data.streamerModeEnabled === true}
+                    {#if $page.data.streamerModeEnabled === true}
                       <PlayfulIconButton
                         colors={{
                           background: "#2c2c2c",

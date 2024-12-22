@@ -2,12 +2,12 @@
   import { onMount } from "svelte"
 
   import { goto } from "$app/navigation"
-  import { page } from "$app/state"
+  import { page } from "$app/stores"
   import ElevatedText from "$lib/components/ElevatedText.svelte"
   import PlayfulSpinner from "$lib/components/PlayfulSpinner.svelte"
 
   onMount(() => {
-    if (page.data.gameCode === undefined) {
+    if ($page.data.gameCode === undefined) {
       goto("/", { replaceState: true })
     } else {
       setTimeout(() => goto("/waitingRoom", { replaceState: true }), 3000)

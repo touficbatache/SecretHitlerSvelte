@@ -4,8 +4,8 @@
   import en from "javascript-time-ago/locale/en"
   import { onMount } from "svelte"
 
-  import { goto, invalidate, invalidateAll } from "$app/navigation"
-  import { page } from "$app/state"
+  import { goto } from "$app/navigation"
+  import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import type { GameplayApiResponse } from "$lib/api_client"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
@@ -42,14 +42,14 @@
   }
 
   onMount(() => {
-    if (page.data.gameCode !== undefined) {
+    if ($page.data.gameCode !== undefined) {
       goto("/reconnect", { replaceState: true })
     }
   })
 </script>
 
-{#if page.data.gameCode === undefined}
-  {#await page.data.response}
+{#if $page.data.gameCode === undefined}
+  {#await $page.data.response}
     <div class="w-full h-full flex justify-center items-center">
       <PlayfulSpinner color="#fff" />
     </div>
