@@ -1,10 +1,14 @@
 import { type Database, type DatabaseReference, onValue, ref as dbRef } from "firebase/database"
 import { type Readable, readable } from "svelte/store"
 
+import * as ApiClient from "$lib/api_client"
 import { castGameData } from "$lib/firebase"
 import type { Player } from "$lib/player"
 
 export interface GameData {
+  readonly connected: {
+    [playerId: string]: boolean
+  }
   readonly currentSession: GameDataSession | undefined
   readonly electionTracker: number
   readonly gameType: GameType
@@ -18,6 +22,7 @@ export interface GameData {
   }
   readonly specialElectionPlayer: string | undefined
   readonly startedAt: number | undefined
+  readonly visibility: GameVisibility
   readonly status: string
   readonly subStatus: string
 }
@@ -69,6 +74,8 @@ export type GameType = "fiveSix" | "sevenEight" | "nineTen"
 
 export type PresidentialPower = "consumed" | "done"
 
+export type GameVisibility = "public" | "private"
+
 // https://sveltefire.fireship.io/
 /**
  * @param {Database} rtdb - Firebase Realtime Database instance.
@@ -80,7 +87,11 @@ export function gameDataStore(rtdb: Database, gameCode: string): Readable<GameDa
 
   return readable<GameData | undefined>(undefined, (set) => {
     return onValue(dataRef, (snapshot) => {
-      set(castGameData(snapshot.val()) as GameData)
+      if (snapshot.val().players === undefined) {
+        ApiClient.leaveGame()
+      } else {
+        set(castGameData(snapshot.val()) as GameData)
+      }
     })
   })
 }

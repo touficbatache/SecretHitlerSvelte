@@ -1,4 +1,5 @@
 import { invalidateAll } from "$app/navigation"
+import type { GameVisibility } from "$lib/game_data"
 
 export interface CodeResponse {
   code: string
@@ -95,6 +96,26 @@ export async function newGame(): Promise<boolean> {
   return true
 }
 
+export async function setGameVisibility(
+  code: string,
+  visibility: NonNullable<GameVisibility>,
+): Promise<GameplayApiResponse> {
+  const endpoint: string = "setGameVisibility"
+  const res: Response = await callApi(
+    endpoint,
+    JSON.stringify({
+      code,
+      visibility,
+    }),
+  )
+
+  if (!res.ok) {
+    return handleError(res)
+  }
+
+  return handleSuccess(res)
+}
+
 export async function joinGame(code: string): Promise<GameplayApiResponse> {
   const endpoint: string = "joinGame"
   const res: Response = await callApi(endpoint, JSON.stringify({ code }))
@@ -111,6 +132,18 @@ export async function joinGame(code: string): Promise<GameplayApiResponse> {
   const jsonRes: CodeResponse = await res.clone().json()
   // TODO: handle error if jsonRes.code !== code
   await setGameCodeCookie(jsonRes.code)
+  return handleSuccess(res)
+}
+
+export async function unJoinGame(code: string): Promise<GameplayApiResponse> {
+  const endpoint: string = "unJoinGame"
+  const res: Response = await callApi(endpoint, JSON.stringify({ code }))
+
+  if (!res.ok) {
+    return handleError(res)
+  }
+
+  await setGameCodeCookie("")
   return handleSuccess(res)
 }
 
@@ -282,10 +315,23 @@ export async function answerVeto(code: string, refuseVeto: boolean): Promise<Gam
 
 export async function leaveGame(): Promise<void> {
   await setGameCodeCookie("")
+
+  await invalidateAll()
 }
 
-export async function getGamesForSelf(): Promise<GameinfoApiResponse> {
+export async function getGamesForSelf(): Promise<GameInfoApiResponse> {
   const endpoint: string = "getGamesForSelf"
+  const res: Response = await callApi(endpoint)
+
+  if (!res.ok) {
+    return handleError(res)
+  }
+
+  return handleSuccess(res)
+}
+
+export async function getActivePublicGames(): Promise<GameInfoApiResponse> {
+  const endpoint: string = "getActivePublicGames"
   const res: Response = await callApi(endpoint)
 
   if (!res.ok) {

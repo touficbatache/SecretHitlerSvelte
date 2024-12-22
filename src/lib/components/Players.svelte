@@ -30,12 +30,15 @@
 
   export let hideName: boolean = false
 
+  export let hideConnectionIssues: boolean = false
+
   $: renderedPlayers = [
     ...(players ?? []),
     ...(fillRemaining
       ? Array(10 - (players?.length ?? 0)).fill({
           name: "...",
           isDummy: true,
+          isConnected: true,
         })
       : []),
   ].filter((player: Player) => showSelf || !player.self)
@@ -63,6 +66,7 @@
     {#each renderedPlayers as player}
       <PlayerView
         {player}
+        hideConnectionIssue={hideConnectionIssues}
         {hideExtras}
         {hideName}
         {hidePlacards}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from "@iconify/svelte"
   import { getContext, onDestroy, onMount } from "svelte"
   import { quartOut } from "svelte/easing"
   import type { Writable } from "svelte/store"
@@ -13,10 +14,9 @@
   import Players from "$lib/components/Players.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
+  import PlayfulSpinner from "$lib/components/PlayfulSpinner.svelte"
   import type { GameData } from "$lib/game_data"
   import { mounted } from "$lib/mounted"
-  import Icon from "@iconify/svelte"
-  import PlayfulIcon from "$lib/components/PlayfulIcon.svelte"
 
   export let gameCode: string
   export let gameData: GameData | undefined
@@ -25,11 +25,14 @@
   const contentOverflow: Writable<boolean> = getContext("contentOverflow") as Writable<boolean>
   const contentShiftRight: Writable<boolean> = getContext("contentShiftRight") as Writable<boolean>
 
+  let revealGameCode: boolean = !streamerModeEnabled
+  let copyGameCodeSuccess: boolean = false
+
   let innerWidth: number
   let infoOpen: boolean = false
 
-  let revealGameCode: boolean = !streamerModeEnabled
-  let copyGameCodeSuccess: boolean = false
+  let showLeaveWarning: boolean = false
+  let showLeavingLoading: boolean = false
 
   onMount(() => {
     $contentShiftRight = true
@@ -43,6 +46,12 @@
         copyGameCodeSuccess = false
       }, 2000)
     })
+  }
+
+  async function leave() {
+    showLeavingLoading = true
+    await ApiClient.leaveGame()
+    showLeavingLoading = false
   }
 
   onDestroy(() => {
@@ -74,9 +83,12 @@
           on:click={() => (infoOpen = !infoOpen)}
         >
           <ElevatedText weight="black">
-            <Icon class="text-xl {gameData?.players.self.role === 'liberal'
-              ? 'text-neutral-200'
-              : 'text-[#fbe1c0]'}" icon="fa:info-circle" />
+            <Icon
+              class="text-xl {gameData?.players.self.role === 'liberal'
+                ? 'text-neutral-200'
+                : 'text-[#fbe1c0]'}"
+              icon="fa:info-circle"
+            />
           </ElevatedText>
         </button>
 
@@ -86,12 +98,17 @@
 
         <button
           class="w-fit h-fit justify-self-end flex p-3 rounded-full hover:scale-95 active:scale-90 hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
-          on:click={ApiClient.leaveGame}
+          on:click={() => {
+            showLeaveWarning = true
+          }}
         >
           <ElevatedText weight="black">
-            <Icon class="text-xl {gameData?.players.self.role === 'liberal'
-              ? 'text-neutral-200'
-              : 'text-[#fbe1c0]'}" icon="fa:sign-out" />
+            <Icon
+              class="text-xl {gameData?.players.self.role === 'liberal'
+                ? 'text-neutral-200'
+                : 'text-[#fbe1c0]'}"
+              icon="fa:sign-out"
+            />
           </ElevatedText>
         </button>
       </PaperBack>
@@ -135,7 +152,9 @@
 
         <button
           class="w-fit h-fit flex p-3 rounded-full hover:scale-95 active:scale-90 hover:bg-white hover:bg-opacity-10 active:bg-white active:bg-opacity-20 transition-all duration-100 ease-material-standard"
-          on:click={ApiClient.leaveGame}
+          on:click={() => {
+            showLeaveWarning = true
+          }}
         >
           <ElevatedText>
             <Icon class="text-2xl" icon="fa:sign-out" />
@@ -207,6 +226,7 @@
           </span>
           <Players
             players={gameData?.players?.fascists.sort(() => Math.random() - 0.5)}
+            hideConnectionIssues={true}
             hideExtras={true}
             hideName={true}
             hidePlacards={true}
@@ -223,6 +243,7 @@
           </span>
           <Players
             players={gameData?.players?.liberals.sort(() => Math.random() - 0.5)}
+            hideConnectionIssues={true}
             hideExtras={true}
             hideName={true}
             hidePlacards={true}
@@ -235,4 +256,42 @@
       </div>
     </FloatingWindow>
   </div>
+
+  <FloatingWindow bind:open={showLeaveWarning} classes="w-full md:w-auto px-10 md:px-0">
+    <div class="px-6 py-6 flex flex-col gap-4 bg-[#141414] shadow-frame rounded-lg">
+      <div class="flex items-center gap-3">
+        <Icon class="text-xl" icon="fa:warning" />
+        <h5 class="text-xl md:text-2xl">You're about to leave this game</h5>
+      </div>
+      <span>Are you sure you want to continue?</span>
+      <div class="self-center flex gap-2 mt-2">
+        <PlayfulButton on:click={() => (showLeaveWarning = false)} size="extra-small">
+          Cancel
+        </PlayfulButton>
+        <PlayfulButton
+          colors={{
+            background: "#2c2c2c",
+            backgroundLight: "#2f2f2f",
+            backgroundRaised: "#222222",
+            reflection: "rgba(255, 255, 255, 0.3)",
+            text: "#d1d1d1",
+          }}
+          on:click={leave}
+          size="extra-small"
+        >
+          Leave
+        </PlayfulButton>
+      </div>
+    </div>
+  </FloatingWindow>
+
+  <FloatingWindow
+    allowDismiss={false}
+    bind:open={showLeavingLoading}
+    classes="flex flex-col items-center gap-5"
+  >
+    <PlayfulSpinner color="#fff" />
+
+    <ElevatedText class="text-xl md:text-2xl" weight="extrabold">Leaving game...</ElevatedText>
+  </FloatingWindow>
 {/if}

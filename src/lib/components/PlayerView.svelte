@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Icon from "@iconify/svelte"
+
   import type { Player } from "$lib/player"
 
   interface CustomPlayer extends Player {
@@ -25,6 +27,8 @@
   export let showRole: boolean = false
 
   export let revealCards: boolean = false
+
+  export let hideConnectionIssue: boolean = false
 </script>
 
 <div
@@ -121,6 +125,13 @@
           />
         </div>
       {/if}
+    {/if}
+    {#if !hideConnectionIssue && !player?.isConnected}
+      <div
+        class="absolute -top-2 -left-2 z-50 p-1 text-red-800 bg-black/80 border border-neutral-700 rounded-full animate-blink"
+      >
+        <Icon class="md:text-lg" icon="ph:wifi-x-bold" />
+      </div>
     {/if}
   </div>
   {#if !hideName}

@@ -7,6 +7,7 @@ export interface Player {
   readonly role: PlayerRole
   readonly membership: PlayerMembership
   readonly self: boolean
+  readonly isConnected: boolean
   readonly isExecuted: boolean
   readonly isInvestigated: boolean
   readonly isPresident: boolean

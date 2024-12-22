@@ -16,10 +16,17 @@
   let inputName: string | undefined = $page.data.user?.name
   let isUpdatingUserName: boolean = false
   let isMenuOpen: boolean = false
+  let isModifyingStreamerMode: boolean = false
 
   $: hasModifiedName = inputName !== $page.data.user?.name
   $: if (!hasModifiedName) {
     isUpdatingUserName = false
+  }
+
+  async function toggleStreamerMode() {
+    isModifyingStreamerMode = true
+    await ApiClient.setStreamerMode(!$page.data.streamerModeEnabled)
+    isModifyingStreamerMode = false
   }
 </script>
 
@@ -55,8 +62,9 @@
                 backgroundRaised: "#bb612b",
                 text: "#fbe1c0",
               }}
+          enabled={!isModifyingStreamerMode}
           icon="fa:video-camera"
-          on:click={() => ApiClient.setStreamerMode(!$page.data.streamerModeEnabled)}
+          on:click={toggleStreamerMode}
           size="small"
           >Streamer mode: {!$page.data.streamerModeEnabled ? "off" : "on"}</PlayfulButton
         >

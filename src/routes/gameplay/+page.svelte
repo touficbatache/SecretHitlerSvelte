@@ -1,11 +1,18 @@
 <script lang="ts">
+  import {
+    onDisconnect as onDisconnectRef,
+    ref as dbRef,
+    set as setRef,
+    type Unsubscribe,
+  } from "@firebase/database"
   import Icon from "@iconify/svelte"
   import { Canvas } from "@threlte/core"
-  import { getContext } from "svelte"
+  import { type DatabaseReference, onValue } from "firebase/database"
+  import { getContext, onMount } from "svelte"
   import type { Readable } from "svelte/store"
 
   import { browser } from "$app/environment"
-  import { goto } from "$app/navigation"
+  import { beforeNavigate, goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import ChancellorPolicyChooseView from "$lib/components/ChancellorPolicyChooseView.svelte"
@@ -20,6 +27,7 @@
   import PresidentPolicyChooseView from "$lib/components/PresidentPolicyChooseView.svelte"
   import PresidentReviewingVeto from "$lib/components/PresidentReviewingVeto.svelte"
   import VoteView from "$lib/components/VoteView.svelte"
+  import { rtdb } from "$lib/firebase"
   import type { GameData } from "$lib/game_data"
   import type { PlayerMembership } from "$lib/player"
 
@@ -28,9 +36,11 @@
     GameData | undefined
   >
 
+  let presenceListenerUnsubscribe: Unsubscribe | undefined
+
   let isMinimized: boolean = false
 
-  let importantGameStatuses = [
+  let importantGameStatuses: string[] = [
     "election_voting",
     "presidentialPower_investigateLoyalty",
     "presidentialPower_policyPeek",
@@ -53,6 +63,26 @@
   }
 
   $: hasGameEnded = $gameData?.status !== undefined && $gameData.status === "gameEnded"
+
+  onMount(() => {
+    setupPresence(gameCode)
+  })
+
+  function setupPresence(gameCode: any) {
+    if (gameCode !== undefined && $page.data.user?.uid !== undefined) {
+      const gameUserConnectedRef: DatabaseReference = dbRef(
+        rtdb,
+        `ongoingGames/${gameCode}/connected/${$page.data.user.uid}`,
+      )
+      const connectedRef: DatabaseReference = dbRef(rtdb, ".info/connected")
+      presenceListenerUnsubscribe = onValue(connectedRef, (snapshot) => {
+        if (snapshot.val() === true) {
+          onDisconnectRef(gameUserConnectedRef).set(false)
+          setRef(gameUserConnectedRef, true)
+        }
+      })
+    }
+  }
 
   function getGameWinningTeam(hasGameEnded: boolean): PlayerMembership | undefined {
     if (!hasGameEnded || $gameData?.subStatus === undefined) return
@@ -84,6 +114,19 @@
         return "The President is executing a player"
     }
   }
+
+  beforeNavigate(({ to }) => {
+    if (gameCode !== undefined && to !== undefined && to.route.id !== "waitingRoom") {
+      if (presenceListenerUnsubscribe !== undefined) {
+        presenceListenerUnsubscribe()
+      }
+      const gameUserConnectedRef: DatabaseReference = dbRef(
+        rtdb,
+        `ongoingGames/${gameCode}/connected/${$page.data.user.uid}`,
+      )
+      setRef(gameUserConnectedRef, false)
+    }
+  })
 </script>
 
 <Decor

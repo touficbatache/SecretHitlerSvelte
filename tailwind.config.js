@@ -16,6 +16,7 @@ export default {
     extend: {
       animation: {
         "pulse-slow": "pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        blink: "blink 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
       backgroundImage: {
         "board-election-tracker": "url('/board_election_tracker.png')",
@@ -179,6 +180,14 @@ export default {
         nunito: ["Nunito Variable"],
       },
       keyframes: {
+        blink: {
+          "3.5%, 10.5%": {
+            opacity: 0.9,
+          },
+          "7%, 14%": {
+            opacity: 1,
+          },
+        },
         rotator: {
           "0%": {
             transform: "rotate(0deg)",

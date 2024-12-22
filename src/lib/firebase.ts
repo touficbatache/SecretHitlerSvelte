@@ -106,6 +106,7 @@ export async function signOut() {
 export function castGameData(snapshotValue: any): GameData {
   const user = getAuth(app).currentUser
   const {
+    connected,
     currentSession,
     electionTracker,
     gameType,
@@ -117,6 +118,7 @@ export function castGameData(snapshotValue: any): GameData {
     settings,
     specialElectionPlayer,
     startedAt,
+    visibility,
     status,
     subStatus,
   } = snapshotValue
@@ -140,6 +142,7 @@ export function castGameData(snapshotValue: any): GameData {
     role: player.role,
     membership: player.role === "liberal" ? "liberal" : "fascist",
     self: player.id === user?.uid,
+    isConnected: connected[player.id] ?? false,
     isExecuted: player.isExecuted ?? false,
     isInvestigated: player.isInvestigated ?? false,
     isPresident: player.id === currentSessionObj?.presidentId,
@@ -166,6 +169,7 @@ export function castGameData(snapshotValue: any): GameData {
       }
     | undefined = policies
   return {
+    connected,
     currentSession: {
       ...currentSession,
       president: () => allPlayers.find((player) => player.id === currentSessionObj?.presidentId),
@@ -199,6 +203,7 @@ export function castGameData(snapshotValue: any): GameData {
     presidentialPower,
     settings,
     startedAt,
+    visibility: visibility === "public" ? "public" : "private",
     status,
     specialElectionPlayer,
     subStatus,

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Icon from "@iconify/svelte"
+
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
@@ -9,7 +11,7 @@
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import PlayfulIconButton from "$lib/components/PlayfulIconButton.svelte"
 
-  const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  const dateFormatter: Intl.DateTimeFormat = new Intl.DateTimeFormat("en-US", {
     month: "2-digit",
     year: "numeric",
   })
@@ -147,11 +149,16 @@
         </tr>
       </thead>
       <tbody>
-        {#each $page.data.games as { createdAt, code, playerCount, startedAt, status, subStatus }}
+        {#each $page.data.games as { createdAt, code, playerCount, startedAt, visibility, status, subStatus }}
           {@const winningTeam = subStatus?.split("gameEnded_")[1]}
           <tr class="h-20 [&>*]:font-normal">
             <td>
-              <div class="!grid grid-cols-2 md:!flex gap-1 rounded-l-lg">
+              <div class="!hidden md:!flex gap-1 rounded-l-lg">
+                {#if visibility === "public"}
+                  <div class="mr-2 p-2 bg-green-800 rounded-full">
+                    <Icon icon="fa6-solid:tower-broadcast" />
+                  </div>
+                {/if}
                 <div class="col-span-2 justify-self-center flex gap-0.5 md:gap-1">
                   {#each code.split("") as digit}
                     <span
@@ -161,7 +168,7 @@
                     </span>
                   {/each}
                 </div>
-                <div class="hidden md:block h-5 w-0.25 md:mx-2 bg-neutral-700" />
+                <div class="h-5 w-0.25 md:mx-2 bg-neutral-700" />
                 <PlayfulIconButton
                   colors={{
                     background: "#2c2c2c",
@@ -191,6 +198,53 @@
                     on:touchend={() => (revealGameCode = false)}
                   />
                 {/if}
+              </div>
+              <div class="md:!hidden flex flex-col gap-1 rounded-l-lg">
+                <div class="col-span-2 justify-self-center flex gap-0.5 md:gap-1">
+                  {#each code.split("") as digit}
+                    <span
+                      class="w-5 md:w-7 rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-center text-lg px-1 md:px-2 md:py-0.5"
+                    >
+                      {#if !hideGameCode} {digit} {:else} •{/if}
+                    </span>
+                  {/each}
+                </div>
+                <div class="flex gap-2">
+                  {#if visibility === "public"}
+                    <div class="justify-self-center p-1.5 bg-green-800 rounded-full">
+                      <Icon icon="fa6-solid:tower-broadcast" />
+                    </div>
+                  {/if}
+                  <PlayfulIconButton
+                    colors={{
+                      background: "#2c2c2c",
+                      backgroundLight: "#2f2f2f",
+                      backgroundRaised: "#222222",
+                      reflection: "rgba(255, 255, 255, 0.3)",
+                      text: "#d1d1d1",
+                    }}
+                    extraClasses="w-8 h-7 md:w-9 md:h-8 aspect-square"
+                    icon={copiedGameCode === code ? "fa:check" : "ion:copy"}
+                    on:click={() => copyGameCode(code)}
+                  />
+                  {#if $page.data.streamerModeEnabled === true}
+                    <PlayfulIconButton
+                      colors={{
+                        background: "#2c2c2c",
+                        backgroundLight: "#2f2f2f",
+                        backgroundRaised: "#222222",
+                        reflection: "rgba(255, 255, 255, 0.3)",
+                        text: "#d1d1d1",
+                      }}
+                      extraClasses="w-8 h-7 md:w-9 md:h-8 aspect-square"
+                      icon="ion:eye-off-sharp"
+                      on:mousedown={() => (revealGameCode = true)}
+                      on:touchstart={() => (revealGameCode = true)}
+                      on:mouseup={() => (revealGameCode = false)}
+                      on:touchend={() => (revealGameCode = false)}
+                    />
+                  {/if}
+                </div>
               </div>
             </td>
             <td class="hidden md:table-cell">
