@@ -144,10 +144,10 @@
             <ul class="self-stretch flex-1 flex flex-col gap-2">
               {#each joinableGames as { createdAt, code, playerCount, startedAt, visibility, status, subStatus }}
                 <li
-                  class="flex justify-around py-1.5 bg-neutral-50/5 shadow-frame rounded-l-lg rounded-r-lg"
+                  class="flex justify-around items-center py-1.5 bg-neutral-50/5 shadow-frame rounded-l-lg rounded-r-lg"
                 >
                   <div class="flex gap-1">
-                    <div class="col-span-2 justify-self-center flex gap-0.5">
+                    <div class="col-span-2 justify-self-center flex items-center gap-0.5">
                       {#each Array(6) as i}
                         <span
                           class="w-5 rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-center text-lg px-1 md:py-0.5"
@@ -157,20 +157,26 @@
                       {/each}
                     </div>
                   </div>
-                  <div class="flex items-center md:px-5 text-nowrap">
+                  <div class="hidden md:flex items-center md:pl-4 md:pr-1.5 text-nowrap">
                     {playerCount} player{playerCount === 1 ? "" : "s"}
                   </div>
-                  <div class="flex items-center md:px-5 text-nowrap">
+                  <div class="hidden md:flex items-center md:pl-1.5 md:pr-4 text-nowrap">
                     {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
                   </div>
-                  <div>
-                    <PlayfulButton
-                      enabled={!isJoining}
-                      extraClasses="text-sm"
-                      on:click={() => join(code)}
-                      size="extra-small">Join</PlayfulButton
-                    >
+                  <div class="md:hidden flex flex-col gap-1">
+                    <span>
+                      {playerCount} player{playerCount === 1 ? "" : "s"}
+                    </span>
+                    <span>
+                      {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
+                    </span>
                   </div>
+                  <PlayfulButton
+                    enabled={!isJoining}
+                    extraClasses="text-sm"
+                    on:click={() => join(code)}
+                    size="extra-small">Join</PlayfulButton
+                  >
                 </li>
               {/each}
             </ul>
@@ -211,10 +217,10 @@
             <ul class="self-stretch flex-1 flex flex-col gap-2">
               {#each watchableGames as { createdAt, code, playerCount, startedAt, status, subStatus }}
                 <li
-                  class="flex justify-around py-1.5 bg-neutral-50/5 shadow-frame rounded-l-lg rounded-r-lg"
+                  class="flex justify-around items-center py-1.5 bg-neutral-50/5 shadow-frame rounded-l-lg rounded-r-lg"
                 >
                   <div class="flex gap-1">
-                    <div class="col-span-2 justify-self-center flex gap-0.5">
+                    <div class="col-span-2 justify-self-center flex items-center gap-0.5">
                       {#each code.slice("") as digit}
                         <span
                           class="w-5 rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-center text-lg px-1 md:py-0.5"
@@ -224,22 +230,28 @@
                       {/each}
                     </div>
                   </div>
-                  <div class="flex items-center md:px-5 text-nowrap">
+                  <div class="hidden md:flex items-center md:pl-4 md:pr-1.5 text-nowrap">
                     {playerCount} player{playerCount === 1 ? "" : "s"}
                   </div>
-                  <div class="flex items-center md:px-5 text-nowrap">
+                  <div class="hidden md:flex items-center md:pl-1.5 md:pr-4 text-nowrap">
                     {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
                   </div>
-                  <div>
-                    <PlayfulButton
-                      enabled={!isJoining}
-                      extraClasses="text-sm"
-                      on:click={() => (showWatchDialog = true)}
-                      size="extra-small"
-                    >
-                      Watch
-                    </PlayfulButton>
+                  <div class="md:hidden flex flex-col gap-1">
+                    <span>
+                      {playerCount} player{playerCount === 1 ? "" : "s"}
+                    </span>
+                    <span>
+                      {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
+                    </span>
                   </div>
+                  <PlayfulButton
+                    enabled={!isJoining}
+                    extraClasses="text-sm"
+                    on:click={() => (showWatchDialog = true)}
+                    size="extra-small"
+                  >
+                    Watch
+                  </PlayfulButton>
                 </li>
               {/each}
             </ul>

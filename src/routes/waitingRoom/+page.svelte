@@ -147,7 +147,7 @@
     <div class="px-6 py-6 flex flex-col gap-4 bg-[#141414] shadow-frame rounded-lg">
       <div class="flex items-center gap-3">
         <Icon class="text-xl" icon="fa:warning" />
-        <h5 class="text-2xl">Streamer mode is on</h5>
+        <h5 class="text-xl md:text-2xl">Streamer mode is on</h5>
       </div>
       <span>Are you sure you want to make your game public?</span>
       <span>Anyone will be able to join.</span>

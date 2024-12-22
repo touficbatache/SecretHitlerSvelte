@@ -31,6 +31,9 @@
   let innerWidth: number
   let infoOpen: boolean = false
 
+  let showPublicVisibilityStreamerModeWarning: boolean = false
+  let modifyingGameVisibility: boolean = false
+
   let showLeaveWarning: boolean = false
   let showLeavingLoading: boolean = false
 
@@ -46,6 +49,19 @@
         copyGameCodeSuccess = false
       }, 2000)
     })
+  }
+
+  async function toggleGameVisibility(force: boolean = false) {
+    if (streamerModeEnabled && gameData?.visibility === "private" && !force) {
+      showPublicVisibilityStreamerModeWarning = true
+    } else {
+      modifyingGameVisibility = true
+      await ApiClient.setGameVisibility(
+        gameCode,
+        gameData?.visibility === "private" ? "public" : "private",
+      )
+      modifyingGameVisibility = false
+    }
   }
 
   async function leave() {
@@ -252,6 +268,91 @@
               ? gameData?.players?.all.map((player) => player.id)
               : []}
           />
+        </div>
+
+        {#if gameData.isOwner}
+          <PlayfulButton
+            colors={gameData.visibility === "private"
+              ? {
+                  background: "#2c2c2c",
+                  backgroundLight: "#2f2f2f",
+                  backgroundRaised: "#222222",
+                  reflection: "rgba(255, 255, 255, 0.3)",
+                  text: "#afafaf",
+                }
+              : {
+                  background: "#ea6148",
+                  backgroundLight: "#ef664a",
+                  backgroundRaised: "#bb612b",
+                  text: "#fbe1c0",
+                }}
+            enabled={!modifyingGameVisibility}
+            icon="fa6-solid:tower-broadcast"
+            on:click={() => toggleGameVisibility()}
+            size="small"
+          >
+            Visibility:
+            {#if gameData.visibility === "private"}
+              private
+            {:else}
+              public
+            {/if}
+          </PlayfulButton>
+        {:else}
+          <ElevatedText
+            class="w-full px-3 py-1.5 text-lg tracking-wider rounded-lg opacity-70 transition-all {gameData.visibility ===
+            'private'
+              ? 'text-neutral-300 bg-neutral-800'
+              : 'text-[#fbe1c0] bg-[#ea6148]'}"
+            weight="black"
+          >
+            <Icon class="my-auto text-base" icon="fa6-solid:tower-broadcast" />
+
+            Game is
+            {#if gameData.visibility === "private"}
+              private
+            {:else}
+              public
+            {/if}
+          </ElevatedText>
+        {/if}
+      </div>
+    </FloatingWindow>
+
+    <FloatingWindow
+      bind:open={showPublicVisibilityStreamerModeWarning}
+      classes="w-full md:w-auto px-10 md:px-0"
+    >
+      <div class="px-6 py-6 flex flex-col gap-4 bg-[#141414] shadow-frame rounded-lg">
+        <div class="flex items-center gap-3">
+          <Icon class="text-xl" icon="fa:warning" />
+          <h5 class="text-xl md:text-2xl">Streamer mode is on</h5>
+        </div>
+        <span>No worries, you're currently mid-game, so no one will be able to join.</span>
+        <span>Making your game public will allow others to watch it.</span>
+        <div class="self-center flex gap-2 mt-2">
+          <PlayfulButton
+            on:click={() => (showPublicVisibilityStreamerModeWarning = false)}
+            size="extra-small"
+          >
+            Cancel
+          </PlayfulButton>
+          <PlayfulButton
+            colors={{
+              background: "#2c2c2c",
+              backgroundLight: "#2f2f2f",
+              backgroundRaised: "#222222",
+              reflection: "rgba(255, 255, 255, 0.3)",
+              text: "#d1d1d1",
+            }}
+            on:click={() => {
+              showPublicVisibilityStreamerModeWarning = false
+              toggleGameVisibility(true)
+            }}
+            size="extra-small"
+          >
+            Make public
+          </PlayfulButton>
         </div>
       </div>
     </FloatingWindow>
