@@ -20,7 +20,8 @@
   let isSetup: boolean = false
   let selectedPlayer: Player | undefined = undefined
 
-  $: alivePlayers = players?.others.filter((player) => !player.isExecuted) ?? []
+  $: executablePlayers =
+    players?.all.filter((player) => !player.isExecuted && !player.isPresident) ?? []
   $: isPresident = players?.self?.isPresident ?? false
   $: visibleRolePlayerIds = players?.visibleRolePlayerIds() ?? []
 
@@ -79,7 +80,7 @@
         {/if}
       </span>
       <Players
-        players={alivePlayers}
+        players={executablePlayers}
         cols={3}
         hideExtras={true}
         hidePlacards={true}

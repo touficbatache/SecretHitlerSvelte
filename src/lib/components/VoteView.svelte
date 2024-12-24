@@ -78,7 +78,7 @@
       {/if}
     </div>
 
-    {#if !hasVoted}
+    {#if !hasVoted && players?.self.isExecuted === false}
       <div class="flex flex-col items-center gap-3 mt-7">
         <span class="text-2xl">Vote</span>
         <button
@@ -130,7 +130,7 @@
           compact={Compact.never}
           hideExtras={true}
           hidePlacards={true}
-          players={players?.all}
+          players={players?.alive()}
           showRoles={players?.visibleRolePlayerIds()}
         />
         {#if waiting}
