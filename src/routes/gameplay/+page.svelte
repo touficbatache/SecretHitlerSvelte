@@ -137,6 +137,7 @@
   {#if $gameData?.players?.all}
     <Canvas>
       <GameplayScene
+        disablePan={true}
         disableRotation={true}
         electionTracker={$gameData?.electionTracker}
         playerCount={$gameData?.players.all?.length ?? 0}

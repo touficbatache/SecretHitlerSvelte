@@ -16,6 +16,7 @@
   import type { GameDataPolicies } from "$lib/game_data"
   import { attachMaterial } from "$lib/three_helper"
 
+  export let disablePan: boolean = false
   export let disableRotation: boolean = false
   export let electionTracker: number = 0
   export let playerCount: number = 5
@@ -78,6 +79,7 @@
 >
   <OrbitControls
     enableRotate={!disableRotation}
+    enablePan={!disablePan}
     {minZoom}
     {maxZoom}
     on:change={({ target }) => {
