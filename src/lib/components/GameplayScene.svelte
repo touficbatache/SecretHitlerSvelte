@@ -23,6 +23,9 @@
 
   const { size, scene } = useThrelte()
   const D = 10
+  const baseZoom: number = 16
+  const minZoom: number = baseZoom / 2
+  const maxZoom: number = baseZoom * 3
 
   let helperA: DirectionalLightHelper
   let helperB: DirectionalLightHelper
@@ -71,10 +74,12 @@
   on:create={({ ref }) => {
     ref.lookAt(0, 0, 0)
   }}
-  zoom={16}
+  zoom={baseZoom}
 >
   <OrbitControls
     enableRotate={!disableRotation}
+    {minZoom}
+    {maxZoom}
     on:change={({ target }) => {
       //target.target.clamp(new Vector3(-2, -2, -2), new Vector3(2, 2, 2))
       //console.log("gg", target)
