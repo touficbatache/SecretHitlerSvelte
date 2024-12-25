@@ -185,6 +185,13 @@
       classes="relative flex flex-col py-6 bg-[#141414] shadow-frame rounded-lg"
     >
       <PlayfulIconButton
+        colors={{
+          background: "#2c2c2c",
+          backgroundLight: "#2f2f2f",
+          backgroundRaised: "#222222",
+          reflection: "rgba(255, 255, 255, 0.3)",
+          text: "#d1d1d1",
+        }}
         extraClasses="!absolute top-4 right-4 w-8 h-7"
         icon="fa:times"
         on:click={() => (infoOpen = false)}

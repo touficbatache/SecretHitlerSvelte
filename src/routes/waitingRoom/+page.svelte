@@ -242,7 +242,7 @@
   </div>
 
   <div
-    class="w-full h-full flex flex-col md:flex-row justify-evenly items-center gap-4 md:gap-20 px-6 py-20 md:px-16 md:py-10 overflow-y-auto"
+    class="w-full h-full flex flex-col md:flex-row justify-evenly items-center gap-4 md:gap-20 px-6 pt-24 pb-8 md:px-16 md:py-10 overflow-y-auto"
   >
     <div
       class="w-full flex flex-col items-center gap-3 md:gap-5 md:h-full"
