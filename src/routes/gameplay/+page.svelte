@@ -141,7 +141,10 @@
         disableRotation={true}
         electionTracker={$gameData?.electionTracker}
         playerCount={$gameData?.players.all?.length ?? 0}
-        policies={$gameData?.policies}
+        policies={{
+          ...$gameData?.policies,
+          drawPile: $gameData?.policies.drawPile.toReversed(),
+        }}
       />
     </Canvas>
   {/if}
