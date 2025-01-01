@@ -143,7 +143,7 @@
         playerCount={$gameData?.players.all?.length ?? 0}
         policies={{
           ...$gameData?.policies,
-          drawPile: $gameData?.policies.drawPile.toReversed(),
+          drawPile: Array($gameData?.policies.drawPileCount()),
         }}
       />
     </Canvas>
