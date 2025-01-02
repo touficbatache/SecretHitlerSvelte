@@ -240,7 +240,7 @@
   {:else if statusText($gameData?.subStatus) !== undefined}
     {@const isImportant = importantGameStatuses.includes($gameData?.subStatus)}
     <button
-      class="absolute inset-x-6 bottom-36 md:bottom-6 flex items-center gap-4 px-4 py-2 shadow-frame bg-[#141414] rounded-lg animate-pulse-slow"
+      class="absolute inset-x-6 bottom-36 md:bottom-6 flex md:justify-center items-center gap-4 px-4 py-2 shadow-frame bg-[#141414] rounded-lg animate-pulse-slow"
       class:border-2={isImportant}
       class:border-red-fascist={isImportant && $gameData?.players.self.membership === "fascist"}
       class:border-blue-liberal={isImportant && $gameData?.players.self.membership === "liberal"}
