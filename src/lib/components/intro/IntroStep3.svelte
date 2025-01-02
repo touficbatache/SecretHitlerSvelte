@@ -21,7 +21,7 @@
   })
 </script>
 
-<div class="w-full h-full flex flex-col justify-evenly items-center px-6 md:p-0">
+<div class="w-full h-full flex flex-col md:flex-row justify-evenly items-center px-6 md:p-0">
   {#if player?.role === "liberal"}
     <div
       class="flex flex-col items-center gap-2 opacity-0 transition-opacity duration-1000"

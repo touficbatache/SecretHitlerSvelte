@@ -25,7 +25,9 @@
   })
 </script>
 
-<div class="w-full h-full flex flex-col justify-around items-center px-6 md:p-0">
+<div
+  class="w-full h-full flex flex-col md:flex-row justify-around md:justify-evenly items-center px-6 md:p-0"
+>
   {#if player?.role === "liberal"}
     <div
       class="flex flex-col gap-2 opacity-0 transition-opacity duration-1000"
@@ -81,7 +83,7 @@
               {/if}
             </div>
             <div
-              class="w-20 h-20 bg-contain bg-center rounded-full border-4 border-sh-beige"
+              class="w-20 md:w-28 h-20 md:h-28 bg-contain bg-center rounded-full border-4 border-sh-beige"
               class:bg-player-fascist-frog={fascist?.assetReference === "fascist_frog"}
               class:bg-player-fascist-lizard={fascist?.assetReference === "fascist_lizard"}
               class:bg-player-fascist-snake={fascist?.assetReference === "fascist_snake"}
@@ -100,7 +102,7 @@
     </div>
 
     <div
-      class="flex flex-col gap-2 opacity-0 transition-opacity duration-1000"
+      class="flex md:hidden flex-col gap-2 opacity-0 transition-opacity duration-1000"
       class:opacity-100={visibleSection >= 1}
     >
       <div class="relative w-full text-center">To win, enact 6 fascist policies</div>
@@ -115,14 +117,14 @@
     </div>
 
     <div
-      class="flex flex-col items-center gap-4 opacity-0 transition-opacity duration-1000"
+      class="flex md:hidden flex-col items-center gap-4 opacity-0 transition-opacity duration-1000"
       class:opacity-100={visibleSection >= 2}
     >
       <div class="relative w-full text-center">
         {#if player?.role === "fascist"}
-          Or elect Hitler as Chancellor<br />(with 3+ Fascist policies on the board)
+          Or elect Hitler as Chancellor<br />after 3+ Fascist policies are on the board
         {:else}
-          Or be elected as Chancellor<br />(with 3+ Fascist policies on the board)
+          Or be elected as Chancellor<br />after 3+ Fascist policies are on the board
         {/if}
       </div>
       <div class="relative w-48 h-48">
@@ -142,6 +144,55 @@
           <div
             class="rounded-sm h-10 rotate-12 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-2 shadow-md"
           />
+        </div>
+      </div>
+    </div>
+
+    <div class="hidden md:flex h-full flex-col justify-around items-center">
+      <div
+        class="flex flex-col gap-2 opacity-0 transition-opacity duration-1000"
+        class:opacity-100={visibleSection >= 1}
+      >
+        <div class="relative w-full text-center">To win, enact 6 fascist policies</div>
+        <div class="flex">
+          {#each Array(6) as _, policyIndex}
+            <div
+              class="rounded-md h-20 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-4
+                  z-{5 * 10 - policyIndex * 10} shadow-card-small"
+            />
+          {/each}
+        </div>
+      </div>
+
+      <div
+        class="flex flex-col items-center gap-4 opacity-0 transition-opacity duration-1000"
+        class:opacity-100={visibleSection >= 2}
+      >
+        <div class="relative w-full text-center">
+          {#if player?.role === "fascist"}
+            Or elect Hitler as Chancellor<br />after 3+ Fascist policies are on the board
+          {:else}
+            Or be elected as Chancellor<br />after 3+ Fascist policies are on the board
+          {/if}
+        </div>
+        <div class="relative w-36 h-36">
+          <div
+            class="absolute inset-0 bg-player-hitler bg-contain bg-center rounded-full border-[6px] border-sh-beige"
+          />
+          <div
+            class="absolute inset-x-0 bottom-0 aspect-[1321/349] bg-placard-chancellor bg-contain bg-center"
+          />
+          <div class="absolute bottom-8 right-0 flex">
+            <div
+              class="rounded-sm h-8 -rotate-12 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-2 z-20 shadow-md"
+            />
+            <div
+              class="rounded-sm h-8 -mt-0.5 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-2 z-10 shadow-md"
+            />
+            <div
+              class="rounded-sm h-8 rotate-12 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-2 shadow-md"
+            />
+          </div>
         </div>
       </div>
     </div>

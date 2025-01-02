@@ -29,8 +29,6 @@ async function getActivePublicGames(): Promise<JoinGameResponse> {
     }
   }
 
-  console.log(joinableGames)
-
   return {
     joinableGames: joinableGames.toReversed(), // Show oldest games first (people have been waiting for more time 🤷🏻‍♂️)
     watchableGames,

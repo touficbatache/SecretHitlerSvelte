@@ -42,7 +42,7 @@
   // TODO: uncomment
   // $: player = $gameData?.players?.self
 
-  let skipLongIntro: boolean = true
+  let skipLongIntro: boolean = false
   $: if (player) {
     if (!skipLongIntro) {
       setupLongIntro()
@@ -135,7 +135,7 @@
 
   {#if stepShown === 1}
     <div
-      class="absolute inset-0 flex flex-col justify-center items-center gap-16 px-6 md:p-0"
+      class="absolute inset-0 flex flex-col justify-center items-center gap-16 md:pt-10 px-6 md:p-0"
       transition:fade={{ duration: 300 }}
     >
       <IntroStep1 {player} />
@@ -166,7 +166,7 @@
   {#if skipLongIntro}
     <CountDown
       classContainer=""
-      classNumber="absolute bottom-16 left-1/2 -translate-x-1/2 text-4xl"
+      classNumber="absolute bottom-16 md:bottom-10 left-1/2 -translate-x-1/2 text-4xl"
       startDelay={countDownStartDelay}
       trigger={triggerCountDown}
     />
