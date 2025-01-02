@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { fly } from "svelte/transition"
-
   import { browser } from "$app/environment"
   import type { GameplayApiResponse } from "$lib/api_client"
   import * as ApiClient from "$lib/api_client"
+  import CountDown from "$lib/components/CountDown.svelte"
   import Deck from "$lib/components/Deck.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
@@ -18,33 +17,12 @@
   export let presidentialPower: PresidentialPower | undefined = undefined
 
   let cards: string[] = []
-  let countDown: number = 4
-  let isSetup: boolean = false
   const sessionStorageKey: string = "policyPeek"
 
   $: isPresident = players?.self?.isPresident ?? false
 
   $: if (browser && open) {
     policyPeek()
-  }
-
-  $: if (presidentialPower === "done") {
-    setupCountdown()
-  }
-
-  function setupCountdown() {
-    if (isSetup) {
-      return
-    }
-
-    isSetup = true
-
-    setTimeout(async () => {
-      while (countDown > 0) {
-        countDown--
-        await new Promise((f) => setTimeout(f, 1000))
-      }
-    }, 2000)
   }
 
   async function policyPeek() {
@@ -123,18 +101,7 @@
           policies' order!
         </span>
       {/if}
-      <div class="relative">
-        <span class="text-2xl invisible">{countDown}</span>
-        {#key countDown}
-          <span
-            class="absolute inset-0 text-2xl"
-            in:fly={{ duration: 700, y: "30px" }}
-            out:fly={{ duration: 200, y: "-30px" }}
-          >
-            {4 > countDown && countDown > 0 ? countDown : ""}
-          </span>
-        {/key}
-      </div>
+      <CountDown trigger={presidentialPower === "done"} />
     </div>
   </div>
 </FloatingWindow>

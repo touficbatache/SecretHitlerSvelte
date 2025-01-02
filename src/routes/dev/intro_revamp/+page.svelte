@@ -1,9 +1,10 @@
 <script lang="ts">
   import { getContext } from "svelte"
   import type { Writable } from "svelte/store"
-  import { fade, fly } from "svelte/transition"
+  import { fade } from "svelte/transition"
 
   import { browser } from "$app/environment"
+  import CountDown from "$lib/components/CountDown.svelte"
   import IntroStep1 from "$lib/components/intro/IntroStep1.svelte"
   import IntroStep2 from "$lib/components/intro/IntroStep2.svelte"
   import IntroStep3 from "$lib/components/intro/IntroStep3.svelte"
@@ -25,7 +26,8 @@
   let steps: Step[] | undefined
   let stepShown: number = 1
 
-  let countDown: number = 4
+  let countDownStartDelay: number | undefined = undefined
+  let triggerCountDown: boolean = false
 
   $: if (browser) {
     if ($gameData?.status !== "settingUp") {
@@ -45,7 +47,11 @@
     if (!skipLongIntro) {
       setupLongIntro()
     } else {
-      setupShortIntro()
+      // let startedAt: number = $gameData?.startedAt ?? Date.now()
+      let startedAt: number = Date.now()
+      let currentTime: number = Date.now()
+      countDownStartDelay = 2000 - (currentTime - startedAt)
+      triggerCountDown = true
     }
   }
   // TODO: uncomment
@@ -118,24 +124,6 @@
       }, duration - (currentTime - startedAt))
     }
   }
-
-  function setupShortIntro() {
-    if (isSetup) {
-      return
-    }
-
-    isSetup = true
-
-    let startedAt: number = $gameData?.startedAt ?? Date.now()
-    let currentTime: number = Date.now()
-
-    setTimeout(async () => {
-      while (countDown > 0) {
-        countDown--
-        await new Promise((f) => setTimeout(f, 1000))
-      }
-    }, 2000 - (currentTime - startedAt))
-  }
 </script>
 
 {#if $gameData?.players}
@@ -176,14 +164,11 @@
   {/if}
 
   {#if skipLongIntro}
-    {#key countDown}
-      <span
-        class="absolute bottom-16 left-1/2 -translate-x-1/2 text-4xl"
-        in:fly={{ duration: 700, y: "30px" }}
-        out:fly={{ duration: 200, y: "-30px" }}
-      >
-        {4 > countDown && countDown > 0 ? countDown : ""}
-      </span>
-    {/key}
+    <CountDown
+      classContainer=""
+      classNumber="absolute bottom-16 left-1/2 -translate-x-1/2 text-4xl"
+      startDelay={countDownStartDelay}
+      trigger={triggerCountDown}
+    />
   {/if}
 {/if}

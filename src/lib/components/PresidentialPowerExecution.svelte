@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte"
-  import { fly } from "svelte/transition"
 
+  import CountDown from "$lib/components/CountDown.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import Players from "$lib/components/Players.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
@@ -16,33 +16,12 @@
 
   const dispatch = createEventDispatcher()
 
-  let countDown: number = 4
-  let isSetup: boolean = false
   let selectedPlayer: Player | undefined = undefined
 
   $: executablePlayers =
     players?.all.filter((player) => !player.isExecuted && !player.isPresident) ?? []
   $: isPresident = players?.self?.isPresident ?? false
   $: visibleRolePlayerIds = players?.visibleRolePlayerIds() ?? []
-
-  $: if (presidentialPower === "done") {
-    setupCountdown()
-  }
-
-  function setupCountdown() {
-    if (isSetup) {
-      return
-    }
-
-    isSetup = true
-
-    setTimeout(async () => {
-      while (countDown > 0) {
-        countDown--
-        await new Promise((f) => setTimeout(f, 1000))
-      }
-    }, 2000)
-  }
 </script>
 
 <FloatingWindow
@@ -103,18 +82,7 @@
           Execute
         </PlayfulButton>
       {/if}
-      <div class="relative">
-        <span class="text-2xl invisible">{countDown}</span>
-        {#key countDown}
-          <span
-            class="absolute inset-0 text-2xl"
-            in:fly={{ duration: 700, y: "30px" }}
-            out:fly={{ duration: 200, y: "-30px" }}
-          >
-            {4 > countDown && countDown > 0 ? countDown : ""}
-          </span>
-        {/key}
-      </div>
+      <CountDown trigger={presidentialPower === "done"} />
     </div>
   </div>
 </FloatingWindow>

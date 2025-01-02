@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { fly } from "svelte/transition"
-
   import { browser } from "$app/environment"
   import type { GameplayApiResponse } from "$lib/api_client"
   import * as ApiClient from "$lib/api_client"
+  import CountDown from "$lib/components/CountDown.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import Players from "$lib/components/Players.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
@@ -18,9 +17,7 @@
   export let president: Player | undefined = undefined
   export let presidentialPower: PresidentialPower | undefined = undefined
 
-  let countDown: number = 4
   let isRequestSent: boolean = false
-  let isSetup: boolean = false
   let membership: string | undefined = undefined
   let selectedPlayer: Player | undefined = undefined
   const sessionStorageKey: string = "investigation"
@@ -29,10 +26,6 @@
     players?.alive().filter((player) => !player.isPresident && !player.isInvestigated) ?? []
   $: isPresident = players?.self?.isPresident ?? false
   $: visibleRolePlayerIds = players?.visibleRolePlayerIds() ?? []
-
-  $: if (presidentialPower === "done") {
-    setupCountdown()
-  }
 
   $: if (browser && sessionStorage.getItem(sessionStorageKey) != null) {
     const storageJson: { membership: string; player: Player } = JSON.parse(
@@ -49,21 +42,6 @@
     } else {
       membership = undefined
     }
-  }
-
-  function setupCountdown() {
-    if (isSetup) {
-      return
-    }
-
-    isSetup = true
-
-    setTimeout(async () => {
-      while (countDown > 0) {
-        countDown--
-        await new Promise((f) => setTimeout(f, 1000))
-      }
-    }, 2000)
   }
 
   async function investigateLoyalty() {
@@ -177,18 +155,7 @@
           >
         {/if}
       {/if}
-      <div class="relative">
-        <span class="text-2xl invisible">{countDown}</span>
-        {#key countDown}
-          <span
-            class="absolute inset-0 text-2xl"
-            in:fly={{ duration: 700, y: "30px" }}
-            out:fly={{ duration: 200, y: "-30px" }}
-          >
-            {4 > countDown && countDown > 0 ? countDown : ""}
-          </span>
-        {/key}
-      </div>
+      <CountDown trigger={presidentialPower === "done"} />
     </div>
   </div>
 </FloatingWindow>
