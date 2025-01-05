@@ -6,7 +6,7 @@ import type { FirebaseServerConfig } from "$lib/server/firebase"
 
 export interface Config {
   apiURL: string
-  devMode: boolean
+  debugMode: boolean
   firebaseAppConfig: FirebaseOptions
   firebaseServerConfig: FirebaseServerConfig
   recaptchaSiteKey: string
@@ -14,7 +14,7 @@ export interface Config {
 
 const [config, error] = validateConfig({
   apiURL: process.env["PUBLIC_API_URL"],
-  devMode: process.env["PUBLIC_DEV"],
+  debugMode: process.env["PUBLIC_DEBUG"],
   firebaseAppConfig: process.env["PUBLIC_FIREBASE_CONFIG"],
   firebaseServerConfig: process.env["PRIVATE_FIREBASE_SERVER_CONFIG"],
   recaptchaSiteKey: process.env["PUBLIC_RECAPTCHA_SITE_KEY"],
@@ -28,7 +28,7 @@ if (error !== null) {
       2,
     )}`,
   )
-  // process.exit(-1)
+  process.exit(-1)
 }
 
 export default config

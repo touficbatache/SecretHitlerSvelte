@@ -10,7 +10,7 @@ export const load: LayoutServerLoad = async ({
   locals,
 }): Promise<{
   apiURL: string
-  devMode?: boolean
+  debugMode?: boolean
   firebaseAppConfig?: FirebaseOptions
   gameCode?: string
   recaptchaSiteKey?: string
@@ -25,7 +25,7 @@ export const load: LayoutServerLoad = async ({
 
   return {
     apiURL: config.apiURL,
-    devMode: config.devMode,
+    debugMode: config.debugMode,
     firebaseAppConfig: config.firebaseAppConfig,
     gameCode,
     recaptchaSiteKey: config.recaptchaSiteKey,

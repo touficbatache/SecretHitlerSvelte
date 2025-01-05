@@ -39,7 +39,7 @@
     auth = getAuth(app)
 
     //TODO: remove?
-    if ($page.data.devMode) {
+    if ($page.data.debugMode) {
       auth.settings.appVerificationDisabledForTesting = true
     }
 

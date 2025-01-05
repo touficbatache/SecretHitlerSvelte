@@ -2,7 +2,7 @@ import admin from "firebase-admin"
 import type { UserRecord } from "firebase-admin/auth"
 
 import { PRIVATE_FIREBASE_SERVER_CONFIG } from "$env/static/private"
-import { PUBLIC_FIREBASE_CONFIG } from "$env/static/public"
+import { PUBLIC_DEBUG, PUBLIC_FIREBASE_CONFIG } from "$env/static/public"
 
 export interface FirebaseServerConfig {
   type: string
@@ -29,7 +29,7 @@ if (!initialized) {
     credential: admin.credential.cert(serviceAccount),
     databaseURL: publicConfig.databaseURL,
   })
-} else {
+} else if (PUBLIC_DEBUG) {
   console.log("admin", admin)
   console.log("admin.apps", admin.apps)
   console.log("admin.apps.length", admin.apps.length)

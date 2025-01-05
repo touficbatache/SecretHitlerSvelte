@@ -15,7 +15,7 @@ export let rtdb: Database
 export function initializeFirebase(
   firebaseConfig: FirebaseOptions | undefined,
   recaptchaSiteKey: string | undefined,
-  devMode: boolean = false,
+  debugMode: boolean = false,
 ): void {
   if (!browser) {
     throw new Error("Can't use the Firebase client on the server.")
@@ -33,7 +33,7 @@ export function initializeFirebase(
 
   if (!app) {
     app = initializeApp(firebaseConfig)
-    if (devMode) {
+    if (debugMode) {
       self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
     }
     initializeAppCheck(app, {

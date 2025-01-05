@@ -27,7 +27,7 @@
 
   $: if (browser) {
     try {
-      initializeFirebase(data.firebaseAppConfig, data.recaptchaSiteKey, data.devMode)
+      initializeFirebase(data.firebaseAppConfig, data.recaptchaSiteKey, data.debugMode)
     } catch (error) {
       console.error(error)
     }

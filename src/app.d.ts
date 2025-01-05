@@ -5,7 +5,7 @@ declare global {
   namespace App {
     // interface Error {}
     interface Locals {
-      devMode: boolean
+      debugMode: boolean
       firebaseAppConfig: import("@firebase/app").FirebaseOptions
       gameCode?: string
       recaptchaSiteKey: string
