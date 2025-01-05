@@ -18,7 +18,7 @@ export function setSession(cookies: Cookies, session: SHSession) {
   cookies.set("__session", JSON.stringify(session), {
     path: "/",
     httpOnly: true,
-    secure: true,
+    secure: process.env["PUBLIC_SECURE"] === "true",
     sameSite: "lax",
   })
 }
