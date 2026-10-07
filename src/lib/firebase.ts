@@ -111,6 +111,7 @@ export function castGameData(snapshotValue: any): GameData {
     electionTracker,
     gameType,
     lastSuccessfulChancellorId,
+    lastSuccessfulPresidentId,
     ownerId,
     players,
     policies,
@@ -187,10 +188,19 @@ export function castGameData(snapshotValue: any): GameData {
       fascists: allPlayers.filter((player) => player.membership === "fascist"),
       liberals: allPlayers.filter((player) => player.membership === "liberal"),
       alive: () => allPlayers.filter((player) => !player.isExecuted),
-      eligibleForChancellor: () =>
-        allPlayers.filter(
-          (player) => !player.isPresident && !player.isPreviousChancellor && !player.isExecuted,
-        ),
+      // Same rules as the server (eligibility.ts in SecretHitlerFirebase): the last elected
+      // President and Chancellor are term-limited, except that with 5 or fewer players alive
+      // only the last elected Chancellor is.
+      eligibleForChancellor: () => {
+        const alivePlayerCount: number = allPlayers.filter((player) => !player.isExecuted).length
+        return allPlayers.filter(
+          (player) =>
+            !player.isPresident &&
+            !player.isExecuted &&
+            !player.isPreviousChancellor &&
+            !(alivePlayerCount > 5 && player.id === lastSuccessfulPresidentId),
+        )
+      },
       visibleRolePlayerIds: () => canSeeRoles(currentPlayer, allPlayers, gameType),
     },
     policies: {
