@@ -1,15 +1,18 @@
+import { redirect } from "@sveltejs/kit"
+
 import type { PageServerLoad } from "./$types"
 
 import * as ApiClient from "$lib/api_client"
-import { type GameInfo, type GameInfoApiResponse } from "$lib/api_client"
+import { type ApiAuth, type GameInfo, type GameInfoApiResponse } from "$lib/api_client"
+import config from "$lib/server/config"
 
 interface JoinGameResponse {
   joinableGames: GameInfo[]
   watchableGames: GameInfo[]
 }
 
-async function getActivePublicGames(): Promise<JoinGameResponse> {
-  const response: GameInfoApiResponse = await ApiClient.getActivePublicGames()
+async function getActivePublicGames(auth: ApiAuth): Promise<JoinGameResponse> {
+  const response: GameInfoApiResponse = await ApiClient.getActivePublicGames(auth)
 
   const joinableGames: GameInfo[] = []
   const watchableGames: GameInfo[] = []
@@ -35,8 +38,18 @@ async function getActivePublicGames(): Promise<JoinGameResponse> {
   }
 }
 
-export const load: PageServerLoad = () => {
-  const response: Promise<JoinGameResponse> = getActivePublicGames()
+export const load: PageServerLoad = ({ locals }) => {
+  const { user } = locals
+
+  if (!user) {
+    redirect(302, "/login")
+  }
+
+  // Pass this request's credentials explicitly: server modules are shared by all requests.
+  const response: Promise<JoinGameResponse> = getActivePublicGames({
+    apiURL: config.apiURL,
+    token: user.token,
+  })
 
   return {
     response,

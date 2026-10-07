@@ -1,3 +1,4 @@
+import { browser } from "$app/environment"
 import { invalidateAll } from "$app/navigation"
 import type { GameVisibility } from "$lib/game_data"
 
@@ -33,22 +34,37 @@ export interface GameInfo {
   subStatus: string
 }
 
-export let userIdToken: string | undefined
-
-let apiURL: string
-
-export async function init(apiUrl: string, token: string) {
-  apiURL = apiUrl
-  userIdToken = token
+/** Which API to call, and as which user. */
+export interface ApiAuth {
+  apiURL: string
+  token: string | undefined
 }
 
-async function callApi(endpoint: string, body?: string) {
-  return await fetch(new URL(endpoint, apiURL).toString(), {
+/**
+ * Browser only. A browser tab has a single user, so keeping their credentials in module
+ * state is safe there. On the server one module instance serves every request, so server
+ * code must pass an ApiAuth explicitly instead (see getGamesForSelf, getActivePublicGames).
+ */
+let browserAuth: ApiAuth | undefined
+
+export function init(apiUrl: string, token: string) {
+  if (!browser) {
+    throw new Error("ApiClient.init() is browser-only. On the server, pass an ApiAuth explicitly.")
+  }
+  browserAuth = { apiURL: apiUrl, token }
+}
+
+async function callApi(endpoint: string, body?: string, auth: ApiAuth | undefined = browserAuth) {
+  if (auth === undefined) {
+    throw new Error(`API call to ${endpoint} without credentials: call init() or pass an ApiAuth.`)
+  }
+
+  return await fetch(new URL(endpoint, auth.apiURL).toString(), {
     method: "POST",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json; charset=utf-8",
-      Authorization: `Bearer ${userIdToken}`,
+      Authorization: `Bearer ${auth.token}`,
     },
     body,
   })
@@ -319,9 +335,9 @@ export async function leaveGame(): Promise<void> {
   await invalidateAll()
 }
 
-export async function getGamesForSelf(): Promise<GameInfoApiResponse> {
+export async function getGamesForSelf(auth?: ApiAuth): Promise<GameInfoApiResponse> {
   const endpoint: string = "getGamesForSelf"
-  const res: Response = await callApi(endpoint)
+  const res: Response = await callApi(endpoint, undefined, auth)
 
   if (!res.ok) {
     return handleError(res)
@@ -330,9 +346,9 @@ export async function getGamesForSelf(): Promise<GameInfoApiResponse> {
   return handleSuccess(res)
 }
 
-export async function getActivePublicGames(): Promise<GameInfoApiResponse> {
+export async function getActivePublicGames(auth?: ApiAuth): Promise<GameInfoApiResponse> {
   const endpoint: string = "getActivePublicGames"
-  const res: Response = await callApi(endpoint)
+  const res: Response = await callApi(endpoint, undefined, auth)
 
   if (!res.ok) {
     return handleError(res)
