@@ -13,7 +13,7 @@
     "deploy:dev": "firebase deploy --project=dev",
     "deploy:prod": "firebase deploy --project=prod",
     "link": "cp example.firebaserc .firebaserc && cp functions/example.env functions/.env.prod && cp functions/example.env functions/.env.dev && cp functions/example.env functions/.env.local && ed -s .firebaserc <<ED_COMMANDS\n,s/FIREBASEPROJECT/${npm_config_project}/g\nw\nED_COMMANDS",
-    "test": "vitest run",
+    "test": "playwright test -c playwright.unit.config.ts",
     "test:e2e": "firebase emulators:exec --config tests/e2e/firebase.json --only auth,database --project demo-shtest \"playwright test\""
   },
   "dependencies": {
@@ -59,7 +59,6 @@
   "devDependencies": {
     "@playwright/test": "1.56.1",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
-    "eslint-plugin-import": "^2.31.0",
-    "vitest": "2.1.9"
+    "eslint-plugin-import": "^2.31.0"
   }
 }

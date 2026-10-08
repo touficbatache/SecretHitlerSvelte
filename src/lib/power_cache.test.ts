@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { expect, test } from "@playwright/test"
 
 import { powerCacheKey, readPowerCache, writePowerCache } from "$lib/power_cache"
 
@@ -13,11 +13,14 @@ function memoryStorage(): Storage {
   return storage as unknown as Storage
 }
 
-describe("power cache", () => {
-  beforeEach(() => vi.stubGlobal("sessionStorage", memoryStorage()))
-  afterEach(() => vi.unstubAllGlobals())
+test.describe("power cache", () => {
+  const useStorage: (storage: unknown) => void = (storage: unknown) =>
+    Object.defineProperty(globalThis, "sessionStorage", { value: storage, configurable: true })
 
-  it("keys entries by game and enacted policy count", () => {
+  test.beforeEach(() => useStorage(memoryStorage()))
+  test.afterEach(() => delete (globalThis as { sessionStorage?: Storage }).sessionStorage)
+
+  test("keys entries by game and enacted policy count", () => {
     expect(powerCacheKey("policyPeek", "111111", 3)).not.toBe(
       powerCacheKey("policyPeek", "222222", 3),
     )
@@ -26,7 +29,7 @@ describe("power cache", () => {
     )
   })
 
-  it("never returns another game's or round's peek, and clears it", () => {
+  test("never returns another game's or round's peek, and clears it", () => {
     sessionStorage.setItem("policyPeek", "liberal,liberal,liberal") // written by older versions
     writePowerCache(powerCacheKey("policyPeek", "111111", 3), "fascist,fascist,fascist")
     writePowerCache(powerCacheKey("investigation", "111111", 3), "{}")
@@ -35,15 +38,14 @@ describe("power cache", () => {
     expect(Object.keys(sessionStorage)).toEqual([powerCacheKey("investigation", "111111", 3)])
   })
 
-  it("returns the same round's entry, so a reload keeps the peeked cards", () => {
+  test("returns the same round's entry, so a reload keeps the peeked cards", () => {
     const key: string = powerCacheKey("policyPeek", "222222", 3)
     writePowerCache(key, "liberal,fascist,liberal")
     expect(readPowerCache("policyPeek", key)).toBe("liberal,fascist,liberal")
   })
 
-  it("doesn't throw when storage is blocked", () => {
-    vi.stubGlobal(
-      "sessionStorage",
+  test("doesn't throw when storage is blocked", () => {
+    useStorage(
       new Proxy(
         {},
         {
