@@ -9,6 +9,13 @@
   export let policies: string[] = []
   export let type: "draw" | "discard" | undefined = undefined
 
+  $: cardMaterial = type === "draw" ? "/pile_draw.png" : "/pile_discard.png"
+
+  /** The materials of a policy card's faces: front, back and side. */
+  function getPolicyFaceMaterials(policy: string): string[] {
+    return [0, 1, 2].map((index: number) => getPolicyFaceMaterial(policy, index))
+  }
+
   function getPolicyFaceMaterial(policy: string, index: number) {
     if (index === 0) {
       return policy === "liberal"
@@ -25,7 +32,6 @@
 </script>
 
 {#if type !== undefined}
-  {@const cardMaterial = type === "draw" ? "/pile_draw.png" : "/pile_discard.png"}
   <T.Mesh position.y={-0.25} castShadow receiveShadow>
     <RoundedPlaneGeometry args={[4.48, 6.4, 0.05]} />
     {#each [cardMaterial, cardMaterial, "#fff"] as material, i}
@@ -49,8 +55,7 @@
   {#each policies as policy, index}
     <T.Mesh position.z={0.2 * index} rotation.y={DEG2RAD * 180} castShadow>
       <RoundedPlaneGeometry args={[3.5, 4.9, 0.2]} />
-      {#each Array(3) as _, i}
-        {@const material = getPolicyFaceMaterial(policy, i)}
+      {#each getPolicyFaceMaterials(policy) as material, i}
         {#if material.startsWith("/")}
           {#await useTexture(material) then texture}
             <T.MeshStandardMaterial

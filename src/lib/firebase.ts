@@ -6,13 +6,14 @@ import {
   onIdTokenChanged,
   updateProfile,
   signOut as _signOut,
+  type User,
 } from "firebase/auth"
 import { connectDatabaseEmulator, getDatabase, type Database } from "firebase/database"
 
 import { browser } from "$app/environment"
 import { invalidateAll } from "$app/navigation"
 import type { GameData } from "$lib/game_data"
-import { canSeeRoles, type Player } from "$lib/player"
+import { canSeeRoles, type Player, type PlayerRole } from "$lib/player"
 
 // The emulators listen on IPv4 only, and "localhost" may resolve to IPv6 first
 const EMULATOR_HOST: string = "127.0.0.1"
@@ -96,13 +97,13 @@ function listenForAuthChanges() {
 }
 
 export function setUserName(name: string) {
-  const currentUser = getAuth(app).currentUser
+  const currentUser: User | null = getAuth(app).currentUser
   if (currentUser !== null) {
     updateProfile(currentUser, {
       displayName: name,
     })
       .then(async () => {
-        const token = await getAuth(app).currentUser?.getIdToken()
+        const token: string | undefined = await getAuth(app).currentUser?.getIdToken()
         await setTokenCookie(token)
         location.reload()
       })
@@ -126,8 +127,19 @@ export function isSignedIn(): boolean {
   return app !== undefined && getAuth(app).currentUser !== null
 }
 
+/** A player as the database stores it, under the game's `players` node. */
+interface DatabasePlayer {
+  id: string
+  name: string
+  // Dealt when the game starts
+  assetReference?: string
+  role?: PlayerRole
+  isExecuted?: boolean
+  isInvestigated?: boolean
+}
+
 export function castGameData(snapshotValue: any): GameData {
-  const user = getAuth(app).currentUser
+  const user: User | null = getAuth(app).currentUser
   const {
     connected,
     currentSession,
@@ -158,8 +170,8 @@ export function castGameData(snapshotValue: any): GameData {
         }
       }
     | undefined = currentSession
-  const votes = Object.entries(currentSessionObj?.votes ?? {})
-  const playersArray = Array.isArray(players) ? players : Object.values(players)
+  const votes: [string, boolean][] = Object.entries(currentSessionObj?.votes ?? {})
+  const playersArray: DatabasePlayer[] = Array.isArray(players) ? players : Object.values(players)
   const allPlayers: Player[] = playersArray.map((player) => ({
     id: player.id,
     assetReference: player.assetReference,
@@ -175,7 +187,7 @@ export function castGameData(snapshotValue: any): GameData {
     isPreviousChancellor: player.id === lastSuccessfulChancellorId,
     vote: () => votes.find(([playerId]) => player.id === playerId)?.[1],
   }))
-  const currentPlayerIndex = allPlayers.findIndex((player) => player.self)
+  const currentPlayerIndex: number = allPlayers.findIndex((player) => player.self)
   const [currentPlayer, ...otherPlayers] = [
     ...allPlayers.slice(currentPlayerIndex),
     ...allPlayers.slice(0, currentPlayerIndex),

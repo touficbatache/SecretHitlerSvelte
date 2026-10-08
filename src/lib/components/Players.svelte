@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
 
   import PlayerView from "$lib/components/PlayerView.svelte"
   import { Compact } from "$lib/enums"
@@ -15,7 +15,7 @@
   export let showRoles: string[] | undefined = undefined
   export let showSelf: boolean = true
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher<{ click: Player }> = createEventDispatcher<{ click: Player }>()
 
   /// Essentials are:
   /// - Placards

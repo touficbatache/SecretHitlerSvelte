@@ -6,17 +6,28 @@
   $: hexCode =
     inputHexCode?.length === 6 && /^[0-9A-F]{6}$/i.test(inputHexCode) ? inputHexCode : undefined
 
-  function componentToHex(c) {
-    const hex = c.toString(16)
+  interface Rgb {
+    r: number
+    g: number
+    b: number
+  }
+
+  /** Colors by weight (50 to 950), like Tailwind's palettes. */
+  interface Palette<Color> {
+    [weight: string]: Color
+  }
+
+  function componentToHex(c: number): string {
+    const hex: string = c.toString(16)
     return hex.length == 1 ? "0" + hex : hex
   }
 
-  function rgbToHex(rgb) {
+  function rgbToHex(rgb: Rgb): string {
     return "#" + componentToHex(rgb.r) + componentToHex(rgb.g) + componentToHex(rgb.b)
   }
 
-  function hexToRgb(hex) {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  function hexToRgb(hex: string): Rgb | null {
+    const result: RegExpExecArray | null = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
     return result
       ? {
           r: parseInt(result[1], 16),
@@ -26,28 +37,38 @@
       : null
   }
 
-  function getComponentTint(c, tint) {
+  function getComponentTint(c: number, tint: number): number {
     return c + Math.round((255 - c) * tint)
   }
 
-  function getComponentShade(c, shade) {
+  function getComponentShade(c: number, shade: number): number {
     return Math.round(c * shade)
   }
 
-  function getHexTintOrShade(hex, factor, isTint) {
-    let rgb = hexToRgb(hex)
+  function getHexTintOrShade(hex: string, factor: number, isTint: boolean): string | undefined {
+    let rgb: Rgb | null = hexToRgb(hex)
 
     if (!rgb) return
 
-    let r = isTint ? getComponentTint(rgb.r, factor) : getComponentShade(rgb.r, factor)
-    let g = isTint ? getComponentTint(rgb.g, factor) : getComponentShade(rgb.g, factor)
-    let b = isTint ? getComponentTint(rgb.b, factor) : getComponentShade(rgb.b, factor)
-    let brightness = (r * 299 + g * 587 + b * 114) / 1000
-    // {hex: rgbToHex({r, g, b}), brightness: brightness}
+    let r: number = isTint ? getComponentTint(rgb.r, factor) : getComponentShade(rgb.r, factor)
+    let g: number = isTint ? getComponentTint(rgb.g, factor) : getComponentShade(rgb.g, factor)
+    let b: number = isTint ? getComponentTint(rgb.b, factor) : getComponentShade(rgb.b, factor)
     return rgbToHex({ r, g, b })
   }
 
-  let shades
+  /** Black or white, whichever reads best on each shade. */
+  function getTextColors(shades: Palette<string | undefined>): Palette<string> {
+    return Object.keys(shades).reduce(function (result: Palette<string>, key: string) {
+      let rgb: Rgb | null = hexToRgb(shades[key] ?? "")
+      if (rgb !== null) {
+        let brightness: number = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000
+        result[key] = brightness < 155 ? "#ffffff" : "#000000"
+      }
+      return result
+    }, {})
+  }
+
+  let shades: Palette<string | undefined> | undefined
   $: shades = hexCode
     ? {
         50: getHexTintOrShade(hexCode, 0.9, true),
@@ -63,15 +84,8 @@
         950: getHexTintOrShade(hexCode, 0.2, false),
       }
     : undefined
-  let on_shades
-  $: on_shades = shades
-    ? Object.keys(shades).reduce(function (result, key) {
-        let rgb = hexToRgb(shades[key])
-        let brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000
-        result[key] = brightness < 155 ? "#ffffff" : "#000000"
-        return result
-      }, {})
-    : undefined
+  let on_shades: Palette<string> | undefined
+  $: on_shades = shades ? getTextColors(shades) : undefined
 
   let inputColorName: string | undefined
   let colorName: string | undefined
@@ -79,24 +93,24 @@
     inputColorName && inputColorName.trim().length > 0
       ? inputColorName.toLowerCase().replaceAll(" ", "-").replaceAll("_", "-").replaceAll(".", "")
       : undefined
-  let isButtonDisabled = false
+  let isButtonDisabled: boolean = false
   $: isButtonDisabled =
     colorName === undefined ||
     colorName.length === 0 ||
     hexCode === undefined ||
     hexCode.length === 0
 
-  let includeTextColor = false
+  let includeTextColor: boolean = false
   let clipboardElement: HTMLElement
-  let isCopiedSuccessfully = false
+  let isCopiedSuccessfully: boolean = false
 
   function copyCode() {
     if (!colorName) return
 
-    let configCode = `"${colorName}": ${JSON.stringify(shades, null, 2)},`
+    let configCode: string = `"${colorName}": ${JSON.stringify(shades, null, 2)},`
     if (includeTextColor)
       configCode = `${configCode}\n"on-${colorName}": ${JSON.stringify(on_shades, null, 2)},`
-    const copyClipboard = new CopyClipboard({
+    const copyClipboard: CopyClipboard = new CopyClipboard({
       target: clipboardElement,
       props: { value: configCode },
     })
@@ -128,10 +142,10 @@
     class:opacity-100={shades !== undefined}
   >
     {#if shades}
-      {#each Object.entries(shades) as [weight, hex], i}
+      {#each Object.entries(shades) as [weight, hex]}
         <div
           class="w-24 h-24 shadow-lg flex justify-center items-center bg-white rounded-xl text-2xl font-bold"
-          style="background: {hex}; color: {Object.entries(on_shades)[i][1]}"
+          style="background: {hex}; color: {on_shades?.[weight]}"
         >
           {weight}
         </div>

@@ -2,9 +2,9 @@ import type { GameType } from "$lib/game_data"
 
 export interface Player {
   readonly id: string
-  readonly assetReference: string
+  readonly assetReference: string | undefined
   readonly name: string
-  readonly role: PlayerRole
+  readonly role: PlayerRole | undefined
   readonly membership: PlayerMembership
   readonly self: boolean
   readonly isConnected: boolean
@@ -14,7 +14,8 @@ export interface Player {
   isPreviousPresident?: boolean
   readonly isChancellor: boolean
   readonly isPreviousChancellor: boolean
-  readonly vote: () => boolean
+  /** The player's vote in the current election, undefined while they haven't voted. */
+  readonly vote: () => boolean | undefined
 }
 
 export type PlayerRole = "liberal" | "fascist" | "hitler"

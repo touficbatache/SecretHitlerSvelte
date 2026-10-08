@@ -18,7 +18,7 @@
     reflection: "rgba(255, 255, 255, 0.75)",
     text: "#fbe1c0",
   }
-  const dispatch: EventDispatcher = createEventDispatcher()
+  const dispatch: EventDispatcher<{ click: null }> = createEventDispatcher<{ click: null }>()
 </script>
 
 <button

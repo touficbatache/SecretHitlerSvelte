@@ -29,12 +29,23 @@
   export let revealCards: boolean = false
 
   export let hideConnectionIssue: boolean = false
+
+  // Selects the player from the keyboard, like a button
+  function onKeyDown(event: KeyboardEvent & { currentTarget: HTMLElement }) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault()
+      event.currentTarget.click()
+    }
+  }
 </script>
 
 <div
-  class="flex flex-col items-center"
+  class="flex flex-col items-center cursor-default"
   class:opacity-30={player?.isDummy || player?.isExecuted}
+  role="button"
+  tabindex="0"
   on:click
+  on:keydown={onKeyDown}
 >
   <div class="relative w-full aspect-square">
     <div

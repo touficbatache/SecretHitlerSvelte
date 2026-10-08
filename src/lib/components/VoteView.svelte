@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
 
   import CountDown from "$lib/components/CountDown.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
@@ -16,7 +16,7 @@
   /** When the pause after this phase ends (server time), if the game is in it. */
   export let pauseEndsAt: number | undefined = undefined
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher<{ vote: boolean }> = createEventDispatcher<{ vote: boolean }>()
 
   let vote: boolean | undefined = undefined
 
@@ -95,6 +95,7 @@
         <PlayfulButton
           enabled={vote !== undefined}
           on:click={() => {
+            if (vote === undefined) return
             dispatch("vote", vote)
             vote = undefined
           }}
@@ -118,7 +119,7 @@
           <span> Waiting for all votes... </span>
         {:else}
           <span>
-            {#if Object.values(currentSession?.votes ?? {}).filter((val) => val === true).length > players.all.filter((player) => !player.isExecuted).length / 2.0}
+            {#if Object.values(currentSession?.votes ?? {}).filter((val) => val === true).length > (players?.all ?? []).filter((player) => !player.isExecuted).length / 2.0}
               The Government has succeeded&nbsp;&nbsp;<iconify-icon
                 class="text-white align-[-0.16rem]"
                 icon="fa:check-circle"

@@ -7,7 +7,7 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
-  import type { GameplayApiResponse } from "$lib/api_client"
+  import type { GameInfo, GameplayApiResponse } from "$lib/api_client"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PaperBack from "$lib/components/PaperBack.svelte"
   import PinInput from "$lib/components/PinInput.svelte"
@@ -27,6 +27,16 @@
   let expandWatchableGames: boolean = false
 
   let showWatchDialog: boolean = false
+
+  /** The games to list: all of them when expanded, otherwise the first 2. */
+  function shownGames(games: GameInfo[], expanded: boolean): GameInfo[] {
+    return expanded ? games : games.slice(0, 2)
+  }
+
+  /** How long ago a game was created, kept on one line. */
+  function createdAgo(createdAt: number): string {
+    return `${timeAgo.format(createdAt, "mini").replace(/ /g, "\u00a0")} ago`
+  }
 
   async function join(gameCode: string) {
     error = ""
@@ -54,12 +64,6 @@
       <PlayfulSpinner color="#fff" />
     </div>
   {:then { joinableGames: pageDataJoinableGames, watchableGames: pageDataWatchableGames }}
-    {@const joinableGames = expandJoinableGames
-      ? pageDataJoinableGames
-      : pageDataJoinableGames.slice(0, 2)}
-    {@const watchableGames = expandWatchableGames
-      ? pageDataWatchableGames
-      : pageDataWatchableGames.slice(0, 2)}
     <FloatingWindow bind:open={showWatchDialog} classes="w-full md:w-auto px-10 md:px-0">
       <div class="px-6 py-6 flex flex-col items-center bg-[#141414] shadow-frame rounded-lg">
         <h5 class="text-2xl">Coming soon: watch another game</h5>
@@ -155,17 +159,17 @@
               </div>
             {:else}
               <ul class="self-stretch flex-1 flex flex-col gap-2">
-                {#each joinableGames as { createdAt, code, playerCount, startedAt, visibility, status, subStatus }}
+                {#each shownGames(pageDataJoinableGames, expandJoinableGames) as { createdAt, code, playerCount }}
                   <li
                     class="flex justify-around items-center py-1.5 bg-neutral-50/5 shadow-frame rounded-l-lg rounded-r-lg"
                   >
                     <div class="flex gap-1">
                       <div class="col-span-2 justify-self-center flex items-center gap-0.5">
-                        {#each Array(6) as i}
+                        {#each Array(6).fill("•") as hiddenDigit}
                           <span
                             class="w-5 rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-center text-lg px-1 md:py-0.5"
                           >
-                            •
+                            {hiddenDigit}
                           </span>
                         {/each}
                       </div>
@@ -174,14 +178,14 @@
                       {playerCount} player{playerCount === 1 ? "" : "s"}
                     </div>
                     <div class="hidden md:flex items-center md:pl-1.5 md:pr-4 text-nowrap">
-                      {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
+                      {createdAgo(createdAt)}
                     </div>
                     <div class="md:hidden flex flex-col gap-1">
                       <span>
                         {playerCount} player{playerCount === 1 ? "" : "s"}
                       </span>
                       <span>
-                        {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
+                        {createdAgo(createdAt)}
                       </span>
                     </div>
                     <PlayfulButton
@@ -235,13 +239,13 @@
               </div>
             {:else}
               <ul class="self-stretch flex-1 flex flex-col gap-2">
-                {#each watchableGames as { createdAt, code, playerCount, startedAt, status, subStatus }}
+                {#each shownGames(pageDataWatchableGames, expandWatchableGames) as { createdAt, code, playerCount }}
                   <li
                     class="flex justify-around items-center py-1.5 bg-neutral-50/5 shadow-frame rounded-l-lg rounded-r-lg"
                   >
                     <div class="flex gap-1">
                       <div class="col-span-2 justify-self-center flex items-center gap-0.5">
-                        {#each code.slice("") as digit}
+                        {#each code.split("") as digit}
                           <span
                             class="w-5 rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-center text-lg px-1 md:py-0.5"
                           >
@@ -254,14 +258,14 @@
                       {playerCount} player{playerCount === 1 ? "" : "s"}
                     </div>
                     <div class="hidden md:flex items-center md:pl-1.5 md:pr-4 text-nowrap">
-                      {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
+                      {createdAgo(createdAt)}
                     </div>
                     <div class="md:hidden flex flex-col gap-1">
                       <span>
                         {playerCount} player{playerCount === 1 ? "" : "s"}
                       </span>
                       <span>
-                        {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
+                        {createdAgo(createdAt)}
                       </span>
                     </div>
                     <PlayfulButton

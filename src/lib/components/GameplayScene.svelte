@@ -1,15 +1,7 @@
 <script lang="ts">
-  import { T, useThrelte } from "@threlte/core"
-  import {
-    Align,
-    interactivity,
-    OrbitControls,
-    Portal,
-    TransformControls,
-    useTexture,
-  } from "@threlte/extras"
-  import type { CameraHelper, DirectionalLightHelper } from "three"
-  import { DEG2RAD } from "three/src/math/MathUtils"
+  import { T } from "@threlte/core"
+  import { Align, interactivity, OrbitControls, useTexture } from "@threlte/extras"
+  import { MathUtils } from "three"
 
   import Deck from "$lib/components/three/Deck.svelte"
   import RoundedPlaneGeometry from "$lib/components/three/RoundedPlaneGeometry.svelte"
@@ -22,17 +14,10 @@
   export let playerCount: number = 5
   export let policies: GameDataPolicies | undefined = undefined
 
-  const { size, scene } = useThrelte()
-  const D = 10
+  const D: number = 10
   const baseZoom: number = 16
   const minZoom: number = baseZoom / 2
   const maxZoom: number = baseZoom * 3
-
-  let helperA: DirectionalLightHelper
-  let helperB: DirectionalLightHelper
-
-  let perspectiveCameraHelper: CameraHelper
-  let orthographicCameraHelper: CameraHelper
 
   const electionTrackerX: number[] = [-4.09, -1.475, 1.14, 3.755] //x diff = 2.615
 
@@ -69,7 +54,6 @@
 
 <T.OrthographicCamera
   makeDefault
-  let:ref
   args={[-D * aspectRatio, D * aspectRatio, D, -D, -10, 100]}
   position={[-5, 10, 5]}
   on:create={({ ref }) => {
@@ -82,7 +66,7 @@
     enablePan={!disablePan}
     {minZoom}
     {maxZoom}
-    on:change={({ target }) => {
+    on:change={() => {
       //target.target.clamp(new Vector3(-2, -2, -2), new Vector3(2, 2, 2))
       //console.log("gg", target)
     }}
@@ -105,7 +89,7 @@
 
 <T.AmbientLight color="white" intensity={1} />
 
-<T.DirectionalLight let:ref color="white" intensity={2} position={[3, 5, 3.5]} castShadow>
+<T.DirectionalLight color="white" intensity={2} position={[3, 5, 3.5]} castShadow>
   <!--  <TransformControls-->
   <!--    object={ref}-->
   <!--    on:objectChange={() => {-->
@@ -122,7 +106,7 @@
   <!--  </Portal>-->
 </T.DirectionalLight>
 
-<Align rotation.x={DEG2RAD * -90}>
+<Align rotation.x={MathUtils.DEG2RAD * -90}>
   <T.Group position.z={0.15}>
     <T.Mesh castShadow receiveShadow>
       <T.BoxGeometry args={[28, 10, 0.3]} />
@@ -149,7 +133,7 @@
       position.x={electionTrackerX[electionTracker]}
       position.y={-3.4}
       position.z={0.25}
-      rotation.x={DEG2RAD * 90}
+      rotation.x={MathUtils.DEG2RAD * 90}
       castShadow
     >
       <T.CylinderGeometry args={[0.5, 0.5, 0.2, 50]} />

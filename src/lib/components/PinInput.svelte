@@ -7,13 +7,13 @@
   export let inactiveClass: string
   export let isEnabled: boolean = true
   export let pin: string
-  export let size: number | undefined = 6
+  export let size: number = 6
 
   let pinArray: string[] =
     pin?.length > 0
       ? [...pin.split(""), ...Array(size - pin.length).fill("")]
       : Array(size).fill("")
-  let activeIndex: number = undefined
+  let activeIndex: number | undefined = undefined
 
   $: if (!isEnabled) {
     onBlur()
@@ -26,7 +26,7 @@
   function updateActive() {
     if (!browser) return
 
-    let firstEmptyIndex: null = pinArray.findIndex((val: string) => val === "")
+    let firstEmptyIndex: number = pinArray.findIndex((val: string) => val === "")
     activeIndex = firstEmptyIndex >= 0 ? firstEmptyIndex : pinArray.length - 1
     document.getElementById(`pin-input-${activeIndex}`)?.focus()
   }
@@ -38,12 +38,12 @@
     activeIndex = undefined
   }
 
-  function handleInput(event, index) {
-    pinArray[index] = event.target.value?.charAt(0) ?? ""
+  function handleInput(event: Event & { currentTarget: HTMLInputElement }, index: number) {
+    pinArray[index] = event.currentTarget.value?.charAt(0) ?? ""
     updateActive()
   }
 
-  function handleBackspace(event, index) {
+  function handleBackspace(event: KeyboardEvent, index: number) {
     if (event.key === "Backspace") {
       if (pinArray[index].trim() === "") {
         pinArray[index - 1] = ""
@@ -54,10 +54,10 @@
     updateActive()
   }
 
-  function handlePaste(event) {
+  function handlePaste(event: ClipboardEvent) {
     event.preventDefault()
-    const data = event.clipboardData || window.clipboardData
-    const code: string = data.getData("Text").replace(/\D/g, "").slice(0, 6)
+    const data: DataTransfer | null = event.clipboardData
+    const code: string = (data?.getData("Text") ?? "").replace(/\D/g, "").slice(0, 6)
     for (let i: number = 0; i < code.length; i++) {
       pinArray[i] = code.charAt(i)
     }
@@ -65,9 +65,12 @@
   }
 </script>
 
+<!-- Clicking anywhere focuses the next empty input, a shortcut for pointer users: keyboard and
+  assistive technology users reach the inputs directly, so the wrapper itself is presentational -->
 <div
   class="w-full flex justify-between gap-2 {$$props.class}"
   class:cursor-pointer={isEnabled}
+  role="presentation"
   on:click={isEnabled ? updateActive : onBlur}
   use:clickOutside={{ callback: onBlur }}
 >

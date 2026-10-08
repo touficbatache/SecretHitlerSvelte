@@ -1,8 +1,8 @@
 import admin from "firebase-admin"
-import type { UserRecord } from "firebase-admin/auth"
+import type { DecodedIdToken, UserRecord } from "firebase-admin/auth"
+import type { DataSnapshot } from "firebase-admin/database"
 
-import { PRIVATE_FIREBASE_SERVER_CONFIG } from "$env/static/private"
-import { PUBLIC_DEBUG, PUBLIC_FIREBASE_CONFIG } from "$env/static/public"
+import config from "$lib/server/config"
 
 export interface FirebaseServerConfig {
   type: string
@@ -20,16 +20,19 @@ export interface FirebaseServerConfig {
 
 // Correct way of doing is using  `if (!admin.apps.length)` but
 // Firebase goes crazy when deploying with functions, so:
-const initialized = admin.apps.some((app) => app.name === "[DEFAULT]")
+const initialized: boolean = admin.apps.some((app) => app?.name === "[DEFAULT]")
 
 if (!initialized) {
-  const publicConfig = JSON.parse(PUBLIC_FIREBASE_CONFIG)
-  const serviceAccount = JSON.parse(PRIVATE_FIREBASE_SERVER_CONFIG)
+  const serviceAccount: FirebaseServerConfig = config.firebaseServerConfig
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: publicConfig.databaseURL,
+    credential: admin.credential.cert({
+      projectId: serviceAccount.project_id,
+      clientEmail: serviceAccount.client_email,
+      privateKey: serviceAccount.private_key,
+    }),
+    databaseURL: config.firebaseAppConfig.databaseURL,
   })
-} else if (PUBLIC_DEBUG) {
+} else if (config.debugMode) {
   console.log("admin", admin)
   console.log("admin.apps", admin.apps)
   console.log("admin.apps.length", admin.apps.length)
@@ -40,7 +43,7 @@ export async function verifyGameCode(gameCode?: string): Promise<string> {
     throw new Error("Invalid game code.")
   }
 
-  const snapshot = await admin.database().ref(`ongoingGames/${gameCode}`).get()
+  const snapshot: DataSnapshot = await admin.database().ref(`ongoingGames/${gameCode}`).get()
 
   if (!snapshot.exists()) {
     throw new Error("Invalid game code.")
@@ -54,7 +57,7 @@ export async function verifyIdToken(token?: string): Promise<UserRecord> {
     throw new Error("Invalid login.")
   }
 
-  const decodedToken = await admin.auth().verifyIdToken(token)
+  const decodedToken: DecodedIdToken = await admin.auth().verifyIdToken(token)
 
   if (!decodedToken) {
     throw new Error("Couldn't decode login.")

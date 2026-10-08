@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
 
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import Players from "$lib/components/Players.svelte"
@@ -12,7 +12,7 @@
   export let players: GameDataPlayers | undefined = undefined
   export let president: Player | undefined = undefined
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher<{ click: string }> = createEventDispatcher<{ click: string }>()
 
   let selectedPlayer: Player | undefined
 
@@ -42,7 +42,7 @@
           player={president}
           hideExtras={true}
           hideVotes={true}
-          showRole={visibleRolePlayerIds.includes(president?.id)}
+          showRole={president !== undefined && visibleRolePlayerIds.includes(president.id)}
         />
       </div>
     </div>
@@ -68,6 +68,7 @@
         <PlayfulButton
           enabled={selectedPlayer !== undefined}
           on:click={() => {
+            if (selectedPlayer === undefined) return
             dispatch("click", selectedPlayer.id)
             open = false
             selectedPlayer = undefined

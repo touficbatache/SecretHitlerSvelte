@@ -121,7 +121,7 @@
           player={president}
           hideExtras={true}
           hideVotes={true}
-          showRole={visibleRolePlayerIds.includes(president.id)}
+          showRole={president !== undefined && visibleRolePlayerIds.includes(president.id)}
         />
       </div>
     </div>

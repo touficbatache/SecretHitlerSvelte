@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
 
   import CountDown from "$lib/components/CountDown.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
@@ -17,7 +17,7 @@
   export let pauseEndsAt: number | undefined = undefined
   export let selectedPlayer: string | undefined = undefined
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher<{ click: string }> = createEventDispatcher<{ click: string }>()
 
   let selectedPlayerObj: Player | undefined = undefined
 
@@ -56,7 +56,7 @@
           player={president}
           hideExtras={true}
           hideVotes={true}
-          showRole={visibleRolePlayerIds.includes(president.id)}
+          showRole={president !== undefined && visibleRolePlayerIds.includes(president.id)}
         />
       </div>
     </div>
@@ -100,7 +100,7 @@
             player={selectedPlayerObj}
             hideExtras={true}
             hideVotes={true}
-            showRole={visibleRolePlayerIds.includes(selectedPlayer)}
+            showRole={selectedPlayer !== undefined && visibleRolePlayerIds.includes(selectedPlayer)}
           />
         </div>
         <CountDown until={pauseEndsAt} />

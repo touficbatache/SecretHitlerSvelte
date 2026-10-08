@@ -1,15 +1,21 @@
+import type { Action } from "svelte/action"
+
 /** Dispatch event on click outside of node */
 export interface ClickOutsideOptions {
   callback: (() => void) | undefined
   excluded?: HTMLElement[]
 }
 
-export const clickOutside = (node: HTMLElement, options: ClickOutsideOptions | undefined) => {
+export const clickOutside: Action<HTMLElement, ClickOutsideOptions | undefined> = (
+  node: HTMLElement,
+  options: ClickOutsideOptions | undefined,
+) => {
   if (options === undefined || options.callback === undefined) {
     return
   }
+  const callback: () => void = options.callback
 
-  const handleClick = (event: MouseEvent) => {
+  const handleClick: (event: MouseEvent) => void = (event) => {
     if (!event?.target) return
     if (
       node &&
@@ -18,7 +24,7 @@ export const clickOutside = (node: HTMLElement, options: ClickOutsideOptions | u
         true) &&
       !event.defaultPrevented
     ) {
-      options.callback()
+      callback()
     }
   }
 

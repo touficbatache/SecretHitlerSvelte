@@ -33,6 +33,11 @@
     return result.charAt(0).toLowerCase() + result.slice(1).toLowerCase()
   }
 
+  /** The team that won a finished game, undefined while it isn't over. */
+  function getWinningTeam(subStatus: string | undefined): string | undefined {
+    return subStatus?.split("gameEnded_")[1]
+  }
+
   function copyGameCode(gameCode: string) {
     copyToClipboard(gameCode, () => {
       copiedGameCode = gameCode
@@ -114,8 +119,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each response.success ?? [] as { createdAt, code, playerCount, startedAt, visibility, status, subStatus }}
-              {@const winningTeam = subStatus?.split("gameEnded_")[1]}
+            {#each response.success ?? [] as { createdAt, code, playerCount, visibility, status, subStatus }}
               <tr class="h-20 [&>*]:font-normal">
                 <td>
                   <div class="!hidden md:!flex gap-1 rounded-l-lg">
@@ -222,12 +226,13 @@
                     <div
                       class="rounded px-2"
                       class:bg-neutral-500={status === "waiting"}
-                      class:bg-green-600={status !== "waiting" && winningTeam === undefined}
-                      class:bg-blue-liberal={winningTeam === "liberal"}
-                      class:bg-red-fascist={winningTeam === "fascist"}
+                      class:bg-green-600={status !== "waiting" &&
+                        getWinningTeam(subStatus) === undefined}
+                      class:bg-blue-liberal={getWinningTeam(subStatus) === "liberal"}
+                      class:bg-red-fascist={getWinningTeam(subStatus) === "fascist"}
                     >
-                      {#if winningTeam !== undefined}
-                        {winningTeam} win
+                      {#if getWinningTeam(subStatus) !== undefined}
+                        {getWinningTeam(subStatus)} win
                       {:else if status !== "waiting"}
                         <span class="hidden md:inline">
                           ongoing:

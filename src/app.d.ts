@@ -15,6 +15,13 @@ declare global {
     // interface PageData {}
     // interface Platform {}
   }
+
+  interface Window {
+    /** Turns on the App Check debug provider, see https://firebase.google.com/docs/app-check/web/debug-provider */
+    FIREBASE_APPCHECK_DEBUG_TOKEN?: boolean | string
+    /** The login page's invisible reCAPTCHA, see https://firebase.google.com/docs/auth/web/phone-auth */
+    recaptchaVerifier?: import("firebase/auth").RecaptchaVerifier
+  }
 }
 
 export {}

@@ -103,13 +103,13 @@
           <input
             bind:value={inputName}
             class="z-20 w-full bg-[#5b5b5b] focus:bg-[#2c2c2c] disabled:bg-[#434343] border-2 border-opacity-50 focus:border-opacity-70 disabled:border-opacity-30 rounded-md text-2xl font-bold text-white text-opacity-70 focus:text-opacity-90 disabled:text-opacity-50 px-4 py-2 outline-none transition-all duration-200 ease-material-deceleration"
-            class:mr-32={hasModifiedName && inputName?.length > 0}
+            class:mr-32={hasModifiedName && (inputName?.length ?? 0) > 0}
             class:mr-16={hasModifiedName && inputName?.length === 0}
-            class:border-white={inputName?.length > 0}
+            class:border-white={(inputName?.length ?? 0) > 0}
             class:border-red-500={inputName?.length === 0}
             disabled={isUpdatingUserName}
             on:input={() => {
-              inputName = inputName
+              inputName = (inputName ?? "")
                 .toLowerCase()
                 .replace(/[^a-z]+/g, "")
                 .slice(0, 10)
@@ -117,7 +117,7 @@
           />
           <button
             class="z-10 absolute flex justify-center items-center w-[52px] h-[52px] aspect-square bg-[#5b5b5b] enabled:hover:bg-[#2c2c2c] disabled:bg-[#434343] border-2 border-white border-opacity-50 enabled:hover:border-opacity-70 disabled:border-opacity-30 text-white text-opacity-90 disabled:text-opacity-50 rounded-md transition-all duration-200 ease-material-deceleration"
-            class:right-16={inputName?.length > 0}
+            class:right-16={(inputName?.length ?? 0) > 0}
             class:right-0={inputName?.length === 0}
             disabled={isUpdatingUserName}
             on:click={() => (inputName = $page.data.user?.name)}
@@ -128,6 +128,7 @@
             class="absolute right-0 flex justify-center items-center w-[52px] h-[52px] aspect-square bg-white bg-opacity-30 enabled:hover:bg-opacity-10 disabled:bg-opacity-20 border-2 border-white border-opacity-50 enabled:hover:border-opacity-70 disabled:border-opacity-30 text-white text-opacity-90 disabled:text-opacity-50 rounded-md transition duration-200 ease-material-deceleration"
             disabled={inputName?.length === 0 || isUpdatingUserName}
             on:click={() => {
+              if (inputName === undefined) return
               setUserName(inputName)
               isUpdatingUserName = true
             }}

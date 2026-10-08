@@ -3,7 +3,7 @@
 
   export let value: string
 
-  let textarea: HTMLElement
+  let textarea: HTMLTextAreaElement
 
   onMount(() => {
     textarea.select()

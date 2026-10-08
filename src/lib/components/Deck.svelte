@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
 
-  export let cards: string[]
+  export let cards: string[] | undefined
   export let center: boolean = false
   export let debug: boolean = false
   export let expanded: boolean = false
@@ -9,21 +9,21 @@
   export let selectable: boolean = false
   export let shadow: boolean = true
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher<{ select: string }> = createEventDispatcher<{ select: string }>()
 
   let deckEl: HTMLElement | undefined = undefined
   let isContainerExpanded: boolean = expanded
   let revealedElementIndex: number | undefined = undefined
 
   // Helper function to check if the touch position is inside an element
-  function isInsideElement(touchX, touchY, element) {
-    const rect = element.getBoundingClientRect()
+  function isInsideElement(touchX: number, touchY: number, element: Element) {
+    const rect: DOMRect = element.getBoundingClientRect()
     return (
       touchX >= rect.left && touchX <= rect.right && touchY >= rect.top && touchY <= rect.bottom
     )
   }
 
-  function onContainerTouchStartEnd(event) {
+  function onContainerTouchStartEnd(event: TouchEvent | MouseEvent) {
     if (!interactive) return
 
     if (event.type === "touchstart" || event.type === "mouseenter") {
@@ -32,25 +32,26 @@
       isContainerExpanded = false
     }
     if (!selectable) {
-      revealedElementIndex = null
+      revealedElementIndex = undefined
     }
   }
 
-  function onContainerTouchMove(event) {
-    if (!interactive) return
+  function onContainerTouchMove(event: TouchEvent | MouseEvent) {
+    if (!interactive || cards === undefined) return
+    const deckCards: string[] = cards
 
     // Check if the touch is inside any of the child elements
     deckEl?.querySelectorAll(":scope>*").forEach((el, index) => {
       if (
         revealedElementIndex !== index &&
         isInsideElement(
-          event.type.includes("touch") ? event.touches[0].clientX : event.clientX,
-          event.type.includes("touch") ? event.touches[0].clientY : event.clientY,
+          event instanceof MouseEvent ? event.clientX : event.touches[0].clientX,
+          event instanceof MouseEvent ? event.clientY : event.touches[0].clientY,
           el,
         )
       ) {
         revealedElementIndex = index
-        dispatch("select", cards[revealedElementIndex])
+        dispatch("select", deckCards[index])
       }
     })
   }
