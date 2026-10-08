@@ -3,8 +3,6 @@
   import type { Writable } from "svelte/store"
   import { fade } from "svelte/transition"
 
-  import { browser } from "$app/environment"
-  import { goto } from "$app/navigation"
   import CountDown from "$lib/components/CountDown.svelte"
   import IntroStep1 from "$lib/components/intro/IntroStep1.svelte"
   import IntroStep2 from "$lib/components/intro/IntroStep2.svelte"
@@ -12,6 +10,9 @@
   import IntroStep4 from "$lib/components/intro/IntroStep4.svelte"
   import RoleHeader from "$lib/components/RoleHeader.svelte"
   import type { GameData } from "$lib/game_data"
+  import { createTimers, type Timers } from "$lib/timers"
+
+  const timers: Timers = createTimers()
 
   interface Step {
     text: string
@@ -29,12 +30,6 @@
 
   let countDownStartDelay: number | undefined = undefined
   let triggerCountDown: boolean = false
-
-  $: if (browser) {
-    if ($gameData?.status !== "settingUp") {
-      goto("/gameplay")
-    }
-  }
 
   $: player = $gameData?.players?.self
 
@@ -109,7 +104,7 @@
         .map((step) => step.duration)
         .reduce((a, b) => a + b, 0)
 
-      setTimeout(() => {
+      timers.setTimeout(() => {
         stepShown = index + 2
       }, duration - (currentTime - startedAt))
     }

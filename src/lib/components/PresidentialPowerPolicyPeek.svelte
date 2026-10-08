@@ -15,6 +15,9 @@
     removePowerCache,
     writePowerCache,
   } from "$lib/power_cache"
+  import { createTimers, type Timers } from "$lib/timers"
+
+  const timers: Timers = createTimers()
 
   export let enactedPolicyCount: number
   export let gameCode: string
@@ -53,7 +56,7 @@
     if (isPresident && presidentialPower === "consumed") {
       const cacheKey: string = powerCacheKey("policyPeek", gameCode, enactedPolicyCount)
       ApiClient.presidentialPower_policyPeek(gameCode)
-      setTimeout(async () => {
+      timers.setTimeout(() => {
         removePowerCache(cacheKey)
         cards = []
       }, 10000)

@@ -14,6 +14,7 @@ export const load: LayoutServerLoad = async ({
   gameCode?: string
   recaptchaSiteKey?: string
   streamerModeEnabled?: boolean
+  useEmulators?: boolean
   user?: User
 }> => {
   const { user, gameCode, streamerModeEnabled } = locals
@@ -25,6 +26,7 @@ export const load: LayoutServerLoad = async ({
     gameCode,
     recaptchaSiteKey: config.recaptchaSiteKey,
     streamerModeEnabled,
+    useEmulators: config.useEmulators,
     user,
   }
 }

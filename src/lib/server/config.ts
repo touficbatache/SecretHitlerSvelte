@@ -7,6 +7,7 @@ import type { FirebaseServerConfig } from "$lib/server/firebase"
 export interface Config {
   apiURL: string
   debugMode: boolean
+  useEmulators: boolean
   firebaseAppConfig: FirebaseOptions
   firebaseServerConfig: FirebaseServerConfig
   recaptchaSiteKey: string
@@ -18,6 +19,7 @@ const [config, error] = validateConfig({
   firebaseAppConfig: process.env["PUBLIC_FIREBASE_CONFIG"],
   firebaseServerConfig: process.env["PRIVATE_FIREBASE_SERVER_CONFIG"],
   recaptchaSiteKey: process.env["PUBLIC_RECAPTCHA_SITE_KEY"],
+  useEmulators: process.env["PUBLIC_USE_EMULATORS"],
 }) as [Config, unknown]
 
 if (error !== null) {

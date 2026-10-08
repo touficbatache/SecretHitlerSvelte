@@ -8,13 +8,6 @@ import {
   type Unsubscribe,
 } from "firebase/database"
 
-/** Routes where the player is in a game and must be shown as connected. */
-const GAME_ROUTE_IDS: string[] = ["/waitingRoom", "/intro", "/gameplay"]
-
-export function isGameRoute(routeId: string | null | undefined): boolean {
-  return routeId != null && GAME_ROUTE_IDS.includes(routeId)
-}
-
 /**
  * Marks the player as connected to the game for as long as this tab is connected to the
  * database, including after a dropped connection comes back.

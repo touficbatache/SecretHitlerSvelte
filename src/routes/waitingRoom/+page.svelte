@@ -3,8 +3,6 @@
   import { getContext } from "svelte"
   import type { Readable } from "svelte/store"
 
-  import { browser } from "$app/environment"
-  import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import { type GameplayApiResponse } from "$lib/api_client"
@@ -20,6 +18,9 @@
   import SimpleButton from "$lib/components/SimpleButton.svelte"
   import { Compact } from "$lib/enums"
   import type { GameData } from "$lib/game_data"
+  import { createTimers, type Timers } from "$lib/timers"
+
+  const timers: Timers = createTimers()
 
   const gameCode: string = $page.data.gameCode
   const gameData: Readable<GameData> = getContext("gameData") as Readable<GameData>
@@ -38,20 +39,6 @@
   let isStarting: boolean = false
   let startingError: string = ""
 
-  $: if (browser) {
-    if ($page.data.gameCode === undefined) {
-      goto("/", { replaceState: true })
-    }
-
-    if ($gameData?.status !== undefined && $gameData?.status !== "waiting") {
-      if ($gameData?.status === "settingUp") {
-        goto("/intro", { replaceState: true })
-      } else {
-        goto("/gameplay", { replaceState: true })
-      }
-    }
-  }
-
   async function unJoin() {
     showUnjoinWarning = false
     showUnjoiningLoading = true
@@ -62,7 +49,7 @@
   function copyGameCode(gameCode: string) {
     copyToClipboard(gameCode, () => {
       copiedGameCode = gameCode
-      setTimeout(() => {
+      timers.setTimeout(() => {
         copiedGameCode = undefined
       }, 2000)
     })

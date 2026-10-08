@@ -75,6 +75,27 @@ Then execute the following command:
 npm run dev
 ```
 
+## Tests
+
+Unit tests (game helpers, no browser):
+
+```shell
+npm test
+```
+
+End-to-end tests run the app in Chromium against the Firebase auth and database emulators, with two
+players signed in through the real login page. Game states are written straight into the database
+emulator, and a small fake replaces the game API (`tests/e2e/fake-api.ts`). They need the Firebase CLI
+(`npm install -g firebase-tools`, which needs Java for the emulators) and Playwright's Chromium
+(`npx playwright install chromium`):
+
+```shell
+npm run test:e2e
+```
+
+`tests/e2e/database.rules.json` is a copy of the backend's `database.rules.json`: update it when those
+rules change.
+
 ## Deploy to dev/prod
 
 To deploy the project to Firebase Hosting, you need to set the correct environment variable values for the development or production environment in `.env.<alias>` (`.env.dev` or `.env.prod`) respectively.

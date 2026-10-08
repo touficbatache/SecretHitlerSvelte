@@ -2,19 +2,21 @@
   import "../app.postcss"
   import "iconify-icon"
   import { onDestroy, setContext } from "svelte"
-  import { writable, type Writable } from "svelte/store"
+  import { type Readable, writable, type Writable } from "svelte/store"
 
   import type { LayoutData } from "./$types"
 
   import { browser } from "$app/environment"
+  import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import PlayfulTextField from "$lib/components/PlayfulTextField.svelte"
   import { initializeFirebase, rtdb, setUserName } from "$lib/firebase"
-  import { gameDataStore } from "$lib/game_data"
-  import { isGameRoute, trackPresence } from "$lib/presence"
+  import { type GameData, gameDataStore } from "$lib/game_data"
+  import { trackPresence } from "$lib/presence"
+  import { isGameRoute, routeForPhase } from "$lib/routing"
 
   export let data: LayoutData
 
@@ -27,19 +29,38 @@
   let nickname: string = ""
   let error: string = ""
 
-  $: if (browser) {
+  // The Firebase config never changes while the app runs, so this only needs to happen once
+  if (browser) {
     try {
-      initializeFirebase(data.firebaseAppConfig, data.recaptchaSiteKey, data.debugMode)
+      initializeFirebase(
+        data.firebaseAppConfig,
+        data.recaptchaSiteKey,
+        data.debugMode,
+        data.useEmulators,
+      )
     } catch (error) {
       console.error(error)
     }
+  }
 
-    if (data.user?.token) {
-      ApiClient.init(data.apiURL, data.user.token)
-    }
+  // One store for the whole app, following the current game: pages read it from the context
+  const gameCode: Writable<string | undefined> = writable(undefined)
+  const gameData: Readable<GameData | undefined> = gameDataStore(() => rtdb, gameCode)
+  setContext("gameData", gameData)
 
-    if (data.gameCode !== undefined && data.user?.uid !== undefined) {
-      setContext("gameData", gameDataStore(rtdb, data.gameCode))
+  $: if (browser && data.user?.token) {
+    ApiClient.init(data.apiURL, data.user.token)
+  }
+
+  $: if (browser) {
+    gameCode.set(data.user?.uid !== undefined ? data.gameCode : undefined)
+  }
+
+  // The only place that moves players between the game pages, following the game's status
+  $: if (browser && isGameRoute($page.route.id)) {
+    const target: string | undefined = routeForPhase(data.gameCode, $gameData?.status)
+    if (target !== undefined && target !== $page.route.id) {
+      goto(target, { replaceState: true })
     }
   }
 

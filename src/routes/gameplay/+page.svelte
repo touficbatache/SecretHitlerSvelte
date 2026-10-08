@@ -4,8 +4,6 @@
   import { getContext } from "svelte"
   import type { Readable } from "svelte/store"
 
-  import { browser } from "$app/environment"
-  import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import ChancellorPolicyChooseView from "$lib/components/ChancellorPolicyChooseView.svelte"
@@ -40,20 +38,6 @@
     "presidentialPower_callSpecialElection",
     "presidentialPower_execution",
   ]
-
-  $: if (browser) {
-    if ($page.data.gameCode === undefined) {
-      goto("/", { replaceState: true })
-    }
-
-    if ($gameData?.status === "waiting") {
-      goto("/waitingRoom", { replaceState: true })
-    }
-
-    if ($gameData?.status === "settingUp") {
-      goto("/intro", { replaceState: true })
-    }
-  }
 
   $: hasGameEnded = $gameData?.status !== undefined && $gameData.status === "gameEnded"
 

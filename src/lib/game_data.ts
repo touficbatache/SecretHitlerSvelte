@@ -1,5 +1,5 @@
 import { type Database, type DatabaseReference, onValue, ref as dbRef } from "firebase/database"
-import { type Readable, readable } from "svelte/store"
+import { derived, type Readable } from "svelte/store"
 
 import * as ApiClient from "$lib/api_client"
 import { castGameData } from "$lib/firebase"
@@ -76,22 +76,38 @@ export type PresidentialPower = "consumed" | "done"
 
 export type GameVisibility = "public" | "private"
 
-// https://sveltefire.fireship.io/
 /**
- * @param {Database} rtdb - Firebase Realtime Database instance.
- * @param {string} gameCode - Code of the requested game.
- * @returns a store with realtime updates on individual database nodes.
+ * Live data of the game whose code `gameCode` holds, or undefined when there is none.
+ * Moving to another game drops the previous game's listener.
+ *
+ * @param getDatabase - the Realtime Database, read lazily since it only exists in the browser.
+ * @param gameCode - the code of the current game.
  */
-export function gameDataStore(rtdb: Database, gameCode: string): Readable<GameData | undefined> {
-  const dataRef: DatabaseReference = dbRef(rtdb, `ongoingGames/${gameCode}`)
+export function gameDataStore(
+  getDatabase: () => Database,
+  gameCode: Readable<string | undefined>,
+): Readable<GameData | undefined> {
+  return derived<Readable<string | undefined>, GameData | undefined>(
+    gameCode,
+    ($gameCode, set) => {
+      set(undefined)
+      if ($gameCode === undefined) return
 
-  return readable<GameData | undefined>(undefined, (set) => {
-    return onValue(dataRef, (snapshot) => {
-      if (snapshot.val().players === undefined) {
-        ApiClient.leaveGame()
-      } else {
-        set(castGameData(snapshot.val()) as GameData)
-      }
-    })
-  })
+      const dataRef: DatabaseReference = dbRef(getDatabase(), `ongoingGames/${$gameCode}`)
+      return onValue(
+        dataRef,
+        (snapshot) => {
+          const value: any = snapshot.val()
+          if (value?.players === undefined) {
+            // The game was closed or deleted
+            ApiClient.leaveGame()
+          } else {
+            set(castGameData(value))
+          }
+        },
+        (error) => console.error(`Can't read game ${$gameCode}:`, error),
+      )
+    },
+    undefined,
+  )
 }

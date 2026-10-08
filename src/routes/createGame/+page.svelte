@@ -6,12 +6,15 @@
   import * as ApiClient from "$lib/api_client"
   import ElevatedText from "$lib/components/ElevatedText.svelte"
   import PlayfulSpinner from "$lib/components/PlayfulSpinner.svelte"
+  import { createTimers, type Timers } from "$lib/timers"
+
+  const timers: Timers = createTimers()
 
   onMount(() => {
     if ($page.data.gameCode === undefined) {
-      setTimeout(async () => {
+      timers.setTimeout(async () => {
         const success: boolean = await ApiClient.newGame()
-        if (success) {
+        if (success && timers.isAlive()) {
           await goto("/waitingRoom", { replaceState: true })
         }
       }, 1000)

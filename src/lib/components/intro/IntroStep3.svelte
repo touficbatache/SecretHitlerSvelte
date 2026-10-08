@@ -2,19 +2,22 @@
   import { onMount } from "svelte"
 
   import type { Player } from "$lib/player"
+  import { createTimers, type Timers } from "$lib/timers"
 
   export let player: Player | undefined
 
+  const timers: Timers = createTimers()
+
   let visibleSection: number = -1
   onMount(() => {
-    setTimeout(async () => {
+    timers.setTimeout(async () => {
       if (player?.role === "liberal") {
         visibleSection = 0
-        await new Promise((f) => setTimeout(f, 4000))
+        await timers.sleep(4000)
         visibleSection = 1
       } else {
         visibleSection = 0
-        await new Promise((f) => setTimeout(f, 3000))
+        await timers.sleep(3000)
         visibleSection = 1
       }
     }, 1000)

@@ -1,12 +1,21 @@
 import { initializeApp, type FirebaseApp, type FirebaseOptions } from "firebase/app"
 import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
-import { getAuth, onIdTokenChanged, updateProfile, signOut as _signOut } from "firebase/auth"
-import { getDatabase, type Database } from "firebase/database"
+import {
+  connectAuthEmulator,
+  getAuth,
+  onIdTokenChanged,
+  updateProfile,
+  signOut as _signOut,
+} from "firebase/auth"
+import { connectDatabaseEmulator, getDatabase, type Database } from "firebase/database"
 
 import { browser } from "$app/environment"
 import { invalidateAll } from "$app/navigation"
 import type { GameData } from "$lib/game_data"
 import { canSeeRoles, type Player } from "$lib/player"
+
+// The emulators listen on IPv4 only, and "localhost" may resolve to IPv6 first
+const EMULATOR_HOST: string = "127.0.0.1"
 
 // Initialize Firebase
 export let app: FirebaseApp
@@ -16,6 +25,7 @@ export function initializeFirebase(
   firebaseConfig: FirebaseOptions | undefined,
   recaptchaSiteKey: string | undefined,
   debugMode: boolean = false,
+  useEmulators: boolean = false,
 ): void {
   if (!browser) {
     throw new Error("Can't use the Firebase client on the server.")
@@ -36,11 +46,19 @@ export function initializeFirebase(
     if (debugMode) {
       self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
     }
-    initializeAppCheck(app, {
-      provider: new ReCaptchaEnterpriseProvider(recaptchaSiteKey),
-      isTokenAutoRefreshEnabled: true,
-    })
+    if (useEmulators) {
+      // Local Firebase emulators, on their default ports. They don't check App Check tokens.
+      connectAuthEmulator(getAuth(app), `http://${EMULATOR_HOST}:9099`, { disableWarnings: true })
+    } else {
+      initializeAppCheck(app, {
+        provider: new ReCaptchaEnterpriseProvider(recaptchaSiteKey),
+        isTokenAutoRefreshEnabled: true,
+      })
+    }
     rtdb = getDatabase(app)
+    if (useEmulators) {
+      connectDatabaseEmulator(rtdb, EMULATOR_HOST, 9000)
+    }
     listenForAuthChanges()
   }
 }

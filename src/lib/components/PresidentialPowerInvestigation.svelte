@@ -15,6 +15,9 @@
     removePowerCache,
     writePowerCache,
   } from "$lib/power_cache"
+  import { createTimers, type Timers } from "$lib/timers"
+
+  const timers: Timers = createTimers()
 
   export let beingInvestigatedPlayerId: string | undefined
   export let enactedPolicyCount: number
@@ -85,7 +88,7 @@
       const investigationCacheKey: string = cacheKey
       ApiClient.presidentialPower_investigation(gameCode)
 
-      setTimeout(async () => {
+      timers.setTimeout(() => {
         removePowerCache(investigationCacheKey)
         membership = undefined
         selectedPlayer = undefined

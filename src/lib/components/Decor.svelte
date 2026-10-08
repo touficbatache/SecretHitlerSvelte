@@ -18,6 +18,9 @@
   import PlayfulSpinner from "$lib/components/PlayfulSpinner.svelte"
   import type { GameData } from "$lib/game_data"
   import { mounted } from "$lib/mounted"
+  import { createTimers, type Timers } from "$lib/timers"
+
+  const timers: Timers = createTimers()
 
   export let gameCode: string
   export let gameData: GameData | undefined
@@ -46,7 +49,7 @@
   function copyGameCode() {
     copyToClipboard(gameCode, () => {
       copyGameCodeSuccess = true
-      setTimeout(() => {
+      timers.setTimeout(() => {
         copyGameCodeSuccess = false
       }, 2000)
     })
