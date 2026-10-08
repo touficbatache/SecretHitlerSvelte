@@ -96,6 +96,9 @@ npm run test:e2e
 `tests/e2e/database.rules.json` is a copy of the backend's `database.rules.json`: update it when those
 rules change.
 
+GitHub Actions runs the lint (`npm run lint`), the type check (`npm run check`), the build and both
+test suites on every pull request and on `master` (`.github/workflows/ci.yml`).
+
 ## Deploy to dev/prod
 
 To deploy the project to Firebase Hosting, you need to set the correct environment variable values for the development or production environment in `.env.<alias>` (`.env.dev` or `.env.prod`) respectively.
