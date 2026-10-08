@@ -53,9 +53,11 @@ export default defineConfig({
     baseURL: `http://127.0.0.1:${APP_PORT}`,
     viewport: { width: 1280, height: 800 },
   },
+  // The app listens on 127.0.0.1, where the tests reach it. With "localhost", Vite listens on
+  // whichever address that resolves to first: ::1 on GitHub's runners, so the tests never reach it.
   webServer: [
     {
-      command: `vite dev --port ${APP_PORT} --strictPort`,
+      command: `vite dev --host 127.0.0.1 --port ${APP_PORT} --strictPort`,
       url: `http://127.0.0.1:${APP_PORT}/login`,
       timeout: 120_000,
       env: {
