@@ -123,6 +123,7 @@
     />
 
     <VoteView
+      pauseEndsAt={$gameData?.pendingTransition?.at}
       currentSession={$gameData?.currentSession}
       on:minimize={minimize}
       on:vote={({ detail }) => ApiClient.vote(gameCode, detail)}
@@ -159,6 +160,7 @@
     />
 
     <PresidentialPowerPolicyPeek
+      pauseEndsAt={$gameData?.pendingTransition?.at}
       {enactedPolicyCount}
       {gameCode}
       on:minimize={minimize}
@@ -169,6 +171,7 @@
     />
 
     <PresidentialPowerInvestigation
+      pauseEndsAt={$gameData?.pendingTransition?.at}
       beingInvestigatedPlayerId={$gameData?.currentSession?.beingInvestigatedPlayerId}
       {enactedPolicyCount}
       {gameCode}
@@ -180,6 +183,7 @@
     />
 
     <PresidentialPowerSpecialElection
+      pauseEndsAt={$gameData?.pendingTransition?.at}
       on:click={({ detail }) => ApiClient.presidentialPower_specialElection(gameCode, detail)}
       on:minimize={minimize}
       open={$gameData?.subStatus === "presidentialPower_callSpecialElection"}
@@ -190,6 +194,7 @@
     />
 
     <PresidentialPowerExecution
+      pauseEndsAt={$gameData?.pendingTransition?.at}
       on:click={({ detail }) => ApiClient.presidentialPower_execution(gameCode, detail)}
       on:minimize={minimize}
       open={$gameData?.subStatus === "presidentialPower_execution"}

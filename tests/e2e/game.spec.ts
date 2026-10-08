@@ -258,3 +258,79 @@ test("/logout renders on the server without taking the server down", async () =>
   // Signing out during server rendering used to throw outside the request and kill the process
   expect((await alice.request.get("/login")).status()).toBe(200)
 })
+
+test("every player counts down together and moves on at the same time, even with a clock 10s off", async () => {
+  const code: string = "700007"
+  // Bob's device clock runs 10 seconds fast
+  await bob.context().addInitScript(() => {
+    const RealDate: DateConstructor = Date
+    const skewMs: number = 10_000
+    class SkewedDate extends RealDate {
+      constructor(...args: []) {
+        if (args.length === 0) super(RealDate.now() + skewMs)
+        else super(...(args as unknown as [number]))
+      }
+      static now(): number {
+        return RealDate.now() + skewMs
+      }
+    }
+    globalThis.Date = SkewedDate as DateConstructor
+  })
+  await db(
+    "PUT",
+    `ongoingGames/${code}`,
+    gameInProgress({
+      status: "election",
+      subStatus: "election_voting",
+      currentSession: { presidentId: "carol", chancellorId: "dave" },
+    }),
+  )
+  await Promise.all([enterGame(alice, code, "/gameplay"), enterGame(bob, code, "/gameplay")])
+  await alice.getByText("Vote", { exact: true }).first().waitFor()
+  await bob.getByText("Vote", { exact: true }).first().waitFor()
+  expect(
+    await bob.evaluate(() => Date.now() - performance.timeOrigin - performance.now()),
+  ).toBeGreaterThan(9000)
+
+  // The last vote is in: the server shows the votes for 6 seconds
+  await resetApi()
+  const at: number = Date.now() + 6000
+  await db("PATCH", `ongoingGames/${code}`, {
+    subStatus: "election_votingEnded",
+    pendingTransition: { at, kind: "beginLegislativeSession" },
+    currentSession: {
+      presidentId: "carol",
+      chancellorId: "dave",
+      hasSucceeded: true,
+      votes: { [ALICE.uid]: true, [BOB.uid]: true, carol: true, dave: true, eve: false },
+    },
+  })
+
+  const timers: Page[] = [alice, bob]
+  const shown: (page: Page) => Promise<string> = async (page: Page) =>
+    (await page.getByRole("timer").first().innerText()).trim()
+  for (const [msBefore, expected] of [
+    [4500, ""],
+    [2500, "3"],
+    [1500, "2"],
+    [500, "1"],
+  ] as [number, string][]) {
+    await sleep(at - msBefore - Date.now())
+    for (const page of timers) {
+      expect(await shown(page), `${msBefore}ms before the end`).toBe(expected)
+    }
+  }
+
+  await sleep(at + 1500 - Date.now())
+  const advances: { uid: string | undefined; receivedAt: number }[] = (await apiCalls()).filter(
+    (call) => call.endpoint === "advance",
+  )
+  expect(new Set(advances.map((call) => call.uid))).toEqual(new Set([ALICE.uid, BOB.uid]))
+  for (const call of advances) {
+    expect(
+      call.receivedAt,
+      `${call.uid} asked ${at - call.receivedAt}ms early`,
+    ).toBeGreaterThanOrEqual(at - 100)
+    expect(call.receivedAt).toBeLessThan(at + 1000)
+  }
+})

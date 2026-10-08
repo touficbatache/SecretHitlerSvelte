@@ -2,7 +2,7 @@ import { type Database, type DatabaseReference, onValue, ref as dbRef } from "fi
 import { derived, type Readable } from "svelte/store"
 
 import * as ApiClient from "$lib/api_client"
-import { castGameData } from "$lib/firebase"
+import { castGameData, isSignedIn } from "$lib/firebase"
 import type { Player } from "$lib/player"
 
 export interface GameData {
@@ -13,6 +13,8 @@ export interface GameData {
   readonly electionTracker: number
   readonly gameType: GameType
   readonly isOwner: boolean
+  /** The pause the game is in, and when (server time) it moves on. See clock.ts. */
+  readonly pendingTransition: PendingTransition | undefined
   readonly players: GameDataPlayers
   readonly policies: GameDataPolicies
   readonly presidentialPower: PresidentialPower | undefined
@@ -70,6 +72,12 @@ export interface GameDataSession {
   readonly isVetoRefused: boolean | undefined
 }
 
+export interface PendingTransition {
+  /** Server time, in milliseconds, when the pause ends. */
+  readonly at: number
+  readonly kind: "finishSetup" | "beginLegislativeSession" | "frustratedPopulace" | "nextElection"
+}
+
 export type GameType = "fiveSix" | "sevenEight" | "nineTen"
 
 export type PresidentialPower = "consumed" | "done"
@@ -105,7 +113,14 @@ export function gameDataStore(
             set(castGameData(value))
           }
         },
-        (error) => console.error(`Can't read game ${$gameCode}:`, error),
+        (error) => {
+          console.error(`Can't read game ${$gameCode}:`, error)
+          // A signed-in player loses access when the game is removed, or when they're no longer
+          // in it: only its players may read a game
+          if (isSignedIn()) {
+            ApiClient.leaveGame()
+          }
+        },
       )
     },
     undefined,

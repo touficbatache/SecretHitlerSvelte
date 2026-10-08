@@ -329,6 +329,26 @@ export async function answerVeto(code: string, refuseVeto: boolean): Promise<Gam
   return handleSuccess(res)
 }
 
+/**
+ * Asks the server to move the game on once a pause between phases is over (see
+ * GameData.pendingTransition).
+ *
+ * @returns when the pause ends, if it's still on (this device's clock was early), or undefined.
+ * @throws if the request failed in a way worth retrying.
+ */
+export async function advance(code: string): Promise<number | undefined> {
+  const res: Response = await callApi("advance", JSON.stringify({ code }))
+
+  if (res.ok) {
+    return ((await res.json()) as { pendingTransitionAt?: number }).pendingTransitionAt
+  }
+  if (res.status >= 500 || res.status === 409) {
+    throw new Error(`advance failed with ${res.status}`)
+  }
+  // The game is gone, or this player isn't in it: nothing to retry
+  return undefined
+}
+
 export async function leaveGame(): Promise<void> {
   await setGameCodeCookie("")
 

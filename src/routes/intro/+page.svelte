@@ -3,6 +3,7 @@
   import type { Writable } from "svelte/store"
   import { fade } from "svelte/transition"
 
+  import { serverNow } from "$lib/clock"
   import CountDown from "$lib/components/CountDown.svelte"
   import IntroStep1 from "$lib/components/intro/IntroStep1.svelte"
   import IntroStep2 from "$lib/components/intro/IntroStep2.svelte"
@@ -28,20 +29,13 @@
   let steps: Step[] | undefined
   let stepShown: number = 1
 
-  let countDownStartDelay: number | undefined = undefined
-  let triggerCountDown: boolean = false
-
   $: player = $gameData?.players?.self
 
-  $: if (player) {
-    if (!$gameData?.settings?.skipLongIntro) {
-      setupLongIntro()
-    } else {
-      let startedAt: number = $gameData?.startedAt ?? Date.now()
-      let currentTime: number = Date.now()
-      countDownStartDelay = 2000 - (currentTime - startedAt)
-      triggerCountDown = true
-    }
+  // The server ends the intro at this time; every screen counts down to it
+  $: introEndsAt = $gameData?.pendingTransition?.at
+
+  $: if (player && !$gameData?.settings?.skipLongIntro) {
+    setupLongIntro()
   }
 
   function setupLongIntro() {
@@ -51,7 +45,7 @@
 
     isSetup = true
 
-    let startedAt: number = $gameData?.startedAt ?? Date.now()
+    let startedAt: number = $gameData?.startedAt ?? serverNow()
 
     switch (player?.membership) {
       case "liberal":
@@ -96,7 +90,7 @@
         break
     }
 
-    let currentTime: number = Date.now()
+    let currentTime: number = serverNow()
 
     for (const index of steps.keys()) {
       const duration: number = steps
@@ -144,7 +138,7 @@
       class="absolute inset-0 flex flex-col justify-between items-center pt-20 pb-5"
       transition:fade={{ duration: 300 }}
     >
-      <IntroStep4 />
+      <IntroStep4 until={introEndsAt} />
     </div>
   {/if}
 
@@ -152,8 +146,7 @@
     <CountDown
       classContainer=""
       classNumber="absolute bottom-16 md:bottom-10 left-1/2 -translate-x-1/2 text-4xl"
-      startDelay={countDownStartDelay}
-      trigger={triggerCountDown}
+      until={introEndsAt}
     />
   {/if}
 {/if}

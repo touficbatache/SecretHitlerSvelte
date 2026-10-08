@@ -121,6 +121,11 @@ export async function signOut() {
   })
 }
 
+/** Whether a player is signed in on this device (false until the session is restored). */
+export function isSignedIn(): boolean {
+  return app !== undefined && getAuth(app).currentUser !== null
+}
+
 export function castGameData(snapshotValue: any): GameData {
   const user = getAuth(app).currentUser
   const {
@@ -131,6 +136,7 @@ export function castGameData(snapshotValue: any): GameData {
     lastSuccessfulChancellorId,
     lastSuccessfulPresidentId,
     ownerId,
+    pendingTransition,
     players,
     policies,
     presidentialPower,
@@ -199,6 +205,7 @@ export function castGameData(snapshotValue: any): GameData {
     electionTracker,
     gameType,
     isOwner: ownerId === user?.uid,
+    pendingTransition,
     players: {
       self: currentPlayer,
       all: allPlayers,
