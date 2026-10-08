@@ -55,6 +55,12 @@ module.exports = {
   },
   settings: {
     "svelte3/typescript": () => require("typescript"),
+    // eslint-plugin-import parses imported modules with the importing file's parser by default.
+    // For .svelte files that is svelte-eslint-parser, which cannot parse plain JS package entries,
+    // so parse script modules with the TypeScript parser instead.
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".cts", ".mts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"],
+    },
     "import/resolver": {
       node: {
         paths: ["src"],
