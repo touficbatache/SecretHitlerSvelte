@@ -1,12 +1,16 @@
 <script lang="ts">
   import { fly } from "svelte/transition"
 
+  import { createTimers, type Timers } from "$lib/timers"
+
   export let classContainer: string = "relative"
   export let classNumber: string = "absolute inset-0 text-2xl"
   export let from: number = 4
   export let interval: number = 1000
   export let startDelay: number = 2000
   export let trigger: boolean = false
+
+  const timers: Timers = createTimers()
 
   let countDown: number = from
   let countDownHasStarted: boolean = false
@@ -27,10 +31,10 @@
 
     countDownHasStarted = true
 
-    setTimeout(async () => {
+    timers.setTimeout(async () => {
       while (countDown > 0) {
         countDown--
-        await new Promise((f) => setTimeout(f, interval))
+        await timers.sleep(interval)
       }
       if (countDown === 0) {
         resetCountdown()

@@ -5,12 +5,15 @@
   import { page } from "$app/stores"
   import ElevatedText from "$lib/components/ElevatedText.svelte"
   import PlayfulSpinner from "$lib/components/PlayfulSpinner.svelte"
+  import { createTimers, type Timers } from "$lib/timers"
+
+  const timers: Timers = createTimers()
 
   onMount(() => {
     if ($page.data.gameCode === undefined) {
       goto("/", { replaceState: true })
     } else {
-      setTimeout(() => goto("/waitingRoom", { replaceState: true }), 3000)
+      timers.setTimeout(() => goto("/waitingRoom", { replaceState: true }), 3000)
     }
   })
 </script>

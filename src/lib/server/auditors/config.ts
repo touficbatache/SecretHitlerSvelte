@@ -53,7 +53,7 @@ export function auditConfig(audit: Audit, dataUnknown: unknown): [unknown, unkno
   )
 
   // booleans
-  for (const key of ["debugMode"]) {
+  for (const key of ["debugMode", "useEmulators"]) {
     audit.attribute(
       data,
       key,

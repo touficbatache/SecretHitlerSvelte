@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "ongoingGames": {
+      "$gameCode": {
+        ".read": "data.child('connected').child(auth.uid).exists()",
+        ".write": false,
+        "connected": {
+          "$userId": {
+            ".write": "$userId === auth.uid && data.exists() && newData.isBoolean()"
+          }
+        }
+      }
+    }
+  }
+}

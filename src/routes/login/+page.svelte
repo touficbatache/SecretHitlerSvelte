@@ -38,8 +38,8 @@
     // Get a reference to the Auth instance
     auth = getAuth(app)
 
-    //TODO: remove?
-    if ($page.data.debugMode) {
+    // No real SMS or reCAPTCHA in debug mode, nor with the emulators (codes are read from them)
+    if ($page.data.debugMode || $page.data.useEmulators) {
       auth.settings.appVerificationDisabledForTesting = true
     }
 

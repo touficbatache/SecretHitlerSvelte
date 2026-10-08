@@ -1,18 +1,9 @@
 <script lang="ts">
-  import {
-    onDisconnect as onDisconnectRef,
-    ref as dbRef,
-    set as setRef,
-    type Unsubscribe,
-  } from "@firebase/database"
   import Icon from "@iconify/svelte"
   import { Canvas } from "@threlte/core"
-  import { type DatabaseReference, onValue } from "firebase/database"
-  import { getContext, onMount } from "svelte"
+  import { getContext } from "svelte"
   import type { Readable } from "svelte/store"
 
-  import { browser } from "$app/environment"
-  import { beforeNavigate, goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import ChancellorPolicyChooseView from "$lib/components/ChancellorPolicyChooseView.svelte"
@@ -27,18 +18,18 @@
   import PresidentPolicyChooseView from "$lib/components/PresidentPolicyChooseView.svelte"
   import PresidentReviewingVeto from "$lib/components/PresidentReviewingVeto.svelte"
   import VoteView from "$lib/components/VoteView.svelte"
-  import { rtdb } from "$lib/firebase"
+  import WaitingForReconnect from "$lib/components/WaitingForReconnect.svelte"
   import type { GameData } from "$lib/game_data"
   import type { PlayerMembership } from "$lib/player"
+  import { ownTurnText, playersToWaitFor } from "$lib/turn"
 
   const gameCode: string = $page.data.gameCode
   const gameData: Readable<GameData | undefined> = getContext("gameData") as Readable<
     GameData | undefined
   >
 
-  let presenceListenerUnsubscribe: Unsubscribe | undefined
-
   let isMinimized: boolean = false
+  let minimizedSubStatus: string | undefined
 
   let importantGameStatuses: string[] = [
     "election_voting",
@@ -48,40 +39,26 @@
     "presidentialPower_execution",
   ]
 
-  $: if (browser) {
-    if ($page.data.gameCode === undefined) {
-      goto("/", { replaceState: true })
-    }
-
-    if ($gameData?.status === "waiting") {
-      goto("/waitingRoom", { replaceState: true })
-    }
-
-    if ($gameData?.status === "settingUp") {
-      goto("/intro", { replaceState: true })
-    }
-  }
-
   $: hasGameEnded = $gameData?.status !== undefined && $gameData.status === "gameEnded"
 
-  onMount(() => {
-    setupPresence(gameCode)
-  })
+  // Minimizing only lasts for the current phase, so a new phase always opens its window
+  $: if (isMinimized && $gameData?.subStatus !== minimizedSubStatus) {
+    isMinimized = false
+  }
 
-  function setupPresence(gameCode: any) {
-    if (gameCode !== undefined && $page.data.user?.uid !== undefined) {
-      const gameUserConnectedRef: DatabaseReference = dbRef(
-        rtdb,
-        `ongoingGames/${gameCode}/connected/${$page.data.user.uid}`,
-      )
-      const connectedRef: DatabaseReference = dbRef(rtdb, ".info/connected")
-      presenceListenerUnsubscribe = onValue(connectedRef, (snapshot) => {
-        if (snapshot.val() === true) {
-          onDisconnectRef(gameUserConnectedRef).set(false)
-          setRef(gameUserConnectedRef, true)
-        }
-      })
-    }
+  // Changes once per enacted policy, so it identifies the presidential power being used
+  $: enactedPolicyCount =
+    ($gameData?.policies.board?.liberal ?? 0) + ($gameData?.policies.board?.fascist ?? 0)
+
+  $: ownTurn = ownTurnText($gameData)
+  $: isFascist = $gameData?.players.self.membership === "fascist"
+  $: isImportant =
+    ownTurn !== undefined || importantGameStatuses.includes($gameData?.subStatus ?? "")
+  $: minimizedText = ownTurn ?? statusText($gameData?.subStatus)
+
+  function minimize() {
+    minimizedSubStatus = $gameData?.subStatus
+    isMinimized = true
   }
 
   function getGameWinningTeam(hasGameEnded: boolean): PlayerMembership | undefined {
@@ -114,19 +91,6 @@
         return "The President is executing a player"
     }
   }
-
-  beforeNavigate(({ to }) => {
-    if (gameCode !== undefined && to !== undefined && to.route.id !== "waitingRoom") {
-      if (presenceListenerUnsubscribe !== undefined) {
-        presenceListenerUnsubscribe()
-      }
-      const gameUserConnectedRef: DatabaseReference = dbRef(
-        rtdb,
-        `ongoingGames/${gameCode}/connected/${$page.data.user.uid}`,
-      )
-      setRef(gameUserConnectedRef, false)
-    }
-  })
 </script>
 
 <Decor
@@ -152,7 +116,7 @@
   {#if !isMinimized}
     <ChooseChancellorView
       on:click={({ detail }) => ApiClient.chooseChancellor(gameCode, detail)}
-      on:minimize={() => (isMinimized = true)}
+      on:minimize={minimize}
       open={$gameData?.subStatus === "election_presidentChoosingChancellor"}
       players={$gameData?.players}
       president={$gameData?.currentSession?.president()}
@@ -160,7 +124,7 @@
 
     <VoteView
       currentSession={$gameData?.currentSession}
-      on:minimize={() => (isMinimized = true)}
+      on:minimize={minimize}
       on:vote={({ detail }) => ApiClient.vote(gameCode, detail)}
       open={$gameData?.subStatus === "election_voting" ||
         $gameData?.subStatus === "election_votingEnded"}
@@ -171,7 +135,7 @@
     <PresidentPolicyChooseView
       currentSession={$gameData?.currentSession}
       on:click={({ detail }) => ApiClient.presidentDiscardPolicy(gameCode, detail)}
-      on:minimize={() => (isMinimized = true)}
+      on:minimize={minimize}
       open={$gameData?.subStatus === "legislativeSession_presidentDiscardingPolicy"}
       players={$gameData?.players}
     />
@@ -181,7 +145,7 @@
       currentSession={$gameData?.currentSession}
       on:click={({ detail }) => ApiClient.chancellorDiscardPolicy(gameCode, detail)}
       on:veto={() => ApiClient.askForVeto(gameCode)}
-      on:minimize={() => (isMinimized = true)}
+      on:minimize={minimize}
       open={$gameData?.subStatus === "legislativeSession_chancellorDiscardingPolicy"}
       players={$gameData?.players}
     />
@@ -189,14 +153,15 @@
     <PresidentReviewingVeto
       currentSession={$gameData?.currentSession}
       on:answer={({ detail: isAccepted }) => ApiClient.answerVeto(gameCode, !isAccepted)}
-      on:minimize={() => (isMinimized = true)}
+      on:minimize={minimize}
       open={$gameData?.subStatus === "legislativeSession_chancellorSeekingVeto"}
       players={$gameData?.players}
     />
 
     <PresidentialPowerPolicyPeek
+      {enactedPolicyCount}
       {gameCode}
-      on:minimize={() => (isMinimized = true)}
+      on:minimize={minimize}
       open={$gameData?.subStatus === "presidentialPower_policyPeek"}
       players={$gameData?.players}
       president={$gameData?.currentSession?.president()}
@@ -205,8 +170,9 @@
 
     <PresidentialPowerInvestigation
       beingInvestigatedPlayerId={$gameData?.currentSession?.beingInvestigatedPlayerId}
+      {enactedPolicyCount}
       {gameCode}
-      on:minimize={() => (isMinimized = true)}
+      on:minimize={minimize}
       open={$gameData?.subStatus === "presidentialPower_investigateLoyalty"}
       players={$gameData?.players}
       president={$gameData?.currentSession?.president()}
@@ -215,7 +181,7 @@
 
     <PresidentialPowerSpecialElection
       on:click={({ detail }) => ApiClient.presidentialPower_specialElection(gameCode, detail)}
-      on:minimize={() => (isMinimized = true)}
+      on:minimize={minimize}
       open={$gameData?.subStatus === "presidentialPower_callSpecialElection"}
       players={$gameData?.players}
       president={$gameData?.currentSession?.president()}
@@ -225,29 +191,37 @@
 
     <PresidentialPowerExecution
       on:click={({ detail }) => ApiClient.presidentialPower_execution(gameCode, detail)}
-      on:minimize={() => (isMinimized = true)}
+      on:minimize={minimize}
       open={$gameData?.subStatus === "presidentialPower_execution"}
       players={$gameData?.players}
       president={$gameData?.currentSession?.president()}
       presidentialPower={$gameData?.presidentialPower}
     />
-
-    <GameEnding
-      open={hasGameEnded}
-      players={$gameData?.players}
-      winningTeam={getGameWinningTeam(hasGameEnded)}
-    />
-  {:else if statusText($gameData?.subStatus) !== undefined}
-    {@const isImportant = importantGameStatuses.includes($gameData?.subStatus)}
+  {:else if minimizedText !== undefined}
     <button
-      class="absolute inset-x-6 bottom-36 md:bottom-6 flex md:justify-center items-center gap-4 px-4 py-2 shadow-frame bg-[#141414] rounded-lg animate-pulse-slow"
+      class="absolute inset-x-6 bottom-36 md:bottom-6 flex md:justify-center items-center gap-4 px-4 py-2 shadow-frame rounded-lg animate-pulse-slow {ownTurn ===
+      undefined
+        ? 'bg-[#141414]'
+        : isFascist
+        ? 'bg-red-fascist font-bold'
+        : 'bg-blue-liberal font-bold'}"
       class:border-2={isImportant}
-      class:border-red-fascist={isImportant && $gameData?.players.self.membership === "fascist"}
-      class:border-blue-liberal={isImportant && $gameData?.players.self.membership === "liberal"}
+      class:border-white={ownTurn !== undefined}
+      class:border-red-fascist={isImportant && ownTurn === undefined && isFascist}
+      class:border-blue-liberal={isImportant && ownTurn === undefined && !isFascist}
       on:click={() => (isMinimized = false)}
     >
       <Icon icon="fa:window-restore" />
-      {statusText($gameData?.subStatus)}
+      {minimizedText}
     </button>
   {/if}
+
+  <!-- Outside the minimizable windows: everyone must see how the game ended -->
+  <GameEnding
+    open={hasGameEnded}
+    players={$gameData?.players}
+    winningTeam={getGameWinningTeam(hasGameEnded)}
+  />
+
+  <WaitingForReconnect players={playersToWaitFor($gameData)} />
 </Decor>

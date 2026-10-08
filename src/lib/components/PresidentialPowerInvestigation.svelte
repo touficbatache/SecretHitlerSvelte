@@ -9,8 +9,18 @@
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import type { GameDataPlayers, PresidentialPower } from "$lib/game_data"
   import type { Player } from "$lib/player"
+  import {
+    powerCacheKey,
+    readPowerCache,
+    removePowerCache,
+    writePowerCache,
+  } from "$lib/power_cache"
+  import { createTimers, type Timers } from "$lib/timers"
+
+  const timers: Timers = createTimers()
 
   export let beingInvestigatedPlayerId: string | undefined
+  export let enactedPolicyCount: number
   export let gameCode: string
   export let open: boolean
   export let players: GameDataPlayers | undefined = undefined
@@ -20,26 +30,33 @@
   let isRequestSent: boolean = false
   let membership: string | undefined = undefined
   let selectedPlayer: Player | undefined = undefined
-  const sessionStorageKey: string = "investigation"
 
   $: nonInvestigatedPlayers =
     players?.alive().filter((player) => !player.isPresident && !player.isInvestigated) ?? []
   $: isPresident = players?.self?.isPresident ?? false
   $: visibleRolePlayerIds = players?.visibleRolePlayerIds() ?? []
 
-  $: if (browser && sessionStorage.getItem(sessionStorageKey) != null) {
-    const storageJson: { membership: string; player: Player } = JSON.parse(
-      sessionStorage.getItem(sessionStorageKey) as string,
-    )
-    membership = storageJson.membership
-    selectedPlayer = storageJson.player
+  $: cacheKey = powerCacheKey("investigation", gameCode, enactedPolicyCount)
+
+  $: if (browser && open) {
+    restoreInvestigation(cacheKey)
+  }
+
+  function restoreInvestigation(cacheKey: string) {
+    const cachedInvestigation: string | null = readPowerCache("investigation", cacheKey)
+    if (cachedInvestigation != null) {
+      const storageJson: { membership: string; player: Player } = JSON.parse(cachedInvestigation)
+      membership = storageJson.membership
+      selectedPlayer = storageJson.player
+    }
   }
 
   $: if (beingInvestigatedPlayerId !== undefined) {
     selectedPlayer = players?.all.find((player) => player.id === beingInvestigatedPlayerId)
     if (beingInvestigatedPlayerId === players?.self.id) {
       membership = players?.self?.membership
-    } else {
+    } else if (!isPresident) {
+      // The President keeps the membership the investigation revealed to them
       membership = undefined
     }
   }
@@ -53,8 +70,8 @@
       )
       if (response.error === undefined) {
         membership = response.success?.membership
-        sessionStorage.setItem(
-          sessionStorageKey,
+        writePowerCache(
+          cacheKey,
           JSON.stringify({
             membership: response.success?.membership,
             player: selectedPlayer,
@@ -68,10 +85,11 @@
 
   function nextElection() {
     if (isPresident && presidentialPower === "consumed") {
+      const investigationCacheKey: string = cacheKey
       ApiClient.presidentialPower_investigation(gameCode)
 
-      setTimeout(async () => {
-        sessionStorage.removeItem(sessionStorageKey)
+      timers.setTimeout(() => {
+        removePowerCache(investigationCacheKey)
         membership = undefined
         selectedPlayer = undefined
       }, 10000)
