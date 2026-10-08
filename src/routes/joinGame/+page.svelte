@@ -33,6 +33,11 @@
     return expanded ? games : games.slice(0, 2)
   }
 
+  /** How long ago a game was created, kept on one line. */
+  function createdAgo(createdAt: number): string {
+    return `${timeAgo.format(createdAt, "mini").replace(/ /g, "\u00a0")} ago`
+  }
+
   async function join(gameCode: string) {
     error = ""
     isJoining = true
@@ -173,14 +178,14 @@
                       {playerCount} player{playerCount === 1 ? "" : "s"}
                     </div>
                     <div class="hidden md:flex items-center md:pl-1.5 md:pr-4 text-nowrap">
-                      {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
+                      {createdAgo(createdAt)}
                     </div>
                     <div class="md:hidden flex flex-col gap-1">
                       <span>
                         {playerCount} player{playerCount === 1 ? "" : "s"}
                       </span>
                       <span>
-                        {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
+                        {createdAgo(createdAt)}
                       </span>
                     </div>
                     <PlayfulButton
@@ -253,14 +258,14 @@
                       {playerCount} player{playerCount === 1 ? "" : "s"}
                     </div>
                     <div class="hidden md:flex items-center md:pl-1.5 md:pr-4 text-nowrap">
-                      {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
+                      {createdAgo(createdAt)}
                     </div>
                     <div class="md:hidden flex flex-col gap-1">
                       <span>
                         {playerCount} player{playerCount === 1 ? "" : "s"}
                       </span>
                       <span>
-                        {@html timeAgo.format(createdAt, "mini").replace(/ /g, "&nbsp;")} ago
+                        {createdAgo(createdAt)}
                       </span>
                     </div>
                     <PlayfulButton

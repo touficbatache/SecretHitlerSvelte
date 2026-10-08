@@ -166,9 +166,3 @@
     </div>
   </form>
 </TwoPaneView>
-
-<style>
-  .recaptcha-container > div {
-    @apply contents;
-  }
-</style>

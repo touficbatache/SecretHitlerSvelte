@@ -65,9 +65,12 @@
   }
 </script>
 
+<!-- Clicking anywhere focuses the next empty input, a shortcut for pointer users: keyboard and
+  assistive technology users reach the inputs directly, so the wrapper itself is presentational -->
 <div
   class="w-full flex justify-between gap-2 {$$props.class}"
   class:cursor-pointer={isEnabled}
+  role="presentation"
   on:click={isEnabled ? updateActive : onBlur}
   use:clickOutside={{ callback: onBlur }}
 >
