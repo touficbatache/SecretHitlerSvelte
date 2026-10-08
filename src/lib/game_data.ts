@@ -59,15 +59,18 @@ export interface GameDataPolicies {
 }
 
 export interface GameDataSession {
-  readonly president: () => Player
-  readonly presidentId: string
+  readonly president: () => Player | undefined
+  readonly presidentId: string | undefined
   readonly presidentPolicies: string[] | undefined
   readonly chancellor: () => Player | undefined
   readonly chancellorId: string | undefined
   readonly chancellorPolicies: string[] | undefined
-  readonly votes: {
-    readonly [playerId: string]: boolean
-  }
+  /** Absent until the first vote is cast: the database doesn't store empty objects. */
+  readonly votes:
+    | {
+        readonly [playerId: string]: boolean
+      }
+    | undefined
   readonly beingInvestigatedPlayerId: string | undefined
   readonly isVetoRefused: boolean | undefined
 }

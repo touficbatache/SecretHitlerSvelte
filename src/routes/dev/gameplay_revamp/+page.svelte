@@ -2,8 +2,9 @@
   import { Canvas } from "@threlte/core"
 
   import GameplayScene from "$lib/components/GameplayScene.svelte"
+  import type { GameDataPolicies } from "$lib/game_data"
 
-  const dummyPolicies = {
+  const dummyPolicies: GameDataPolicies = {
     board: { liberal: 2, fascist: 3 },
     drawPile: [
       "fascist",
@@ -16,6 +17,8 @@
       "fascist",
       "liberal",
     ],
+    drawPileCount: () => 9,
+    discardPile: { liberal: 1, fascist: 2 },
     discardPileCount: () => 3,
   }
 </script>

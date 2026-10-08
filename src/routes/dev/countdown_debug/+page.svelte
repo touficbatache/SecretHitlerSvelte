@@ -1,14 +1,22 @@
 <script lang="ts">
   import VoteView from "$lib/components/VoteView.svelte"
+  import type { GameDataPlayers, GameDataSession } from "$lib/game_data"
 
-  let currentSession = {
-    chancellorId: "player1",
+  let currentSession: GameDataSession = {
+    president: () => players.all.find((player) => player.id === "player2"),
     presidentId: "player2",
+    presidentPolicies: undefined,
+    chancellor: () => players.all.find((player) => player.id === "player1"),
+    chancellorId: "player1",
+    chancellorPolicies: undefined,
+    votes: undefined,
+    beingInvestigatedPlayerId: undefined,
+    isVetoRefused: undefined,
   }
 
-  let open = true
+  let open: boolean = true
 
-  let players = {
+  let players: GameDataPlayers = {
     self: {
       id: "player1",
       assetReference: "liberal_5",
@@ -22,6 +30,7 @@
       isPresident: false,
       isChancellor: true,
       isPreviousChancellor: true,
+      vote: () => undefined,
     },
     all: [
       {
@@ -37,6 +46,7 @@
         isPresident: true,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
       {
         id: "player1",
@@ -66,6 +76,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
       {
         id: "player4",
@@ -80,6 +91,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
       {
         id: "player5",
@@ -94,6 +106,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
       {
         id: "player6",
@@ -108,6 +121,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
     ],
     others: [
@@ -124,6 +138,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
       {
         id: "player4",
@@ -138,6 +153,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
       {
         id: "player5",
@@ -152,6 +168,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
       {
         id: "player6",
@@ -166,6 +183,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
       {
         id: "player2",
@@ -180,6 +198,7 @@
         isPresident: true,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
     ],
     fascists: [
@@ -196,6 +215,7 @@
         isPresident: true,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
       {
         id: "player3",
@@ -210,6 +230,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
     ],
     liberals: [
@@ -226,6 +247,7 @@
         isPresident: false,
         isChancellor: true,
         isPreviousChancellor: true,
+        vote: () => undefined,
       },
       {
         id: "player4",
@@ -240,6 +262,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
       {
         id: "player5",
@@ -254,6 +277,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
       {
         id: "player6",
@@ -268,6 +292,7 @@
         isPresident: false,
         isChancellor: false,
         isPreviousChancellor: false,
+        vote: () => undefined,
       },
     ],
     alive: () => [
@@ -332,10 +357,11 @@
         vote: () => undefined,
       },
     ],
+    eligibleForChancellor: () => [],
     visibleRolePlayerIds: () => ["player1"],
   }
 
-  let waiting = true
+  let waiting: boolean = true
 </script>
 
 <VoteView {currentSession} {open} {players} {waiting} />

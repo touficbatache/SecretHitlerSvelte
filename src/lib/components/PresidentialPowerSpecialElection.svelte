@@ -56,7 +56,7 @@
           player={president}
           hideExtras={true}
           hideVotes={true}
-          showRole={visibleRolePlayerIds.includes(president.id)}
+          showRole={president !== undefined && visibleRolePlayerIds.includes(president.id)}
         />
       </div>
     </div>
@@ -100,7 +100,7 @@
             player={selectedPlayerObj}
             hideExtras={true}
             hideVotes={true}
-            showRole={visibleRolePlayerIds.includes(selectedPlayer)}
+            showRole={selectedPlayer !== undefined && visibleRolePlayerIds.includes(selectedPlayer)}
           />
         </div>
         <CountDown until={pauseEndsAt} />

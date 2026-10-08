@@ -13,6 +13,7 @@ export const clickOutside: Action<HTMLElement, ClickOutsideOptions | undefined> 
   if (options === undefined || options.callback === undefined) {
     return
   }
+  const callback: () => void = options.callback
 
   const handleClick: (event: MouseEvent) => void = (event) => {
     if (!event?.target) return
@@ -23,7 +24,7 @@ export const clickOutside: Action<HTMLElement, ClickOutsideOptions | undefined> 
         true) &&
       !event.defaultPrevented
     ) {
-      options.callback()
+      callback()
     }
   }
 

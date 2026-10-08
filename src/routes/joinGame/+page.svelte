@@ -245,7 +245,7 @@
                   >
                     <div class="flex gap-1">
                       <div class="col-span-2 justify-self-center flex items-center gap-0.5">
-                        {#each code.slice("") as digit}
+                        {#each code.split("") as digit}
                           <span
                             class="w-5 rounded-sm md:rounded-md bg-button-500 text-sh-yellow-500 text-center text-lg px-1 md:py-0.5"
                           >

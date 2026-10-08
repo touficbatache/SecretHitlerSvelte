@@ -79,7 +79,7 @@
               index * 10} -ml-5"
           >
             <div class:invisible={index % 2 === 1}>
-              {#if player.id === fascist.id || player?.role !== "hitler" || players?.all?.length < 7}
+              {#if player?.id === fascist.id || player?.role !== "hitler" || (players?.all.length ?? 0) < 7}
                 <span>{fascist?.name}</span>
               {:else}
                 <div class="bg-red-fascist w-12 h-3 mb-2 blur-xxs" />
@@ -93,7 +93,7 @@
               class:bg-player-hitler={fascist?.assetReference === "hitler"}
             />
             <div class:invisible={index % 2 === 0}>
-              {#if player.id === fascist.id || player?.role !== "hitler" || players?.all?.length < 7}
+              {#if player?.id === fascist.id || player?.role !== "hitler" || (players?.all.length ?? 0) < 7}
                 <span>{fascist?.name}</span>
               {:else}
                 <div class="bg-red-fascist w-12 h-3 mt-2 blur-xxs" />

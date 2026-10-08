@@ -89,6 +89,7 @@
         <PlayfulButton
           enabled={selectedPolicy !== undefined}
           on:click={() => {
+            if (selectedPolicy === undefined) return
             dispatch("click", selectedPolicy)
             open = false
             selectedPolicy = undefined

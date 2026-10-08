@@ -92,6 +92,8 @@
 
     let currentTime: number = serverNow()
 
+    if (steps === undefined) return
+
     for (const index of steps.keys()) {
       const duration: number = steps
         .slice(0, index + 1)

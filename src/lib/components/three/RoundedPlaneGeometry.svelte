@@ -18,7 +18,7 @@
     d: number,
     r: number,
     s: number,
-    q: number,
+    q?: number,
   ): BufferGeometry {
     let qu: number = q || 1 // qu: start quadrant regarding u, optional
     const pi: number = Math.PI

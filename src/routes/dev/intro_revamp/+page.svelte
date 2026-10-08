@@ -11,6 +11,7 @@
   import IntroStep4 from "$lib/components/intro/IntroStep4.svelte"
   import RoleHeader from "$lib/components/RoleHeader.svelte"
   import type { GameData } from "$lib/game_data"
+  import type { Player } from "$lib/player"
 
   interface Step {
     text: string
@@ -26,8 +27,8 @@
   let steps: Step[] | undefined
   let stepShown: number = 1
 
-  let countDownStartDelay: number | undefined = undefined
-  let triggerCountDown: boolean = false
+  // When the intro ends. This page plays the intro on its own clock, not the server's.
+  let introEndsAt: number | undefined = undefined
 
   $: if (browser) {
     if ($gameData?.status !== "settingUp") {
@@ -36,9 +37,28 @@
     }
   }
 
-  // $: player = { role: "liberal", membership: "liberal", assetReference: "liberal_6" }
-  $: player = { role: "fascist", membership: "fascist", assetReference: "fascist_snake" }
-  // $: player = { role: "hitler", membership: "fascist", assetReference: "hitler" }
+  const dummyPlayer: Omit<Player, "role" | "membership" | "assetReference"> = {
+    id: "player1",
+    name: "player1",
+    self: true,
+    isConnected: true,
+    isExecuted: false,
+    isInvestigated: false,
+    isPresident: false,
+    isChancellor: false,
+    isPreviousChancellor: false,
+    vote: () => undefined,
+  }
+
+  let player: Player
+  // $: player = { ...dummyPlayer, role: "liberal", membership: "liberal", assetReference: "liberal_6" }
+  $: player = {
+    ...dummyPlayer,
+    role: "fascist",
+    membership: "fascist",
+    assetReference: "fascist_snake",
+  }
+  // $: player = { ...dummyPlayer, role: "hitler", membership: "fascist", assetReference: "hitler" }
   // TODO: uncomment
   // $: player = $gameData?.players?.self
 
@@ -49,9 +69,8 @@
     } else {
       // let startedAt: number = $gameData?.startedAt ?? Date.now()
       let startedAt: number = Date.now()
-      let currentTime: number = Date.now()
-      countDownStartDelay = 2000 - (currentTime - startedAt)
-      triggerCountDown = true
+      // Like the server's short intro: 2 seconds, then a 3-second count
+      introEndsAt = startedAt + 5000
     }
   }
   // TODO: uncomment
@@ -113,6 +132,10 @@
 
     let currentTime: number = Date.now()
 
+    if (steps === undefined) return
+
+    introEndsAt = startedAt + steps.map((step) => step.duration).reduce((a, b) => a + b, 0)
+
     for (const index of steps.keys()) {
       const duration: number = steps
         .slice(0, index + 1)
@@ -159,7 +182,7 @@
       class="absolute inset-0 flex flex-col justify-between items-center pt-20 pb-5"
       transition:fade={{ duration: 300 }}
     >
-      <IntroStep4 />
+      <IntroStep4 until={introEndsAt} />
     </div>
   {/if}
 
@@ -167,8 +190,7 @@
     <CountDown
       classContainer=""
       classNumber="absolute bottom-16 md:bottom-10 left-1/2 -translate-x-1/2 text-4xl"
-      startDelay={countDownStartDelay}
-      trigger={triggerCountDown}
+      until={introEndsAt}
     />
   {/if}
 {/if}

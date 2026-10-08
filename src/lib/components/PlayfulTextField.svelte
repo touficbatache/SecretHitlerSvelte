@@ -7,7 +7,7 @@
   export let placeholder: string | undefined = undefined
   export let type: string
   export let value: string
-  export let validator: ((value) => string) | undefined = undefined
+  export let validator: ((value: string) => string) | undefined = undefined
 
   let uuid: string = uuidV4()
 

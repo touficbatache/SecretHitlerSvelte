@@ -42,7 +42,7 @@
           player={president}
           hideExtras={true}
           hideVotes={true}
-          showRole={visibleRolePlayerIds.includes(president?.id)}
+          showRole={president !== undefined && visibleRolePlayerIds.includes(president.id)}
         />
       </div>
     </div>
@@ -68,6 +68,7 @@
         <PlayfulButton
           enabled={selectedPlayer !== undefined}
           on:click={() => {
+            if (selectedPlayer === undefined) return
             dispatch("click", selectedPlayer.id)
             open = false
             selectedPlayer = undefined
