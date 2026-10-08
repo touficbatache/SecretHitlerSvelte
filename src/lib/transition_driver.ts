@@ -11,16 +11,28 @@ export interface TransitionDriver {
 
 const RETRY_MS: number = 1000
 
+/** How the driver waits. Tests pass a fake one. */
+export interface Scheduler {
+  setTimeout: (callback: () => void, ms: number) => unknown
+  clearTimeout: (id: unknown) => void
+}
+
+const realTimers: Scheduler = {
+  setTimeout: (callback: () => void, ms: number) => setTimeout(callback, ms),
+  clearTimeout: (id: unknown) => clearTimeout(id as ReturnType<typeof setTimeout>),
+}
+
 export function createTransitionDriver(
   advance: (gameCode: string) => Promise<number | undefined>,
   serverNow: () => number,
+  scheduler: Scheduler = realTimers,
 ): TransitionDriver {
   let target: { gameCode: string; at: number } | undefined
-  let timer: ReturnType<typeof setTimeout> | undefined
+  let timer: unknown
 
   function schedule(gameCode: string, at: number, delayMs: number) {
-    clearTimeout(timer)
-    timer = setTimeout(async () => {
+    scheduler.clearTimeout(timer)
+    timer = scheduler.setTimeout(async () => {
       if (target?.gameCode !== gameCode || target.at !== at) return
       try {
         const stillPendingUntil: number | undefined = await advance(gameCode)
@@ -41,7 +53,7 @@ export function createTransitionDriver(
     follow(gameCode: string | undefined, pauseEndsAt: number | undefined) {
       if (target?.gameCode === gameCode && target?.at === pauseEndsAt) return
 
-      clearTimeout(timer)
+      scheduler.clearTimeout(timer)
       target =
         gameCode !== undefined && pauseEndsAt !== undefined
           ? { gameCode, at: pauseEndsAt }
@@ -51,7 +63,7 @@ export function createTransitionDriver(
       }
     },
     stop() {
-      clearTimeout(timer)
+      scheduler.clearTimeout(timer)
       target = undefined
     },
   }
