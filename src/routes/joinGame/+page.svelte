@@ -46,7 +46,7 @@
       await goto("/waitingRoom", { replaceState: true })
     }
     if (response.error !== undefined) {
-      error = `${response.error.code} - ${response.error.message}`
+      error = response.error.message
       isJoining = false
     }
   }

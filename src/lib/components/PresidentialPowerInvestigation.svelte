@@ -1,12 +1,12 @@
 <script lang="ts">
   import { browser } from "$app/environment"
-  import type { GameplayApiResponse } from "$lib/api_client"
   import * as ApiClient from "$lib/api_client"
   import CountDown from "$lib/components/CountDown.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import Players from "$lib/components/Players.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
+  import type { ActionResult } from "$lib/game_action"
   import type { GameDataPlayers, PresidentialPower } from "$lib/game_data"
   import type { Player } from "$lib/player"
   import {
@@ -66,16 +66,16 @@
   async function investigateLoyalty() {
     if (isPresident && selectedPlayer !== undefined) {
       isRequestSent = true
-      const response: GameplayApiResponse = await ApiClient.presidentialPower_investigation(
-        gameCode,
-        selectedPlayer.id,
-      )
-      if (response.error === undefined) {
-        membership = response.success?.membership
+      const result: ActionResult = await ApiClient.sendAction(gameCode, {
+        type: "usePower",
+        targetId: selectedPlayer.id,
+      })
+      if (result.ok) {
+        membership = result.data.membership
         writePowerCache(
           cacheKey,
           JSON.stringify({
-            membership: response.success?.membership,
+            membership: result.data.membership,
             player: selectedPlayer,
           }),
         )
@@ -88,7 +88,7 @@
   function nextElection() {
     if (isPresident && presidentialPower === "consumed") {
       const investigationCacheKey: string = cacheKey
-      ApiClient.presidentialPower_investigation(gameCode)
+      ApiClient.sendAction(gameCode, { type: "endPower" })
 
       timers.setTimeout(() => {
         removePowerCache(investigationCacheKey)

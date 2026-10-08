@@ -115,7 +115,8 @@
 
   {#if !isMinimized}
     <ChooseChancellorView
-      on:click={({ detail }) => ApiClient.chooseChancellor(gameCode, detail)}
+      on:click={({ detail }) =>
+        ApiClient.sendAction(gameCode, { type: "nominate", chancellorId: detail })}
       on:minimize={minimize}
       open={$gameData?.subStatus === "election_presidentChoosingChancellor"}
       players={$gameData?.players}
@@ -126,7 +127,7 @@
       pauseEndsAt={$gameData?.pendingTransition?.at}
       currentSession={$gameData?.currentSession}
       on:minimize={minimize}
-      on:vote={({ detail }) => ApiClient.vote(gameCode, detail)}
+      on:vote={({ detail }) => ApiClient.sendAction(gameCode, { type: "vote", ja: detail })}
       open={$gameData?.subStatus === "election_voting" ||
         $gameData?.subStatus === "election_votingEnded"}
       players={$gameData?.players}
@@ -135,7 +136,7 @@
 
     <PresidentPolicyChooseView
       currentSession={$gameData?.currentSession}
-      on:click={({ detail }) => ApiClient.presidentDiscardPolicy(gameCode, detail)}
+      on:click={({ detail }) => ApiClient.sendAction(gameCode, { type: "discard", policy: detail })}
       on:minimize={minimize}
       open={$gameData?.subStatus === "legislativeSession_presidentDiscardingPolicy"}
       players={$gameData?.players}
@@ -144,8 +145,8 @@
     <ChancellorPolicyChooseView
       boardFascistPolicyCount={$gameData?.policies.board?.fascist}
       currentSession={$gameData?.currentSession}
-      on:click={({ detail }) => ApiClient.chancellorDiscardPolicy(gameCode, detail)}
-      on:veto={() => ApiClient.askForVeto(gameCode)}
+      on:click={({ detail }) => ApiClient.sendAction(gameCode, { type: "discard", policy: detail })}
+      on:veto={() => ApiClient.sendAction(gameCode, { type: "proposeVeto" })}
       on:minimize={minimize}
       open={$gameData?.subStatus === "legislativeSession_chancellorDiscardingPolicy"}
       players={$gameData?.players}
@@ -153,7 +154,8 @@
 
     <PresidentReviewingVeto
       currentSession={$gameData?.currentSession}
-      on:answer={({ detail: isAccepted }) => ApiClient.answerVeto(gameCode, !isAccepted)}
+      on:answer={({ detail: isAccepted }) =>
+        ApiClient.sendAction(gameCode, { type: "answerVeto", accept: isAccepted })}
       on:minimize={minimize}
       open={$gameData?.subStatus === "legislativeSession_chancellorSeekingVeto"}
       players={$gameData?.players}
@@ -184,7 +186,8 @@
 
     <PresidentialPowerSpecialElection
       pauseEndsAt={$gameData?.pendingTransition?.at}
-      on:click={({ detail }) => ApiClient.presidentialPower_specialElection(gameCode, detail)}
+      on:click={({ detail }) =>
+        ApiClient.sendAction(gameCode, { type: "usePower", targetId: detail })}
       on:minimize={minimize}
       open={$gameData?.subStatus === "presidentialPower_callSpecialElection"}
       players={$gameData?.players}
@@ -195,7 +198,8 @@
 
     <PresidentialPowerExecution
       pauseEndsAt={$gameData?.pendingTransition?.at}
-      on:click={({ detail }) => ApiClient.presidentialPower_execution(gameCode, detail)}
+      on:click={({ detail }) =>
+        ApiClient.sendAction(gameCode, { type: "usePower", targetId: detail })}
       on:minimize={minimize}
       open={$gameData?.subStatus === "presidentialPower_execution"}
       players={$gameData?.players}

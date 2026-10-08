@@ -56,7 +56,7 @@
     }
     if (response.error !== undefined) {
       errorAlertOpen = true
-      error = `${response.error.code} - ${response.error.message}`
+      error = response.error.message
       isJoining = false
     }
   }
@@ -100,7 +100,7 @@
   {:then response}
     {#if response.error !== undefined}
       <div class="flex-1 flex flex-col justify-center items-center gap-4 px-6 text-center">
-        <span>Couldn't load your games ({response.error.code}).</span>
+        <span>Couldn't load your games ({response.error.status}).</span>
         <PlayfulButton on:click={() => invalidateAll()} size="small">Try again</PlayfulButton>
       </div>
     {:else if (response.success ?? []).length === 0}
