@@ -7,7 +7,7 @@ import http, { type IncomingMessage, type Server, type ServerResponse } from "no
  * Control endpoints, for the tests:
  *   GET  /__calls  the endpoints called since the last reset
  *   POST /__reset  forget the calls, the failures and the games
- *   POST /__fail   body {"endpoint": "...", "status": 500}: make an endpoint fail
+ *   POST /__fail   body {"endpoint": "...", "status": 500, "code"?: "..."}: make an endpoint fail
  *   POST /__games  body [...]: the games getGamesForSelf returns
  */
 
@@ -51,7 +51,7 @@ function send(res: ServerResponse, status: number, body: unknown): void {
 /** Starts the fake API. Resolves to a function that stops it. */
 export function startFakeApi(port: number): Promise<() => Promise<void>> {
   let calls: Call[] = []
-  let failures: Record<string, number> = {}
+  let failures: Record<string, { status: number; code?: string }> = {}
   let games: unknown[] = []
 
   const server: Server = http.createServer(async (req: IncomingMessage, res: ServerResponse) => {
@@ -70,8 +70,8 @@ export function startFakeApi(port: number): Promise<() => Promise<void>> {
         games = []
         return send(res, 200, {})
       case "__fail": {
-        const { endpoint: failing, status } = await readBody(req)
-        failures[failing] = status
+        const { endpoint: failing, status, code } = await readBody(req)
+        failures[failing] = { status, code }
         return send(res, 200, {})
       }
       case "__games":
@@ -83,9 +83,14 @@ export function startFakeApi(port: number): Promise<() => Promise<void>> {
     const body: Record<string, unknown> = await readBody(req)
     calls.push({ endpoint, body, uid: uidOf(req), receivedAt })
 
-    const failure: number | undefined = failures[endpoint]
+    const failure: { status: number; code?: string } | undefined = failures[endpoint]
     if (failure !== undefined) {
-      return send(res, failure, { message: `${failure} - Failure requested by the test` })
+      return send(res, failure.status, {
+        error: {
+          code: failure.code ?? (failure.status >= 500 ? "INTERNAL" : "INVALID_REQUEST"),
+          message: "Failure requested by the test",
+        },
+      })
     }
 
     switch (endpoint) {
@@ -93,8 +98,14 @@ export function startFakeApi(port: number): Promise<() => Promise<void>> {
         return send(res, 200, games)
       case "getActivePublicGames":
         return send(res, 200, { joinableGames: [], watchableGames: [] })
-      case "presidentialPower":
-        return send(res, 200, { code: body.code, policies: "liberal,fascist,liberal" })
+      case "action":
+        return send(
+          res,
+          200,
+          (body.action as { type?: string } | undefined)?.type === "usePower"
+            ? { code: body.code, policies: "liberal,fascist,liberal" }
+            : { code: body.code },
+        )
       default:
         return send(res, 200, { code: body.code })
     }
