@@ -140,7 +140,9 @@ export async function enterGame(page: Page, code: string, path: string): Promise
   await page.goto(path)
 }
 
-export async function apiCalls(): Promise<{ endpoint: string; body: any }[]> {
+export async function apiCalls(): Promise<
+  { endpoint: string; body: any; uid: string | undefined; receivedAt: number }[]
+> {
   return (await fetch(`${FAKE_API}/__calls`)).json()
 }
 

@@ -10,6 +10,7 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
+  import { serverNow, trackServerClock } from "$lib/clock"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import PlayfulTextField from "$lib/components/PlayfulTextField.svelte"
@@ -17,6 +18,7 @@
   import { type GameData, gameDataStore } from "$lib/game_data"
   import { trackPresence } from "$lib/presence"
   import { isGameRoute, routeForPhase } from "$lib/routing"
+  import { createTransitionDriver, type TransitionDriver } from "$lib/transition_driver"
 
   export let data: LayoutData
 
@@ -38,6 +40,7 @@
         data.debugMode,
         data.useEmulators,
       )
+      trackServerClock(rtdb)
     } catch (error) {
       console.error(error)
     }
@@ -86,7 +89,20 @@
     presenceKey = key
   }
 
-  onDestroy(() => stopPresence?.())
+  // When a pause between phases is over, ask the server to move the game on
+  const transitionDriver: TransitionDriver = createTransitionDriver(ApiClient.advance, serverNow)
+
+  $: if (browser) {
+    transitionDriver.follow(
+      isGameRoute($page.route.id) && data.user?.uid !== undefined ? data.gameCode : undefined,
+      $gameData?.pendingTransition?.at,
+    )
+  }
+
+  onDestroy(() => {
+    stopPresence?.()
+    transitionDriver.stop()
+  })
 </script>
 
 <div

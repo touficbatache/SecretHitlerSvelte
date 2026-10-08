@@ -13,6 +13,8 @@
   export let open: boolean
   export let players: GameDataPlayers | undefined = undefined
   export let waiting: boolean
+  /** When the pause after this phase ends (server time), if the game is in it. */
+  export let pauseEndsAt: number | undefined = undefined
 
   const dispatch = createEventDispatcher()
 
@@ -128,7 +130,7 @@
               />
             {/if}
           </span>
-          <CountDown trigger={hasVoted && !waiting} />
+          <CountDown until={hasVoted && !waiting ? pauseEndsAt : undefined} />
         {/if}
       </div>
     {/if}

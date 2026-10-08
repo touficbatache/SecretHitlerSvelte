@@ -26,6 +26,8 @@
   export let players: GameDataPlayers | undefined = undefined
   export let president: Player | undefined = undefined
   export let presidentialPower: PresidentialPower | undefined = undefined
+  /** When the pause after this phase ends (server time), if the game is in it. */
+  export let pauseEndsAt: number | undefined = undefined
 
   let isRequestSent: boolean = false
   let membership: string | undefined = undefined
@@ -173,7 +175,7 @@
           >
         {/if}
       {/if}
-      <CountDown trigger={presidentialPower === "done"} />
+      <CountDown until={pauseEndsAt} />
     </div>
   </div>
 </FloatingWindow>

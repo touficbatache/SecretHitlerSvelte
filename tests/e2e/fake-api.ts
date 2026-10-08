@@ -14,6 +14,19 @@ import http, { type IncomingMessage, type Server, type ServerResponse } from "no
 interface Call {
   endpoint: string
   body: Record<string, unknown>
+  /** The user id in the request's ID token. */
+  uid: string | undefined
+  /** When the call arrived. */
+  receivedAt: number
+}
+
+function uidOf(req: IncomingMessage): string | undefined {
+  try {
+    const token: string = (req.headers.authorization ?? "").replace("Bearer ", "")
+    return JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString()).user_id
+  } catch {
+    return undefined
+  }
 }
 
 const CORS: Record<string, string> = {
@@ -66,8 +79,9 @@ export function startFakeApi(port: number): Promise<() => Promise<void>> {
         return send(res, 200, {})
     }
 
+    const receivedAt: number = Date.now()
     const body: Record<string, unknown> = await readBody(req)
-    calls.push({ endpoint, body })
+    calls.push({ endpoint, body, uid: uidOf(req), receivedAt })
 
     const failure: number | undefined = failures[endpoint]
     if (failure !== undefined) {
