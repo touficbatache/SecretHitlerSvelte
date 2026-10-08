@@ -1,18 +1,20 @@
 <script lang="ts">
   import "../app.postcss"
   import "iconify-icon"
-  import { setContext } from "svelte"
+  import { onDestroy, setContext } from "svelte"
   import { writable, type Writable } from "svelte/store"
 
   import type { LayoutData } from "./$types"
 
   import { browser } from "$app/environment"
+  import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import PlayfulTextField from "$lib/components/PlayfulTextField.svelte"
   import { initializeFirebase, rtdb, setUserName } from "$lib/firebase"
   import { gameDataStore } from "$lib/game_data"
+  import { isGameRoute, trackPresence } from "$lib/presence"
 
   export let data: LayoutData
 
@@ -40,6 +42,30 @@
       setContext("gameData", gameDataStore(rtdb, data.gameCode))
     }
   }
+
+  // Presence lives here rather than in each game page, so moving between the waiting room,
+  // the intro and the gameplay keeps the player connected instead of briefly disconnecting.
+  let presenceKey: string | undefined
+  let stopPresence: (() => void) | undefined
+
+  $: if (browser) {
+    updatePresence(
+      isGameRoute($page.route.id) && data.gameCode !== undefined && data.user?.uid !== undefined
+        ? { gameCode: data.gameCode, userId: data.user.uid }
+        : undefined,
+    )
+  }
+
+  function updatePresence(target: { gameCode: string; userId: string } | undefined) {
+    const key: string | undefined = target && `${target.gameCode}/${target.userId}`
+    if (key === presenceKey) return
+
+    stopPresence?.()
+    stopPresence = target && trackPresence(rtdb, target.gameCode, target.userId)
+    presenceKey = key
+  }
+
+  onDestroy(() => stopPresence?.())
 </script>
 
 <div

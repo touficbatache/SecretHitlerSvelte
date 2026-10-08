@@ -143,7 +143,7 @@ export function castGameData(snapshotValue: any): GameData {
     role: player.role,
     membership: player.role === "liberal" ? "liberal" : "fascist",
     self: player.id === user?.uid,
-    isConnected: connected[player.id] ?? false,
+    isConnected: connected?.[player.id] ?? false,
     isExecuted: player.isExecuted ?? false,
     isInvestigated: player.isInvestigated ?? false,
     isPresident: player.id === currentSessionObj?.presidentId,

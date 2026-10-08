@@ -1,17 +1,10 @@
 <script lang="ts">
-  import {
-    onDisconnect as onDisconnectRef,
-    ref as dbRef,
-    set as setRef,
-    type Unsubscribe,
-  } from "@firebase/database"
   import Icon from "@iconify/svelte"
-  import { type DatabaseReference, onValue } from "firebase/database"
-  import { getContext, onMount } from "svelte"
+  import { getContext } from "svelte"
   import type { Readable } from "svelte/store"
 
   import { browser } from "$app/environment"
-  import { beforeNavigate, goto } from "$app/navigation"
+  import { goto } from "$app/navigation"
   import { page } from "$app/stores"
   import * as ApiClient from "$lib/api_client"
   import { type GameplayApiResponse } from "$lib/api_client"
@@ -26,13 +19,10 @@
   import Settings from "$lib/components/Settings.svelte"
   import SimpleButton from "$lib/components/SimpleButton.svelte"
   import { Compact } from "$lib/enums"
-  import { rtdb } from "$lib/firebase"
   import type { GameData } from "$lib/game_data"
 
   const gameCode: string = $page.data.gameCode
   const gameData: Readable<GameData> = getContext("gameData") as Readable<GameData>
-
-  let presenceListenerUnsubscribe: Unsubscribe | undefined
 
   let showUnjoinWarning: boolean = false
   let showUnjoiningLoading: boolean = false
@@ -59,26 +49,6 @@
       } else {
         goto("/gameplay", { replaceState: true })
       }
-    }
-  }
-
-  onMount(() => {
-    setupPresence(gameCode)
-  })
-
-  function setupPresence(gameCode: any) {
-    if ($page.data.user?.uid !== undefined) {
-      const gameUserConnectedRef: DatabaseReference = dbRef(
-        rtdb,
-        `ongoingGames/${gameCode}/connected/${$page.data.user.uid}`,
-      )
-      const connectedRef: DatabaseReference = dbRef(rtdb, ".info/connected")
-      presenceListenerUnsubscribe = onValue(connectedRef, (snapshot) => {
-        if (snapshot.val() === true) {
-          onDisconnectRef(gameUserConnectedRef).set(false)
-          setRef(gameUserConnectedRef, true)
-        }
-      })
     }
   }
 
@@ -124,19 +94,6 @@
       startingError = response.error.message
     }
   }
-
-  beforeNavigate(({ to }) => {
-    if (gameCode !== undefined && to !== undefined && to.route.id !== "gameplay") {
-      if (presenceListenerUnsubscribe !== undefined) {
-        presenceListenerUnsubscribe()
-      }
-      const gameUserConnectedRef: DatabaseReference = dbRef(
-        rtdb,
-        `ongoingGames/${gameCode}/connected/${$page.data.user.uid}`,
-      )
-      setRef(gameUserConnectedRef, false)
-    }
-  })
 </script>
 
 {#if $gameData?.status === "waiting"}

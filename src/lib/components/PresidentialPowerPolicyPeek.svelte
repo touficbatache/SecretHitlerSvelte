@@ -9,7 +9,14 @@
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import type { GameDataPlayers, PresidentialPower } from "$lib/game_data"
   import type { Player } from "$lib/player"
+  import {
+    powerCacheKey,
+    readPowerCache,
+    removePowerCache,
+    writePowerCache,
+  } from "$lib/power_cache"
 
+  export let enactedPolicyCount: number
   export let gameCode: string
   export let open: boolean
   export let players: GameDataPlayers | undefined = undefined
@@ -17,7 +24,6 @@
   export let presidentialPower: PresidentialPower | undefined = undefined
 
   let cards: string[] = []
-  const sessionStorageKey: string = "policyPeek"
 
   $: isPresident = players?.self?.isPresident ?? false
 
@@ -27,14 +33,15 @@
 
   async function policyPeek() {
     if (isPresident) {
-      const sessionStorageCache: string | null = sessionStorage.getItem(sessionStorageKey)
-      if (sessionStorageCache != null) {
-        cards = sessionStorageCache.split(",")
+      const cacheKey: string = powerCacheKey("policyPeek", gameCode, enactedPolicyCount)
+      const cachedPolicies: string | null = readPowerCache("policyPeek", cacheKey)
+      if (cachedPolicies != null) {
+        cards = cachedPolicies.split(",")
       } else if (presidentialPower === undefined) {
         const response: GameplayApiResponse = await ApiClient.presidentialPower_policyPeek(gameCode)
         if (response.error === undefined && response.success?.policies !== undefined) {
           cards = response.success?.policies.split(",")
-          sessionStorage.setItem(sessionStorageKey, response.success?.policies)
+          writePowerCache(cacheKey, response.success?.policies)
         }
       }
     } else {
@@ -44,9 +51,10 @@
 
   function nextElection() {
     if (isPresident && presidentialPower === "consumed") {
+      const cacheKey: string = powerCacheKey("policyPeek", gameCode, enactedPolicyCount)
       ApiClient.presidentialPower_policyPeek(gameCode)
       setTimeout(async () => {
-        sessionStorage.removeItem(sessionStorageKey)
+        removePowerCache(cacheKey)
         cards = []
       }, 10000)
     }

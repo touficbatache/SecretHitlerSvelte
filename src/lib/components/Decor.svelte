@@ -118,6 +118,7 @@
           on:click={() => {
             showLeaveWarning = true
           }}
+          title="Leave for now"
         >
           <ElevatedText weight="black">
             <Icon
@@ -172,6 +173,7 @@
           on:click={() => {
             showLeaveWarning = true
           }}
+          title="Leave for now"
         >
           <ElevatedText>
             <Icon class="text-2xl" icon="fa:sign-out" />
@@ -376,9 +378,9 @@
     <div class="px-6 py-6 flex flex-col gap-4 bg-[#141414] shadow-frame rounded-lg">
       <div class="flex items-center gap-3">
         <Icon class="text-xl" icon="fa:warning" />
-        <h5 class="text-xl md:text-2xl">You're about to leave this game</h5>
+        <h5 class="text-xl md:text-2xl">Leave for now?</h5>
       </div>
-      <span>Are you sure you want to continue?</span>
+      <span>The game will wait for you. Rejoin from Game history.</span>
       <div class="self-center flex gap-2 mt-2">
         <PlayfulButton on:click={() => (showLeaveWarning = false)} size="extra-small">
           Cancel
@@ -394,7 +396,7 @@
           on:click={leave}
           size="extra-small"
         >
-          Leave
+          Leave for now
         </PlayfulButton>
       </div>
     </div>
