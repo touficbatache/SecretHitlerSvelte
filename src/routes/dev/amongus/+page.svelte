@@ -1,15 +1,15 @@
 <script lang="ts">
   import { onMount } from "svelte"
   import { sineOut } from "svelte/easing"
-  import { tweened } from "svelte/motion"
+  import { tweened, type Tweened } from "svelte/motion"
 
-  let offsetX = 0
-  let offsetY = 0
+  let offsetX: number = 0
+  let offsetY: number = 0
 
-  let playerOffsetX = 0
-  let playerOffsetY = 0
+  let playerOffsetX: number = 0
+  let playerOffsetY: number = 0
 
-  const playerOffset = tweened(
+  const playerOffset: Tweened<{ x: number; y: number }> = tweened(
     { x: 0, y: 0 },
     {
       duration: 500,
@@ -17,7 +17,7 @@
     },
   )
 
-  const cameraOffset = tweened(
+  const cameraOffset: Tweened<{ x: number; y: number }> = tweened(
     { x: 0, y: 0 },
     {
       duration: 500,
@@ -25,18 +25,18 @@
     },
   )
 
-  let direction = ""
+  let direction: string = ""
 
-  let isFacingLeft = false
-  let isWalking = false
+  let isFacingLeft: boolean = false
+  let isWalking: boolean = false
 
-  const step = 30
+  const step: number = 30
 
-  let abortController = new AbortController()
+  let abortController: AbortController = new AbortController()
 
-  let timerMs = 0.01
-  let timerOffset = 0.7
-  let cameraTimer
+  let timerMs: number = 0.01
+  let timerOffset: number = 0.7
+  let cameraTimer: ReturnType<typeof setInterval> | undefined
   function cameraLeft() {
     if (cameraTimer !== undefined) return
     cameraTimer = setInterval(() => {

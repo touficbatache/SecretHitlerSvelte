@@ -9,7 +9,7 @@
   export let value: string
   export let validator: ((value) => string) | undefined = undefined
 
-  let uuid = uuidV4()
+  let uuid: string = uuidV4()
 
   $: if (value && validator !== undefined) {
     value = validator(value)

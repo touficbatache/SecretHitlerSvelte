@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
 
   import CountDown from "$lib/components/CountDown.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
@@ -16,7 +16,7 @@
   /** When the pause after this phase ends (server time), if the game is in it. */
   export let pauseEndsAt: number | undefined = undefined
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher<{ vote: boolean }> = createEventDispatcher<{ vote: boolean }>()
 
   let vote: boolean | undefined = undefined
 

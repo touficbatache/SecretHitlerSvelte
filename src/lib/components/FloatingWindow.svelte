@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
   import { quartOut } from "svelte/easing"
   import { fade } from "svelte/transition"
 
@@ -11,7 +11,7 @@
   export let classes: string = ""
   export let open: boolean = false
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher<{ minimize: null }> = createEventDispatcher<{ minimize: null }>()
 </script>
 
 {#if open}

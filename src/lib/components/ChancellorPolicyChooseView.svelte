@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
 
   import Deck from "$lib/components/Deck.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
@@ -12,7 +12,10 @@
   export let open: boolean
   export let players: GameDataPlayers | undefined = undefined
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher<{ click: string; veto: null }> = createEventDispatcher<{
+    click: string
+    veto: null
+  }>()
 
   let selectedPolicy: string | undefined
 

@@ -38,7 +38,7 @@
     >
       <div class="relative w-full text-center">To win, enact 5 liberal policies</div>
       <div class="flex">
-        {#each Array(5) as _, policyIndex}
+        {#each [...Array(5).keys()] as policyIndex}
           <!--          shadow-[0px_0px_8px_4px_#0000008a]-->
           <div
             class="rounded-md h-24 aspect-[7/10] bg-policy-liberal bg-contain bg-center -ml-5
@@ -110,7 +110,7 @@
     >
       <div class="relative w-full text-center">To win, enact 6 fascist policies</div>
       <div class="flex">
-        {#each Array(6) as _, policyIndex}
+        {#each [...Array(6).keys()] as policyIndex}
           <div
             class="rounded-md h-20 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-4
                   z-{5 * 10 - policyIndex * 10} shadow-card-small"
@@ -158,7 +158,7 @@
       >
         <div class="relative w-full text-center">To win, enact 6 fascist policies</div>
         <div class="flex">
-          {#each Array(6) as _, policyIndex}
+          {#each [...Array(6).keys()] as policyIndex}
             <div
               class="rounded-md h-20 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-4
                   z-{5 * 10 - policyIndex * 10} shadow-card-small"

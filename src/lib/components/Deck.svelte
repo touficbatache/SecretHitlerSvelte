@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
 
   export let cards: string[]
   export let center: boolean = false
@@ -9,7 +9,7 @@
   export let selectable: boolean = false
   export let shadow: boolean = true
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher<{ select: string }> = createEventDispatcher<{ select: string }>()
 
   let deckEl: HTMLElement | undefined = undefined
   let isContainerExpanded: boolean = expanded

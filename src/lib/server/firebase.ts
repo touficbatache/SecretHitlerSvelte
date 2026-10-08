@@ -1,5 +1,6 @@
 import admin from "firebase-admin"
-import type { UserRecord } from "firebase-admin/auth"
+import type { DecodedIdToken, UserRecord } from "firebase-admin/auth"
+import type { DataSnapshot } from "firebase-admin/database"
 
 import { PRIVATE_FIREBASE_SERVER_CONFIG } from "$env/static/private"
 import { PUBLIC_DEBUG, PUBLIC_FIREBASE_CONFIG } from "$env/static/public"
@@ -40,7 +41,7 @@ export async function verifyGameCode(gameCode?: string): Promise<string> {
     throw new Error("Invalid game code.")
   }
 
-  const snapshot = await admin.database().ref(`ongoingGames/${gameCode}`).get()
+  const snapshot: DataSnapshot = await admin.database().ref(`ongoingGames/${gameCode}`).get()
 
   if (!snapshot.exists()) {
     throw new Error("Invalid game code.")
@@ -54,7 +55,7 @@ export async function verifyIdToken(token?: string): Promise<UserRecord> {
     throw new Error("Invalid login.")
   }
 
-  const decodedToken = await admin.auth().verifyIdToken(token)
+  const decodedToken: DecodedIdToken = await admin.auth().verifyIdToken(token)
 
   if (!decodedToken) {
     throw new Error("Couldn't decode login.")

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
 
   import CountDown from "$lib/components/CountDown.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
@@ -17,7 +17,7 @@
   export let pauseEndsAt: number | undefined = undefined
   export let selectedPlayer: string | undefined = undefined
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher<{ click: string }> = createEventDispatcher<{ click: string }>()
 
   let selectedPlayerObj: Player | undefined = undefined
 

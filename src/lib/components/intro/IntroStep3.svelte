@@ -32,7 +32,7 @@
     >
       <div class="relative w-full text-center">You lose if 6 fascist policies are enacted</div>
       <div class="flex">
-        {#each Array(6) as _, policyIndex}
+        {#each [...Array(6).keys()] as policyIndex}
           <div
             class="rounded-md h-20 aspect-[7/10] bg-policy-fascist bg-contain bg-center -ml-4
                   z-{5 * 10 - policyIndex * 10} shadow-card-small"
@@ -75,7 +75,7 @@
     >
       <div class="relative w-full text-center">You lose if 5 liberal policies are enacted</div>
       <div class="flex">
-        {#each Array(5) as _, policyIndex}
+        {#each [...Array(5).keys()] as policyIndex}
           <div
             class="rounded-md h-20 aspect-[7/10] bg-policy-liberal bg-contain bg-center -ml-4
                   z-{5 * 10 - policyIndex * 10} shadow-card-small"

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, type EventDispatcher } from "svelte"
 
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import Players from "$lib/components/Players.svelte"
@@ -12,7 +12,7 @@
   export let players: GameDataPlayers | undefined = undefined
   export let president: Player | undefined = undefined
 
-  const dispatch = createEventDispatcher()
+  const dispatch: EventDispatcher<{ click: string }> = createEventDispatcher<{ click: string }>()
 
   let selectedPlayer: Player | undefined
 

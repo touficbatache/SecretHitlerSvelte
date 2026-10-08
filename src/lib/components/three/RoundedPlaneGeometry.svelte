@@ -12,9 +12,6 @@
   $: height = args[1] ?? 1
   $: depth = args[2] ?? 1
 
-  let x = 1
-  let y = 1
-
   function createGeometry(
     w: number,
     h: number,
@@ -68,11 +65,11 @@
       positions.push(0, 0, (side * d) / 2) // center
       uvs.push(0.5, 0.5)
 
-      let x, y, z, sgnX, sgnY
-      let phi = 0
-      const u0 = side === 1 ? 0 : 1
+      let x: number, y: number, z: number, sgnX: number, sgnY: number
+      let phi: number = 0
+      const u0: number = side === 1 ? 0 : 1
 
-      for (let q = 1; q < 5; q++) {
+      for (let q: number = 1; q < 5; q++) {
         sgnX = q === 1 || q === 4 ? 1 : -1
         sgnY = q < 3 ? 1 : -1
 
@@ -83,10 +80,14 @@
         positions.push(x, y, z)
         uvs.push(u0 + side * (0.5 + x / w), 0.5 + y / h)
 
-        for (let j = 0; j < s + 1; j++) {
-          const c = { x: sgnX * (w / 2 - r), y: sgnY * (h / 2 - r), z: (side * d) / 2 } // quadrant center
+        for (let j: number = 0; j < s + 1; j++) {
+          const c: { x: number; y: number; z: number } = {
+            x: sgnX * (w / 2 - r),
+            y: sgnY * (h / 2 - r),
+            z: (side * d) / 2,
+          } // quadrant center
 
-          const dPhi = ((pi / 2) * j) / s
+          const dPhi: number = ((pi / 2) * j) / s
 
           x = c.x + r * Math.cos(phi + dPhi)
           y = c.y + r * Math.sin(phi + dPhi)
@@ -107,14 +108,23 @@
     }
 
     function makeFrame(s: number, sidx: number, sif: number, sib: number) {
-      let a, b, c, d, xf, yf, zf, xb, yb, zb
-      const pif = sif * 3 // position start index front
-      const pib = sib * 3 // position start index back
+      let a: number,
+        b: number,
+        c: number,
+        d: number,
+        xf: number,
+        yf: number,
+        zf: number,
+        xb: number,
+        yb: number,
+        zb: number
+      const pif: number = sif * 3 // position start index front
+      const pib: number = sib * 3 // position start index back
 
-      let idx = sidx
+      let idx: number = sidx
 
-      for (let q = 1; q < 5; q++) {
-        for (let j = 0; j < s + 2; j++) {
+      for (let q: number = 1; q < 5; q++) {
+        for (let j: number = 0; j < s + 2; j++) {
           a = idx
           b = idx + 1
           c = idx + 2
@@ -128,20 +138,20 @@
         idx += 2
       }
 
-      const ls = 2 * r * Math.sin(pi / (s * 4)) // length of the outer line of a corner segment
-      const w2r = w / 2 - r
-      const h2r = h / 2 - r
-      const peri = 4 * w2r + 4 * h2r + 4 * s * ls // perimeter
+      const ls: number = 2 * r * Math.sin(pi / (s * 4)) // length of the outer line of a corner segment
+      const w2r: number = w / 2 - r
+      const h2r: number = h / 2 - r
+      const peri: number = 4 * w2r + 4 * h2r + 4 * s * ls // perimeter
 
-      let u
+      let u: number
       idx = 0 // reset
 
-      for (let q = 1; q < 5; q++) {
+      for (let q: number = 1; q < 5; q++) {
         // console.log ( 'qu', qu );
 
         u = qu / 4
 
-        for (let j = 0; j < s + 3; j++) {
+        for (let j: number = 0; j < s + 3; j++) {
           xf = positions[pif + idx]
           yf = positions[pif + idx + 1]
           zf = positions[pif + idx + 2]
