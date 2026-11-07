@@ -99,19 +99,37 @@ rules change.
 GitHub Actions runs the lint (`npm run lint`), the type check (`npm run check`), the build and both
 test suites on every pull request and on `master` (`.github/workflows/ci.yml`).
 
-## Deploy to dev/prod
+## Deploy
 
-To deploy the project to Firebase Hosting, you need to set the correct environment variable values for the development or production environment in `.env.<alias>` (`.env.dev` or `.env.prod`) respectively.
-They will automatically replace the `.env` values as per the [Firebase Functions documentation](https://firebase.google.com/docs/functions/config-env?gen=2nd#deploying_multiple_sets_of_environment_variables).
+Every merge to `master` deploys itself: once both CI jobs pass, GitHub Actions deploys Firebase
+Hosting and its server-side rendering function to the production project
+(`.github/workflows/ci.yml`). The game API ([SecretHitlerFirebase](https://github.com/touficbatache/SecretHitlerFirebase))
+deploys the same way from its own repository: merge the two halves of a change that needs both
+together.
 
-Then execute the following command to deploy to the development environment:
+### One-time setup
+
+1. Follow "Continuous deployment: one-time setup" in the
+   [SecretHitlerFirebase README](https://github.com/touficbatache/SecretHitlerFirebase#continuous-deployment-one-time-setup).
+   It creates the keyless login both repositories use.
+2. In this repository on GitHub (Settings, Secrets and variables, Actions):
+   - **Variables:** the same `FIREBASE_PROJECT`, `GCP_WORKLOAD_IDENTITY_PROVIDER` and
+     `GCP_SERVICE_ACCOUNT` as the API's repository.
+   - **Secret** `PROD_ENV_FILE`: the whole content of your `.env.prod` (see `example.env`), with
+     `PUBLIC_USE_EMULATORS=false`. The deploy writes it to `.env.prod` and `.env`, as a local
+     deploy would use them.
+
+A deploy with a missing setting fails with a message naming it.
+
+### Deploy by hand
+
+Set the correct environment variable values for the development or production environment in `.env.<alias>`
+(`.env.dev` or `.env.prod`). They replace the `.env` values as per the
+[Firebase Functions documentation](https://firebase.google.com/docs/functions/config-env?gen=2nd#deploying_multiple_sets_of_environment_variables).
+
+Then deploy to the development or the production environment:
 
 ```shell
 npm run deploy:dev
-```
-
-or the following command to deploy to the production environment:
-
-```shell
 npm run deploy:prod
 ```
