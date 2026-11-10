@@ -1,14 +1,15 @@
-name: CI
+name: CI/CD
 
 on:
   push:
     branches: [master]
   pull_request:
 
-# A new push to a pull request cancels the run for the previous one
+# A new push to a pull request cancels the run for the previous one. Runs on master are never
+# cancelled, so a deploy is never stopped halfway.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -58,7 +59,8 @@ jobs:
 
   e2e:
     name: End-to-end tests
-    runs-on: ubuntu-latest
+    # Playwright 1.56 can't install Chromium on Ubuntu 26.04, which ubuntu-latest now is
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -101,3 +103,70 @@ jobs:
             test-results/
           if-no-files-found: ignore
           retention-days: 7
+
+  # Every push to master that passes both jobs goes live. See "Deploy" in the README for the
+  # one-time setup.
+  deploy:
+    name: Deploy to Firebase
+    needs: [check, e2e]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    # One deploy at a time: a second merge waits for the first deploy to finish
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      # Lets the job prove to Google that it's this repo's master branch (keyless login)
+      id-token: write
+    env:
+      FIREBASE_PROJECT: ${{ vars.FIREBASE_PROJECT }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
+    steps:
+      - name: Check the deploy settings
+        run: |
+          for name in FIREBASE_PROJECT GCP_WORKLOAD_IDENTITY_PROVIDER GCP_SERVICE_ACCOUNT PROD_ENV_FILE; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name isn't set in the repository's Actions settings. See \"Deploy\" in the README."
+              exit 1
+            fi
+          done
+          if grep -Eq '^PUBLIC_USE_EMULATORS="?true' <<< "$PROD_ENV_FILE"; then
+            echo "::error::PROD_ENV_FILE sets PUBLIC_USE_EMULATORS=true: production would talk to emulators."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Install the Firebase CLI
+        run: |
+          npm install --global firebase-tools@13.35.1
+          firebase experiments:enable webframeworks
+
+      - run: npm ci
+
+      # The same files as a local `npm run deploy:prod`: the "prod" alias, and its .env.prod, which
+      # the server function loads. The build reads .env, so it gets the same values.
+      - name: Write the production configuration
+        run: |
+          printf '{ "projects": { "prod": "%s" } }\n' "$FIREBASE_PROJECT" > .firebaserc
+          printf '%s\n' "$PROD_ENV_FILE" > .env.prod
+          cp .env.prod .env
+
+      # Hosting and its server-side rendering function
+      - name: Deploy
+        run: firebase deploy --only hosting --project prod --non-interactive
