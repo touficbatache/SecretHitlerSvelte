@@ -152,9 +152,11 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
+      # Firebase CLI 15 builds the server function for Node 22. Version 13 only supports up to
+      # Node 20, which Cloud Functions no longer accepts.
       - name: Install the Firebase CLI
         run: |
-          npm install --global firebase-tools@13.35.1
+          npm install --global firebase-tools@15.35.0
           firebase experiments:enable webframeworks
 
       - run: npm ci
