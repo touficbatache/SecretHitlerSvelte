@@ -8,6 +8,7 @@ import {
   sendGameAction,
 } from "$lib/game_action"
 import type { GameVisibility } from "$lib/game_data"
+import { writeSession } from "$lib/session_writes"
 
 export interface CodeResponse {
   code: string
@@ -73,29 +74,13 @@ async function callApi(endpoint: string, body?: string, auth: ApiAuth | undefine
 }
 
 export async function setStreamerMode(enabled: boolean) {
-  const options: RequestInit = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json;charset=utf-8",
-    },
-    body: JSON.stringify({ enabled }),
-  }
-
-  await fetch("/api/setStreamerMode", options)
+  await writeSession("/api/setStreamerMode", { enabled })
 
   await invalidateAll()
 }
 
 async function setGameCodeCookie(code: string) {
-  const options: RequestInit = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json;charset=utf-8",
-    },
-    body: JSON.stringify({ code }),
-  }
-
-  await fetch("/api/joinGame", options)
+  await writeSession("/api/joinGame", { code })
 
   await invalidateAll()
 }
