@@ -14,6 +14,7 @@ import { browser } from "$app/environment"
 import { invalidateAll } from "$app/navigation"
 import type { GameData } from "$lib/game_data"
 import { canSeeRoles, type Player, type PlayerRole } from "$lib/player"
+import { writeSession } from "$lib/session_writes"
 
 // The emulators listen on IPv4 only, and "localhost" may resolve to IPv6 first
 const EMULATOR_HOST: string = "127.0.0.1"
@@ -65,15 +66,7 @@ export function initializeFirebase(
 }
 
 async function setTokenCookie(token: string | undefined) {
-  const options: RequestInit = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json;charset=utf-8",
-    },
-    body: JSON.stringify({ token }),
-  }
-
-  await fetch("/api/login", options)
+  await writeSession("/api/login", { token })
 
   await invalidateAll()
 }
