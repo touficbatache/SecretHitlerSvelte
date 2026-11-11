@@ -1,4 +1,4 @@
-import { initializeApp, type FirebaseApp, type FirebaseOptions } from "firebase/app"
+import { initializeApp, type FirebaseApp } from "firebase/app"
 import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
 import {
   connectAuthEmulator,
@@ -6,15 +6,17 @@ import {
   onIdTokenChanged,
   updateProfile,
   signOut as _signOut,
-  type User,
+  type User as FirebaseUser,
 } from "firebase/auth"
 import { connectDatabaseEmulator, getDatabase, type Database } from "firebase/database"
 
 import { browser } from "$app/environment"
 import { invalidateAll } from "$app/navigation"
+import type { AppConfig } from "$lib/config"
 import type { GameData } from "$lib/game_data"
+import { clearLocalSession } from "$lib/local_session"
 import { canSeeRoles, type Player, type PlayerRole } from "$lib/player"
-import { writeSession } from "$lib/session_writes"
+import type { User } from "$lib/user"
 
 // The emulators listen on IPv4 only, and "localhost" may resolve to IPv6 first
 const EMULATOR_HOST: string = "127.0.0.1"
@@ -23,83 +25,81 @@ const EMULATOR_HOST: string = "127.0.0.1"
 export let app: FirebaseApp
 export let rtdb: Database
 
-export function initializeFirebase(
-  firebaseConfig: FirebaseOptions | undefined,
-  recaptchaSiteKey: string | undefined,
-  debugMode: boolean = false,
-  useEmulators: boolean = false,
-): void {
+/** Starts the Firebase client, once: later calls do nothing. */
+export function initializeFirebase(config: AppConfig): void {
   if (!browser) {
     throw new Error("Can't use the Firebase client on the server.")
   }
+  if (app) return
 
-  if (firebaseConfig === undefined) {
-    console.error("Firebase options config is undefined.")
-    return
+  app = initializeApp(config.firebaseAppConfig)
+  if (config.debugMode) {
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
   }
-
-  if (recaptchaSiteKey === undefined) {
-    console.error("ReCaptcha Enterprise site key is undefined.")
-    return
+  if (config.useEmulators) {
+    // Local Firebase emulators, on their default ports. They don't check App Check tokens.
+    connectAuthEmulator(getAuth(app), `http://${EMULATOR_HOST}:9099`, { disableWarnings: true })
+  } else {
+    initializeAppCheck(app, {
+      provider: new ReCaptchaEnterpriseProvider(config.recaptchaSiteKey),
+      isTokenAutoRefreshEnabled: true,
+    })
   }
-
-  if (!app) {
-    app = initializeApp(firebaseConfig)
-    if (debugMode) {
-      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
-    }
-    if (useEmulators) {
-      // Local Firebase emulators, on their default ports. They don't check App Check tokens.
-      connectAuthEmulator(getAuth(app), `http://${EMULATOR_HOST}:9099`, { disableWarnings: true })
-    } else {
-      initializeAppCheck(app, {
-        provider: new ReCaptchaEnterpriseProvider(recaptchaSiteKey),
-        isTokenAutoRefreshEnabled: true,
-      })
-    }
-    rtdb = getDatabase(app)
-    if (useEmulators) {
-      connectDatabaseEmulator(rtdb, EMULATOR_HOST, 9000)
-    }
-    listenForAuthChanges()
+  rtdb = getDatabase(app)
+  if (config.useEmulators) {
+    connectDatabaseEmulator(rtdb, EMULATOR_HOST, 9000)
   }
 }
 
-async function setTokenCookie(token: string | undefined) {
-  await writeSession("/api/login", { token })
-
-  await invalidateAll()
+/**
+ * The signed-in player, once Firebase has restored the login saved in this browser, or undefined
+ * when nobody is signed in.
+ */
+export async function currentUser(): Promise<User | undefined> {
+  const auth: ReturnType<typeof getAuth> = getAuth(app)
+  await auth.authStateReady()
+  const user: FirebaseUser | null = auth.currentUser
+  if (user === null) return undefined
+  return {
+    uid: user.uid,
+    name: user.displayName ?? undefined,
+    phoneNumber: user.phoneNumber ?? "",
+    token: await user.getIdToken(),
+  }
 }
 
-function listenForAuthChanges() {
-  // Fire on:
-  //    - sign in
-  //    - token expiry (> 1 hour), generating a new one
-  //    - sign out
-  onIdTokenChanged(
+/**
+ * Reloads the app's data when the login changes: sign-in, sign-out, and the token renewed about
+ * every hour. The reload reads the player and their token again (see +layout.ts).
+ *
+ * Call it once the app is running: Firebase reports the current login right away, which the
+ * layout's load already read, so that first report is skipped. Returns the unsubscribe function.
+ */
+export function listenForAuthChanges(): () => void {
+  let first: boolean = true
+  return onIdTokenChanged(
     getAuth(app),
     async (user) => {
-      if (user) {
-        await setTokenCookie(await user.getIdToken())
-      } else {
-        await setTokenCookie(undefined)
+      if (first) {
+        first = false
+        return
       }
+      if (user === null) {
+        clearLocalSession()
+      }
+      await invalidateAll()
     },
     (err) => console.error(err.message),
   )
 }
 
 export function setUserName(name: string) {
-  const currentUser: User | null = getAuth(app).currentUser
-  if (currentUser !== null) {
-    updateProfile(currentUser, {
+  const user: FirebaseUser | null = getAuth(app).currentUser
+  if (user !== null) {
+    updateProfile(user, {
       displayName: name,
     })
-      .then(async () => {
-        const token: string | undefined = await getAuth(app).currentUser?.getIdToken()
-        await setTokenCookie(token)
-        location.reload()
-      })
+      .then(() => location.reload())
       .catch((reason) => {
         console.error(reason)
       })
@@ -132,7 +132,7 @@ interface DatabasePlayer {
 }
 
 export function castGameData(snapshotValue: any): GameData {
-  const user: User | null = getAuth(app).currentUser
+  const user: FirebaseUser | null = getAuth(app).currentUser
   const {
     connected,
     currentSession,

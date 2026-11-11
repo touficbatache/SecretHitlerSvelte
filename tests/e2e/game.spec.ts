@@ -294,11 +294,18 @@ test("Game history explains a failed load instead of crashing", async () => {
   await expect(alice.getByRole("button", { name: "Try again" })).toBeVisible()
 })
 
-test("/logout renders on the server without taking the server down", async () => {
+test("every path serves the app, so /logout and /login load", async () => {
   expect((await alice.request.get("/logout")).status()).toBe(200)
-  await sleep(1000)
-  // Signing out during server rendering used to throw outside the request and kill the process
   expect((await alice.request.get("/login")).status()).toBe(200)
+})
+
+test("a signed-out visitor is sent to the login page", async ({ browser }) => {
+  const visitor: Page = await (await browser.newContext()).newPage()
+  for (const path of ["/", "/history", "/joinGame"]) {
+    await visitor.goto(path)
+    await visitor.waitForURL("**/login")
+  }
+  await visitor.close()
 })
 
 test("every player counts down together and moves on at the same time, even with a clock 10s off", async () => {

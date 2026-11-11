@@ -4,14 +4,7 @@
 declare global {
   namespace App {
     // interface Error {}
-    interface Locals {
-      debugMode: boolean
-      firebaseAppConfig: import("@firebase/app").FirebaseOptions
-      gameCode?: string
-      recaptchaSiteKey: string
-      streamerModeEnabled?: boolean
-      user?: import("$lib/user").User
-    }
+    // interface Locals {}
     // interface PageData {}
     // interface Platform {}
   }

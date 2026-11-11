@@ -14,7 +14,7 @@
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import PlayfulTextField from "$lib/components/PlayfulTextField.svelte"
-  import { initializeFirebase, rtdb, setUserName } from "$lib/firebase"
+  import { listenForAuthChanges, rtdb, setUserName } from "$lib/firebase"
   import { type GameData, gameDataStore } from "$lib/game_data"
   import { trackPresence } from "$lib/presence"
   import { isGameRoute, routeForPhase } from "$lib/routing"
@@ -31,20 +31,12 @@
   let nickname: string = ""
   let error: string = ""
 
-  // The Firebase config never changes while the app runs, so this only needs to happen once
+  // Firebase was started by the layout's load (see +layout.ts)
   if (browser) {
-    try {
-      initializeFirebase(
-        data.firebaseAppConfig,
-        data.recaptchaSiteKey,
-        data.debugMode,
-        data.useEmulators,
-      )
-      trackServerClock(rtdb)
-    } catch (error) {
-      console.error(error)
-    }
+    trackServerClock(rtdb)
   }
+
+  const stopListeningForAuth: () => void = listenForAuthChanges()
 
   // One store for the whole app, following the current game: pages read it from the context
   const gameCode: Writable<string | undefined> = writable(undefined)
@@ -100,6 +92,7 @@
   }
 
   onDestroy(() => {
+    stopListeningForAuth()
     stopPresence?.()
     transitionDriver.stop()
   })

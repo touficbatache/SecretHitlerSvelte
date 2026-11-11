@@ -35,24 +35,19 @@ jobs:
       - name: Type check
         run: npm run check
 
-      # The server validates its configuration when the build loads it. These placeholder values
-      # point at the emulators: nothing connects to them during the build.
+      # The PUBLIC_ settings are built into the static app. These placeholders point at the
+      # emulators: nothing connects to them during the build.
       - name: Build
         run: npm run build
         env:
           PUBLIC_API_URL: http://localhost:5001/
           PUBLIC_DEBUG: "false"
           PUBLIC_USE_EMULATORS: "true"
-          PUBLIC_SECURE: "false"
           PUBLIC_RECAPTCHA_SITE_KEY: unused
           PUBLIC_FIREBASE_CONFIG: >-
             {"apiKey":"demo-key","authDomain":"demo-shtest.firebaseapp.com",
             "databaseURL":"https://demo-shtest-default-rtdb.firebaseio.com","projectId":"demo-shtest",
             "storageBucket":"demo-shtest.appspot.com","messagingSenderId":"1","appId":"1:1:web:1"}
-          PRIVATE_FIREBASE_SERVER_CONFIG: >-
-            {"type":"service_account","project_id":"demo-shtest","private_key_id":"ci",
-            "private_key":"unused","client_email":"ci@demo-shtest.iam.gserviceaccount.com",
-            "client_id":"1"}
 
       - name: Unit tests
         run: npm test
@@ -152,23 +147,21 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
-      # Firebase CLI 15 builds the server function for Node 22. Version 13 only supports up to
-      # Node 20, which Cloud Functions no longer accepts.
       - name: Install the Firebase CLI
-        run: |
-          npm install --global firebase-tools@15.35.0
-          firebase experiments:enable webframeworks
+        run: npm install --global firebase-tools@15.35.0
 
       - run: npm ci
 
-      # The same files as a local `npm run deploy:prod`: the "prod" alias, and its .env.prod, which
-      # the server function loads. The build reads .env, so it gets the same values.
+      # The same files and steps as a local `npm run deploy:prod`: the "prod" alias, and
+      # .env.prod, which `vite build --mode prod` builds into the static app
       - name: Write the production configuration
         run: |
           printf '{ "projects": { "prod": "%s" } }\n' "$FIREBASE_PROJECT" > .firebaserc
           printf '%s\n' "$PROD_ENV_FILE" > .env.prod
-          cp .env.prod .env
 
-      # Hosting and its server-side rendering function
+      - name: Build
+        run: npx vite build --mode prod
+
+      # Static files only: no server function
       - name: Deploy
         run: firebase deploy --only hosting --project prod --non-interactive

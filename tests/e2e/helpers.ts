@@ -128,15 +128,8 @@ export async function signIn(page: Page, user: TestUser): Promise<void> {
 
 /** Makes `code` the player's current game, like joining or rejoining it, and opens `path`. */
 export async function enterGame(page: Page, code: string, path: string): Promise<void> {
-  await page.evaluate(
-    (code) =>
-      fetch("/api/joinGame", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
-      }),
-    code,
-  )
+  // Where the app remembers the current game (see src/lib/local_session.ts)
+  await page.evaluate((code) => localStorage.setItem("gameCode", code), code)
   await page.goto(path)
 }
 
