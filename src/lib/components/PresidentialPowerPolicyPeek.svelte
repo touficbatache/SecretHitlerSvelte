@@ -1,12 +1,12 @@
 <script lang="ts">
   import { browser } from "$app/environment"
-  import type { GameplayApiResponse } from "$lib/api_client"
   import * as ApiClient from "$lib/api_client"
   import CountDown from "$lib/components/CountDown.svelte"
   import Deck from "$lib/components/Deck.svelte"
   import FloatingWindow from "$lib/components/FloatingWindow.svelte"
   import PlayerView from "$lib/components/PlayerView.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
+  import type { ActionResult } from "$lib/game_action"
   import type { GameDataPlayers, PresidentialPower } from "$lib/game_data"
   import type { Player } from "$lib/player"
   import {
@@ -43,10 +43,10 @@
       if (cachedPolicies != null) {
         cards = cachedPolicies.split(",")
       } else if (presidentialPower === undefined) {
-        const response: GameplayApiResponse = await ApiClient.presidentialPower_policyPeek(gameCode)
-        if (response.error === undefined && response.success?.policies !== undefined) {
-          cards = response.success?.policies.split(",")
-          writePowerCache(cacheKey, response.success?.policies)
+        const result: ActionResult = await ApiClient.sendAction(gameCode, { type: "usePower" })
+        if (result.ok && result.data.policies !== undefined) {
+          cards = result.data.policies.split(",")
+          writePowerCache(cacheKey, result.data.policies)
         }
       }
     } else {
@@ -57,7 +57,7 @@
   function nextElection() {
     if (isPresident && presidentialPower === "consumed") {
       const cacheKey: string = powerCacheKey("policyPeek", gameCode, enactedPolicyCount)
-      ApiClient.presidentialPower_policyPeek(gameCode)
+      ApiClient.sendAction(gameCode, { type: "endPower" })
       timers.setTimeout(() => {
         removePowerCache(cacheKey)
         cards = []

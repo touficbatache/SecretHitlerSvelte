@@ -1,5 +1,12 @@
 import { browser } from "$app/environment"
 import { invalidateAll } from "$app/navigation"
+import {
+  type ActionResult,
+  type ApiError,
+  type GameAction,
+  readApiError,
+  sendGameAction,
+} from "$lib/game_action"
 import type { GameVisibility } from "$lib/game_data"
 import { writeSession } from "$lib/session_writes"
 
@@ -9,12 +16,7 @@ export interface CodeResponse {
 
 export interface ApiResponse {
   success: any | undefined
-  error:
-    | {
-        code: number
-        message: string
-      }
-    | undefined
+  error: ApiError | undefined
 }
 
 export interface GameplayApiResponse extends ApiResponse {
@@ -122,9 +124,10 @@ export async function joinGame(code: string): Promise<GameplayApiResponse> {
   const res: Response = await callApi(endpoint, JSON.stringify({ code }))
 
   if (!res.ok) {
-    if (res.status === 453) {
+    const error: ApiError = await readApiError(res.clone())
+    if (error.code === "ALREADY_IN_GAME") {
       await setGameCodeCookie(code)
-      return handleSuccess(res)
+      return { success: { code }, error: undefined }
     } else {
       return handleError(res)
     }
@@ -170,148 +173,9 @@ export async function startGame(
   return handleSuccess(res)
 }
 
-export async function chooseChancellor(
-  code: string,
-  chancellorId: string,
-): Promise<GameplayApiResponse> {
-  const endpoint: string = "chooseChancellor"
-  const res: Response = await callApi(
-    endpoint,
-    JSON.stringify({
-      code,
-      chancellorId,
-    }),
-  )
-
-  if (!res.ok) {
-    return handleError(res)
-  }
-
-  return handleSuccess(res)
-}
-
-export async function vote(code: string, vote: boolean): Promise<GameplayApiResponse> {
-  const endpoint: string = "vote"
-  const res: Response = await callApi(
-    endpoint,
-    JSON.stringify({
-      code,
-      vote,
-    }),
-  )
-
-  if (!res.ok) {
-    return handleError(res)
-  }
-
-  return handleSuccess(res)
-}
-
-export async function presidentDiscardPolicy(
-  code: string,
-  policy: string,
-): Promise<GameplayApiResponse> {
-  const endpoint: string = "presidentDiscardPolicy"
-  const res: Response = await callApi(
-    endpoint,
-    JSON.stringify({
-      code,
-      policy,
-    }),
-  )
-
-  if (!res.ok) {
-    return handleError(res)
-  }
-
-  return handleSuccess(res)
-}
-
-export async function chancellorDiscardPolicy(
-  code: string,
-  policy: string,
-): Promise<GameplayApiResponse> {
-  const endpoint: string = "chancellorDiscardPolicy"
-  const res: Response = await callApi(
-    endpoint,
-    JSON.stringify({
-      code,
-      policy,
-    }),
-  )
-
-  if (!res.ok) {
-    return handleError(res)
-  }
-
-  return handleSuccess(res)
-}
-
-async function presidentialPower(
-  code: string,
-  extras?: { [key: string]: any },
-): Promise<GameplayApiResponse> {
-  const endpoint: string = "presidentialPower"
-  const res: Response = await callApi(
-    endpoint,
-    JSON.stringify({
-      code,
-      ...extras,
-    }),
-  )
-
-  if (!res.ok) {
-    return handleError(res)
-  }
-
-  return handleSuccess(res)
-}
-
-export async function presidentialPower_policyPeek(code: string): Promise<GameplayApiResponse> {
-  return presidentialPower(code)
-}
-
-export async function presidentialPower_investigation(
-  code: string,
-  player?: string,
-): Promise<GameplayApiResponse> {
-  return presidentialPower(code, { player })
-}
-
-export async function presidentialPower_specialElection(
-  code: string,
-  player: string,
-): Promise<GameplayApiResponse> {
-  return presidentialPower(code, { player })
-}
-
-export async function presidentialPower_execution(
-  code: string,
-  player: string,
-): Promise<GameplayApiResponse> {
-  return presidentialPower(code, { player })
-}
-
-export async function askForVeto(code: string): Promise<GameplayApiResponse> {
-  const endpoint: string = "askForVeto"
-  const res: Response = await callApi(endpoint, JSON.stringify({ code }))
-
-  if (!res.ok) {
-    return handleError(res)
-  }
-
-  return handleSuccess(res)
-}
-
-export async function answerVeto(code: string, refuseVeto: boolean): Promise<GameplayApiResponse> {
-  const endpoint: string = "answerVeto"
-  const res: Response = await callApi(endpoint, JSON.stringify({ code, refuseVeto }))
-
-  if (!res.ok) {
-    return handleError(res)
-  }
-
-  return handleSuccess(res)
+/** Plays a move in the game (see game_action.ts). Retries are safe: a move is never played twice. */
+export function sendAction(code: string, action: GameAction): Promise<ActionResult> {
+  return sendGameAction((body: string) => callApi("action", body), code, action)
 }
 
 /**
@@ -363,17 +227,11 @@ export async function getActivePublicGames(auth?: ApiAuth): Promise<GameInfoApiR
 }
 
 async function handleError(res: Response): Promise<ApiResponse> {
-  const message: string = await res.text()
+  const error: ApiError = await readApiError(res)
 
-  console.error(`Error ${res.status}\n\n${message}`)
+  console.error(`Error ${error.status} ${error.code}: ${error.message}`)
 
-  return {
-    success: undefined,
-    error: {
-      code: res.status,
-      message,
-    },
-  }
+  return { success: undefined, error }
 }
 
 async function handleSuccess(res: Response): Promise<ApiResponse> {

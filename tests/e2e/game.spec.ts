@@ -201,7 +201,10 @@ test("a policy peek ignores another game's cached cards and asks the server", as
 
   await enterGame(alice, code, "/gameplay")
   await until(
-    async () => (await apiCalls()).some((call) => call.endpoint === "presidentialPower"),
+    async () =>
+      (
+        await apiCalls()
+      ).some((call) => call.endpoint === "action" && call.body.action?.type === "usePower"),
     "the peek request",
   )
   await sleep(500)
@@ -213,6 +216,45 @@ test("a policy peek ignores another game's cached cards and asks the server", as
     ),
   )
   expect(peeks).toEqual({ [`policyPeek:${code}:3`]: "liberal,fascist,liberal" })
+})
+
+/** Alice votes Ja in a game where carol nominated dave, and returns the /action calls. */
+async function voteJa(code: string): Promise<{ body: any; uid: string | undefined }[]> {
+  await db(
+    "PUT",
+    `ongoingGames/${code}`,
+    gameInProgress({
+      subStatus: "election_voting",
+      currentSession: { presidentId: "carol", chancellorId: "dave" },
+    }),
+  )
+  await enterGame(alice, code, "/gameplay")
+  await alice.locator("button:has(.bg-card-ballot-ja)").click()
+  // The button's label is drawn twice, so its name reads "Vote Vote"
+  await alice.getByRole("button", { name: /^Vote( Vote)?$/ }).click()
+  await until(async () => (await apiCalls()).some((call) => call.endpoint === "action"), "the vote")
+  await sleep(2500)
+  return (await apiCalls()).filter((call) => call.endpoint === "action")
+}
+
+test("a vote is sent to /action as alice, with an id", async () => {
+  const calls: { body: any; uid: string | undefined }[] = await voteJa("700008")
+  expect(calls).toHaveLength(1)
+  expect(calls[0].uid).toBe(ALICE.uid)
+  expect(calls[0].body).toMatchObject({ code: "700008", action: { type: "vote", ja: true } })
+  expect(calls[0].body.actionId).toMatch(/^[0-9a-f-]{36}$/)
+})
+
+test("a vote that finds the game busy is retried with the same id, then given up", async () => {
+  await failApi("action", 409, "GAME_BUSY")
+  const calls: { body: any; uid: string | undefined }[] = await voteJa("700009")
+  expect(calls).toHaveLength(3)
+  expect(new Set(calls.map((call) => call.body.actionId)).size).toBe(1)
+})
+
+test("a vote refused by the rules isn't retried", async () => {
+  await failApi("action", 409, "WRONG_PHASE")
+  expect(await voteJa("700010")).toHaveLength(1)
 })
 
 test("rejoining another game from Game history opens it without reloading the page", async () => {

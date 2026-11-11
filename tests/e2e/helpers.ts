@@ -150,8 +150,12 @@ export async function resetApi(): Promise<void> {
   await fetch(`${FAKE_API}/__reset`, { method: "POST" })
 }
 
-export async function failApi(endpoint: string, status: number): Promise<void> {
-  await fetch(`${FAKE_API}/__fail`, { method: "POST", body: JSON.stringify({ endpoint, status }) })
+/** Makes an endpoint fail with this status, and this error code if given. */
+export async function failApi(endpoint: string, status: number, code?: string): Promise<void> {
+  await fetch(`${FAKE_API}/__fail`, {
+    method: "POST",
+    body: JSON.stringify({ endpoint, status, code }),
+  })
 }
 
 export async function setGamesForSelf(games: unknown[]): Promise<void> {
