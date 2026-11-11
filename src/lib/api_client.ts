@@ -8,7 +8,7 @@ import {
   sendGameAction,
 } from "$lib/game_action"
 import type { GameVisibility } from "$lib/game_data"
-import { writeGameCode, writeStreamerMode } from "$lib/local_session"
+import { writeGameCode } from "$lib/local_session"
 
 export interface CodeResponse {
   code: string
@@ -71,12 +71,6 @@ async function callApi(endpoint: string, body?: string, auth: ApiAuth | undefine
     },
     body,
   })
-}
-
-export async function setStreamerMode(enabled: boolean) {
-  writeStreamerMode(enabled)
-
-  await invalidateAll()
 }
 
 /** Remembers the player's current game ("" for none), and reloads the app's data. */

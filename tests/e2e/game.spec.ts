@@ -1,4 +1,4 @@
-import { type Browser, expect, type Page, test } from "@playwright/test"
+import { type Browser, expect, type Locator, type Page, test } from "@playwright/test"
 
 import {
   ALICE,
@@ -306,6 +306,55 @@ test("a signed-out visitor is sent to the login page", async ({ browser }) => {
     await visitor.waitForURL("**/login")
   }
   await visitor.close()
+})
+
+test("streamer mode is saved in the account, so it follows the player to another device", async ({
+  browser,
+}) => {
+  await db("DELETE", `users/${ALICE.uid}`)
+  await alice.goto("/")
+  await alice.getByRole("button", { name: "Menu" }).click()
+  await alice.getByRole("button", { name: "Streamer mode: off" }).click()
+  await expect(alice.getByRole("button", { name: "Streamer mode: on" })).toBeVisible()
+  expect(await db("GET", `users/${ALICE.uid}/settings`)).toEqual({ streamerMode: true })
+
+  // A second device: same account, nothing in its storage
+  const phone: Page = await playerPage(browser, ALICE)
+  await phone.goto("/")
+  await phone.getByRole("button", { name: "Menu" }).click()
+  await expect(phone.getByRole("button", { name: "Streamer mode: on" })).toBeVisible()
+  await phone.context().close()
+
+  // Another player's settings are their own
+  await bob.goto("/")
+  await bob.getByRole("button", { name: "Menu" }).click()
+  await expect(bob.getByRole("button", { name: "Streamer mode: off" })).toBeVisible()
+  await db("DELETE", `users/${ALICE.uid}`)
+})
+
+test("the waiting room's game settings start from the player's last choices", async () => {
+  const code: string = "700020"
+  await db("DELETE", `users/${ALICE.uid}`)
+  await db(
+    "PUT",
+    `ongoingGames/${code}`,
+    gameInProgress({ status: "waiting", subStatus: null, currentSession: null, startedAt: null }),
+  )
+  await enterGame(alice, code, "/waitingRoom")
+  const skipIntro: Locator = alice.getByRole("checkbox", { name: "Skip long intro" }).first()
+  const hideAvatars: Locator = alice.getByRole("checkbox", { name: "Hide avatars in info" }).first()
+  await expect(skipIntro).not.toBeChecked()
+  await alice.getByText("Skip long intro").locator("visible=true").first().click()
+  await until(
+    async () => (await db("GET", `users/${ALICE.uid}/settings/skipLongIntro`)) === true,
+    "skip long intro saved",
+  )
+
+  await alice.reload()
+  await expect(skipIntro).toBeChecked()
+  await expect(hideAvatars).not.toBeChecked()
+  expect(await db("GET", `users/${ALICE.uid}/settings`)).toEqual({ skipLongIntro: true })
+  await db("DELETE", `users/${ALICE.uid}`)
 })
 
 test("every player counts down together and moves on at the same time, even with a clock 10s off", async () => {

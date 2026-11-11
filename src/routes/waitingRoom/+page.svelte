@@ -17,8 +17,10 @@
   import Settings from "$lib/components/Settings.svelte"
   import SimpleButton from "$lib/components/SimpleButton.svelte"
   import { Compact } from "$lib/enums"
+  import { rtdb } from "$lib/firebase"
   import type { GameData } from "$lib/game_data"
   import { createTimers, type Timers } from "$lib/timers"
+  import { saveUserSetting, type UserSettings } from "$lib/user_settings"
 
   const timers: Timers = createTimers()
 
@@ -28,8 +30,21 @@
   let showUnjoinWarning: boolean = false
   let showUnjoiningLoading: boolean = false
 
-  let hideAvatars: boolean = false
-  let skipLongIntro: boolean = false
+  // Start from the player's saved choices, and save each change to their account
+  const saved: UserSettings = { ...$page.data.settings }
+  let hideAvatars: boolean = saved.hidePicsGameInfo
+  let skipLongIntro: boolean = saved.skipLongIntro
+  $: remember("hidePicsGameInfo", hideAvatars)
+  $: remember("skipLongIntro", skipLongIntro)
+
+  function remember(name: "hidePicsGameInfo" | "skipLongIntro", value: boolean) {
+    const uid: string | undefined = $page.data.user?.uid
+    if (uid === undefined || saved[name] === value) return
+    saved[name] = value
+    saveUserSetting(rtdb, uid, name, value).catch((error) =>
+      console.error(`Couldn't save ${name}:`, error),
+    )
+  }
 
   let showPublicVisibilityStreamerModeWarning: boolean = false
   let modifyingGameVisibility: boolean = false

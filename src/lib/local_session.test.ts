@@ -1,12 +1,6 @@
 import { expect, test } from "@playwright/test"
 
-import {
-  clearLocalSession,
-  readGameCode,
-  readStreamerMode,
-  writeGameCode,
-  writeStreamerMode,
-} from "$lib/local_session"
+import { clearLocalSession, readGameCode, writeGameCode } from "$lib/local_session"
 
 function fakeStorage(): Storage {
   const items: Map<string, string> = new Map()
@@ -29,17 +23,13 @@ function blockedStorage(): Storage {
   return { ...fakeStorage(), getItem: fail, setItem: fail, removeItem: fail }
 }
 
-test("remembers the current game and streamer mode", () => {
+test("remembers the current game", () => {
   globalThis.localStorage = fakeStorage()
   writeGameCode("123456")
-  writeStreamerMode(true)
   expect(readGameCode()).toBe("123456")
-  expect(readStreamerMode()).toBe(true)
 
   writeGameCode("")
-  writeStreamerMode(false)
   expect(readGameCode()).toBeUndefined()
-  expect(readStreamerMode()).toBe(false)
 })
 
 test("signing out forgets the game", () => {
@@ -53,5 +43,4 @@ test("blocked storage doesn't break the app: nothing is remembered", () => {
   globalThis.localStorage = blockedStorage()
   expect(() => writeGameCode("123456")).not.toThrow()
   expect(readGameCode()).toBeUndefined()
-  expect(readStreamerMode()).toBe(false)
 })
