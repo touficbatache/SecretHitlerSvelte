@@ -8,7 +8,7 @@ import {
   sendGameAction,
 } from "$lib/game_action"
 import type { GameVisibility } from "$lib/game_data"
-import { writeSession } from "$lib/session_writes"
+import { writeGameCode, writeStreamerMode } from "$lib/local_session"
 
 export interface CodeResponse {
   code: string
@@ -74,13 +74,14 @@ async function callApi(endpoint: string, body?: string, auth: ApiAuth | undefine
 }
 
 export async function setStreamerMode(enabled: boolean) {
-  await writeSession("/api/setStreamerMode", { enabled })
+  writeStreamerMode(enabled)
 
   await invalidateAll()
 }
 
-async function setGameCodeCookie(code: string) {
-  await writeSession("/api/joinGame", { code })
+/** Remembers the player's current game ("" for none), and reloads the app's data. */
+async function setGameCode(code: string) {
+  writeGameCode(code)
 
   await invalidateAll()
 }
@@ -95,7 +96,7 @@ export async function newGame(): Promise<boolean> {
     return false
   }
   const jsonRes: CodeResponse = await res.json()
-  await setGameCodeCookie(jsonRes.code)
+  await setGameCode(jsonRes.code)
   return true
 }
 
@@ -126,7 +127,7 @@ export async function joinGame(code: string): Promise<GameplayApiResponse> {
   if (!res.ok) {
     const error: ApiError = await readApiError(res.clone())
     if (error.code === "ALREADY_IN_GAME") {
-      await setGameCodeCookie(code)
+      await setGameCode(code)
       return { success: { code }, error: undefined }
     } else {
       return handleError(res)
@@ -135,7 +136,7 @@ export async function joinGame(code: string): Promise<GameplayApiResponse> {
 
   const jsonRes: CodeResponse = await res.clone().json()
   // TODO: handle error if jsonRes.code !== code
-  await setGameCodeCookie(jsonRes.code)
+  await setGameCode(jsonRes.code)
   return handleSuccess(res)
 }
 
@@ -147,7 +148,7 @@ export async function unJoinGame(code: string): Promise<GameplayApiResponse> {
     return handleError(res)
   }
 
-  await setGameCodeCookie("")
+  await setGameCode("")
   return handleSuccess(res)
 }
 
@@ -199,7 +200,7 @@ export async function advance(code: string): Promise<number | undefined> {
 }
 
 export async function leaveGame(): Promise<void> {
-  await setGameCodeCookie("")
+  await setGameCode("")
 
   await invalidateAll()
 }

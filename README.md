@@ -2,6 +2,11 @@
 
 This project is the frontend for the Secret Hitler game, intended to be deployed to Firebase Hosting. It is written in SvelteKit and is designed to work with the backend, deployed to Firebase Functions.
 
+It's a static single-page app: everything runs in the browser, and Firebase Hosting only serves
+files. The browser signs in with Firebase Authentication, reads the game from the Realtime
+Database, and plays moves through the backend's API. What protects the data is the database's
+security rules and the API, which check the login on every read and request.
+
 Secret Hitler Firebase : https://github.com/touficbatache/SecretHitlerFirebase
 
 ## Prerequisites
@@ -21,7 +26,7 @@ npm install
 
 ### Firebase configuration
 
-To configure the project, you need to set up the Firebase Functions and Firebase Hosting.
+To configure the project, you need to set up Firebase Hosting, in the same Firebase project as the backend.
 
 **I - First, you will need to install the Firebase CLI using the following command:**
 
@@ -36,7 +41,6 @@ to call it from any command line on your local computer.
 
 - Authentication
 - AppCheck
-- Functions
 - Realtime Database
 - Hosting
 
@@ -101,8 +105,8 @@ test suites on every pull request and on `master` (`.github/workflows/ci.yml`).
 
 ## Deploy
 
-Every merge to `master` deploys itself: once both CI jobs pass, GitHub Actions deploys Firebase
-Hosting and its server-side rendering function to the production project
+Every merge to `master` deploys itself: once both CI jobs pass, GitHub Actions builds the static
+app with the production settings and deploys it to Firebase Hosting
 (`.github/workflows/ci.yml`). The game API ([SecretHitlerFirebase](https://github.com/touficbatache/SecretHitlerFirebase))
 deploys the same way from its own repository: merge the two halves of a change that needs both
 together.
@@ -116,18 +120,18 @@ together.
    - **Variables:** the same `FIREBASE_PROJECT`, `GCP_WORKLOAD_IDENTITY_PROVIDER` and
      `GCP_SERVICE_ACCOUNT` as the API's repository.
    - **Secret** `PROD_ENV_FILE`: the whole content of your `.env.prod` (see `example.env`), with
-     `PUBLIC_USE_EMULATORS=false`. The deploy writes it to `.env.prod` and `.env`, as a local
-     deploy would use them.
+     `PUBLIC_USE_EMULATORS=false`. The deploy writes it to `.env.prod` and builds with it, as
+     `npm run deploy:prod` does. All of these values end up in the public app; it's a secret
+     only to keep the settings in one place.
 
 A deploy with a missing setting fails with a message naming it.
 
 ### Deploy by hand
 
-Set the correct environment variable values for the development or production environment in `.env.<alias>`
-(`.env.dev` or `.env.prod`). They replace the `.env` values as per the
-[Firebase Functions documentation](https://firebase.google.com/docs/functions/config-env?gen=2nd#deploying_multiple_sets_of_environment_variables).
+Set the values for the development or production environment in `.env.dev` or `.env.prod`. The
+build uses them through Vite's modes (`vite build --mode prod` reads `.env.prod`).
 
-Then deploy to the development or the production environment:
+Then build and deploy to the development or the production environment:
 
 ```shell
 npm run deploy:dev
