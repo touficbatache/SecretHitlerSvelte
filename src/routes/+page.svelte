@@ -2,15 +2,15 @@
   import { backInOut } from "svelte/easing"
   import { scale } from "svelte/transition"
 
-  import { goto } from "$app/navigation"
+  import { goto, invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
-  import * as ApiClient from "$lib/api_client"
   import { clickOutside } from "$lib/click_outside"
   import Logo from "$lib/components/Logo.svelte"
   import PlayfulButton from "$lib/components/PlayfulButton.svelte"
   import SimpleIconButton from "$lib/components/SimpleIconButton.svelte"
   import TwoPaneView from "$lib/components/TwoPaneView.svelte"
-  import { setUserName, signOut } from "$lib/firebase"
+  import { rtdb, setUserName, signOut } from "$lib/firebase"
+  import { saveUserSetting } from "$lib/user_settings"
 
   let btnMenu: HTMLButtonElement
   let inputName: string | undefined = $page.data.user?.name
@@ -24,8 +24,15 @@
   }
 
   async function toggleStreamerMode() {
+    const uid: string | undefined = $page.data.user?.uid
+    if (uid === undefined) return
     isModifyingStreamerMode = true
-    await ApiClient.setStreamerMode(!$page.data.streamerModeEnabled)
+    try {
+      await saveUserSetting(rtdb, uid, "streamerMode", !$page.data.streamerModeEnabled)
+      await invalidateAll()
+    } catch (error) {
+      console.error("Couldn't save streamer mode:", error)
+    }
     isModifyingStreamerMode = false
   }
 </script>
@@ -73,6 +80,7 @@
       </div>
     {/if}
     <SimpleIconButton
+      aria-label="Menu"
       bind:btn={btnMenu}
       classes="m-4"
       icon="fa:bars"

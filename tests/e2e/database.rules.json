@@ -10,6 +10,29 @@
           }
         }
       }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "settings": {
+          "streamerMode": {
+            ".validate": "newData.isBoolean()"
+          },
+          "skipLongIntro": {
+            ".validate": "newData.isBoolean()"
+          },
+          "hidePicsGameInfo": {
+            ".validate": "newData.isBoolean()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
     }
   }
 }
